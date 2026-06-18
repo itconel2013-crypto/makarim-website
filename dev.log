@@ -1,0 +1,15 @@
+
+> makarim-website-cms@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.19
+   - Local:        http://localhost:3000
+   - Network:      http://10.51.41.101:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Compiled /instrumentation in 250ms (23 modules)
+✓ Database initialized on app startup
+ ✓ Ready in 2.5s
+ ○ Compiling / ...
+ ✓ Compiled / in 4.8s (676 modules)

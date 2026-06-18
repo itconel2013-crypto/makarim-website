@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,8..72,400;0,8..72,500;0,8..72,600;1,8..72,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Schibsted Grotesk is the default sans-serif from Google Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap');
+  
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-page font-sans text-body;
+  }
+
+  h1 {
+    @apply font-serif font-normal;
+  }
+
+  h2 {
+    @apply font-serif font-normal;
+  }
+
+  h3 {
+    @apply font-serif font-normal;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+
+  button {
+    @apply transition-colors;
+  }
+
+  /* Remove default input/form styling */
+  input,
+  textarea,
+  select {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply px-6 py-3 bg-primary hover:bg-primary-hover text-white font-sans font-500 rounded-button transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border border-white text-white font-sans font-500 rounded-button hover:bg-white hover:text-ink transition-colors;
+  }
+
+  .btn-link {
+    @apply text-primary-dark hover:text-primary-hover font-medium underline;
+  }
+
+  /* Container */
+  .container-max {
+    @apply max-w-content mx-auto px-gutter;
+  }
+
+  /* Section */
+  .section {
+    @apply py-section container-max;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-card shadow-card overflow-hidden;
+  }
+
+  /* Kicker text */
+  .kicker {
+    @apply text-kicker font-mono font-semibold text-primary-dark uppercase;
+  }
+
+  /* SEO Metadata link */
+  .link-seo {
+    @apply text-link-green;
+  }
+}
+
+/* Smooth scroll behavior (fallback for older browsers) */
+html.scroll-smooth {
+  scroll-behavior: smooth;
+}

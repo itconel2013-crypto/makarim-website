@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#16242B"/><circle cx="50" cy="38" r="13" fill="#C2724A"/><circle cx="50" cy="38" r="5" fill="none" stroke="#16242B" stroke-width="2.6"/><rect x="30" y="62" width="40" height="6" rx="3" fill="#F4F1EA"/><rect x="38" y="76" width="24" height="4" rx="2" fill="#6E807E"/></svg></template>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Schibsted Grotesk',system-ui,sans-serif;background:#F4F1EA;color:#1C2429;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  input,textarea,select,button{font-family:inherit;}
+  textarea{resize:vertical;}
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{background:#D9D2C5;border-radius:6px;border:2px solid transparent;background-clip:content-box;}
+</style>
+</helmet>
+
+<div style="height:100vh;width:100%;display:flex;overflow:hidden;background:#F4F1EA;">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside style="width:248px;flex-shrink:0;background:#16242B;color:#A9B4B2;display:flex;flex-direction:column;padding:22px 16px 18px;">
+    <div style="display:flex;align-items:center;gap:11px;padding:4px 8px 24px;">
+      <div style="width:32px;height:32px;border-radius:50%;background:#C2724A;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:11px;height:11px;border-radius:50%;border:2px solid #16242B;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;line-height:1;">
+        <span style="font-size:16px;font-weight:600;color:#F4F1EA;letter-spacing:-0.01em;">Website Studio</span>
+        <span style="font-size:9.5px;font-weight:600;letter-spacing:0.18em;color:#6E807E;margin-top:4px;">MAKARIM CMS</span>
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.14em;color:#5C6E6C;padding:0 8px 9px;">INHALTE</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+        <div style="{{ n.style }}" onClick="{{ n.onClick }}"><span style="width:20px;display:inline-block;text-align:center;opacity:0.85;">{{ n.icon }}</span>{{ n.label }}</div>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px;">
+      <a href="Richtungen.dc.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:40px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#E6EAE9;font-size:13px;font-weight:500;" style-hover="background:rgba(255,255,255,0.12)">Website ansehen →</a>
+      <div style="display:flex;align-items:center;gap:10px;padding:6px 4px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#3E6B7A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">SO</div>
+        <div style="line-height:1.25;">
+          <div style="font-size:13px;color:#E6EAE9;font-weight:500;">Soleman</div>
+          <div style="font-size:11px;color:#6E807E;">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main style="flex:1;display:flex;flex-direction:column;min-width:0;">
+    <header style="height:62px;flex-shrink:0;background:#FBF9F4;border-bottom:1px solid #E7E1D8;display:flex;align-items:center;gap:18px;padding:0 26px;">
+      <div style="display:flex;flex-direction:column;line-height:1.18;min-width:0;">
+        <span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">{{ sectionTitle }}</span>
+        <span style="font-size:12px;color:#8A8178;">{{ sectionSub }}</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:11px;">
+        <span style="{{ pubStatus.style }}"><span style="{{ pubStatus.dotStyle }}"></span>{{ pubStatus.label }}</span>
+        <sc-if value="{{ isTrips }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ syncCRM }}" style="height:38px;padding:0 14px;background:#fff;border:1px solid #E2DBCF;border-radius:10px;font-size:13px;font-weight:600;color:#3F4A44;cursor:pointer;display:flex;align-items:center;gap:7px;" style-hover="background:#F2EDE3">↻ Aus CRM aktualisieren</button>
+        </sc-if>
+        <button onClick="{{ publish }}" style="{{ publishBtnStyle }}" style-hover="background:#22343d">{{ publishLabel }}</button>
+      </div>
+    </header>
+
+    <div style="flex:1;min-height:0;display:flex;overflow:hidden;">
+
+      <!-- ============ EDITOR COLUMN ============ -->
+      <div style="flex:1;min-width:0;overflow-y:auto;">
+        <div style="max-width:720px;margin:0 auto;padding:26px 30px 60px;">
+
+          <!-- ---------- DASHBOARD ---------- -->
+          <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;">
+              <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:18px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:34px;color:#16242B;line-height:1;">{{ stat.trips }}</div>
+                <div style="font-size:13px;color:#7C746A;margin-top:6px;">Reisen aus CRM</div>
+              </div>
+              <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:18px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:34px;color:#16242B;line-height:1;">{{ stat.faq }}</div>
+                <div style="font-size:13px;color:#7C746A;margin-top:6px;">FAQ-Einträge</div>
+              </div>
+              <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:18px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:34px;color:#16242B;line-height:1;">{{ stat.media }}</div>
+                <div style="font-size:13px;color:#7C746A;margin-top:6px;">Bilder in der Mediathek</div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;">
+              <div style="font-family:'Newsreader',serif;font-size:20px;color:#16242B;margin-bottom:4px;">Willkommen im Website Studio</div>
+              <p style="font-size:14px;line-height:1.6;color:#6B6457;margin:0 0 18px;max-width:520px;">Hier pflegst du alle Inhalte der öffentlichen Website. Reise-Termine und Preise kommen automatisch aus dem CRM — Bilder und Beschreibungen ergänzt du hier. Änderungen werden sofort gespeichert.</p>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                <sc-for list="{{ quickLinks }}" as="q" hint-placeholder-count="4">
+                  <div onClick="{{ q.onClick }}" style="display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid #EAE3D8;border-radius:11px;cursor:pointer;background:#FBF9F4;" style-hover="border-color:#C2724A">
+                    <span style="width:34px;height:34px;border-radius:9px;background:#F0E4DC;color:#A8542F;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">{{ q.icon }}</span>
+                    <div style="line-height:1.3;"><div style="font-size:14px;font-weight:600;color:#1C2429;">{{ q.label }}</div><div style="font-size:12px;color:#9A9082;">{{ q.hint }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---------- STARTSEITE ---------- -->
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;margin-bottom:16px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Hero / Kopfbereich</div>
+              <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Kicker (kleine Zeile oben)</label>
+                <input value="{{ home.kicker }}" onInput="{{ home.oKicker }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;" />
+              </div>
+              <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Überschrift</label>
+                <input value="{{ home.headline }}" onInput="{{ home.oHeadline }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;" />
+              </div>
+              <div style="margin-bottom:15px;">
+                <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Einleitungstext</label>
+                <textarea value="{{ home.sub }}" onInput="{{ home.oSub }}" rows="3" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Button 1</label><input value="{{ home.btnP }}" onInput="{{ home.oBtnP }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Button 2</label><input value="{{ home.btnS }}" onInput="{{ home.oBtnS }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" /></div>
+              </div>
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Hero-Bild</label>
+              <div style="display:flex;gap:14px;align-items:center;">
+                <div style="width:120px;height:74px;border-radius:10px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                  {{ home.thumbEl }}
+                  <sc-if value="{{ home.noHero }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#A99F8D;">Kein Bild</span></sc-if>
+                </div>
+                <button onClick="{{ home.pickHero }}" style="height:40px;padding:0 16px;background:#14617A;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;" style-hover="background:#0F4F63">Bild wählen / hochladen</button>
+              </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Vertrauen / Kennzahlen</div>
+              <div style="display:flex;flex-direction:column;gap:11px;">
+                <sc-for list="{{ trustRows }}" as="t" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:130px 1fr;gap:10px;">
+                    <input value="{{ t.value }}" onInput="{{ t.oVal }}" style="height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;" />
+                    <input value="{{ t.label }}" onInput="{{ t.oLabel }}" style="height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;" />
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---------- KATEGORIEN ---------- -->
+          <sc-if value="{{ isCategories }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <sc-for list="{{ catRows }}" as="c" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:20px 22px;">
+                  <div style="display:flex;gap:16px;">
+                    <div style="width:108px;flex-shrink:0;">
+                      <div style="width:108px;height:80px;border-radius:10px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+                        {{ c.imgEl }}
+                        <sc-if value="{{ c.noImg }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#A99F8D;">Kein Bild</span></sc-if>
+                      </div>
+                      <button onClick="{{ c.pick }}" style="width:108px;height:34px;background:#14617A;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;" style-hover="background:#0F4F63">Bild ändern</button>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                      <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Titel</label>
+                      <input value="{{ c.title }}" onInput="{{ c.oTitle }}" style="width:100%;height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;margin-bottom:12px;" />
+                      <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Beschreibung</label>
+                      <textarea value="{{ c.text }}" onInput="{{ c.oText }}" rows="3" style="width:100%;padding:11px 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ---------- REISEN (CRM) ---------- -->
+          <sc-if value="{{ isTrips }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:9px;background:#EFEAE1;border:1px solid #E4DBCB;border-radius:11px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;color:#7C746A;">
+              <span style="font-weight:700;color:#5A5247;">Aus dem CRM</span> Termine, Preise und Verfügbarkeit sind read-only. Hier ergänzt du nur Bild und Marketing-Text je Reise.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <sc-for list="{{ tripRows }}" as="t" hint-placeholder-count="6">
+                <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:18px 20px;">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A8542F;background:#F0E4DC;border-radius:6px;padding:4px 9px;">VG {{ t.vg }}</span>
+                    <span style="{{ t.statusChipStyle }}">{{ t.statusChipLabel }}</span>
+                    <span style="font-size:15px;font-weight:600;color:#16242B;">{{ t.title }}</span>
+                    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+                      <button onClick="{{ t.togglePublish }}" style="{{ t.pubBtnStyle }}" style-hover="opacity:0.9">{{ t.pubBtnLabel }}</button>
+                      <span onClick="{{ t.toggleStart }}" title="Auf der Startseite anzeigen" style="{{ t.startChipStyle }}" style-hover="border-color:#C2724A">★ Startseite</span>
+                      <span style="font-size:12px;font-weight:600;border-radius:20px;padding:4px 11px;background:{{ t.pillBg }};color:{{ t.pillFg }};">{{ t.status }}</span>
+                      <button onClick="{{ t.moveUp }}" title="Nach oben" style="{{ t.upStyle }}" style-hover="border-color:#C2724A">↑</button>
+                      <button onClick="{{ t.moveDown }}" title="Nach unten" style="{{ t.downStyle }}" style-hover="border-color:#C2724A">↓</button>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:18px;font-size:12.5px;color:#7C746A;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #F2ECE1;">
+                    <span style="font-variant-numeric:tabular-nums;">📅 {{ t.date }}</span><span>· {{ t.typ }}</span><span style="color:#16242B;font-weight:600;">ab {{ t.price }} €</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:22px;margin-bottom:16px;flex-wrap:wrap;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <label style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">Verfügbare Plätze</label>
+                      <input type="number" min="0" value="{{ t.seats }}" onInput="{{ t.oSeats }}" style="width:76px;height:38px;padding:0 11px;border:1px solid #E2DBCF;border-radius:9px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;font-variant-numeric:tabular-nums;" />
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">Warteliste bei 0</span>
+                      <div onClick="{{ t.toggleWaitlist }}" style="{{ t.wlTrack }}"><div style="{{ t.wlKnob }}"></div></div>
+                      <span style="font-size:12.5px;color:#7C746A;">{{ t.waitlistLabel }}</span>
+                    </div>
+                    <span style="margin-left:auto;font-size:11.5px;color:#B4AB9B;">&gt;18 = begrenzte Plätze · 0 ohne Warteliste = ausgebucht</span>
+                  </div>
+                  <!-- Inhalt -->
+                  <div style="margin-top:16px;border-top:1px solid #F2ECE1;">
+                    <div onClick="{{ t.toggleInhalt }}" style="display:flex;align-items:center;gap:9px;padding-top:14px;cursor:pointer;">
+                      <span style="font-size:12px;color:#A8542F;width:14px;">{{ t.chevInhalt }}</span>
+                      <span style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">Inhalt</span>
+                      <span style="margin-left:auto;font-size:11.5px;color:#B4AB9B;">{{ t.inhaltSummary }}</span>
+                    </div>
+                    <sc-if value="{{ t.secInhaltOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding-top:14px;">
+                  <div style="display:flex;gap:16px;">
+                    <div style="width:108px;flex-shrink:0;">
+                      <div style="width:108px;height:80px;border-radius:10px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+                        {{ t.imgEl }}
+                        <sc-if value="{{ t.noImg }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#A99F8D;">Kein Bild</span></sc-if>
+                      </div>
+                      <button onClick="{{ t.pick }}" style="width:108px;height:34px;background:#14617A;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;" style-hover="background:#0F4F63">Bild ändern</button>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                      <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Marketing-Text (Website)</label>
+                      <textarea value="{{ t.text }}" onInput="{{ t.oText }}" rows="4" style="width:100%;padding:11px 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Balken -->
+                  <div style="margin-top:16px;padding-top:16px;border-top:1px solid #F2ECE1;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                      <span style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">Balken auf dem Bild</span>
+                      <div onClick="{{ t.toggleBanner }}" style="{{ t.switchTrack }}">
+                        <div style="{{ t.switchKnob }}"></div>
+                      </div>
+                      <span style="font-size:12.5px;color:#7C746A;">{{ t.bannerOnLabel }}</span>
+                      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+                        <span style="font-family:'Quicksand',sans-serif;font-size:9px;color:#A99F8D;letter-spacing:0.06em;">VORSCHAU</span>
+                        <div style="{{ t.bannerPreviewStyle }}">
+                          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:14px;line-height:1;text-transform:uppercase;letter-spacing:0.04em;">{{ t.bannerLine1 }}</div>
+                          <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:8.5px;line-height:1;text-transform:uppercase;letter-spacing:0.05em;opacity:0.92;margin-top:3px;">{{ t.bannerLine2 }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="{{ t.bannerFieldsStyle }}">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px;">
+                        <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Zeile 1</label><input value="{{ t.bannerLine1 }}" onInput="{{ t.oLine1 }}" style="width:100%;height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" /></div>
+                        <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Zeile 2</label><input value="{{ t.bannerLine2 }}" onInput="{{ t.oLine2 }}" style="width:100%;height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" /></div>
+                      </div>
+                      <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:8px;">Farbe</label>
+                      <div style="display:flex;flex-wrap:wrap;gap:9px;">
+                        <sc-for list="{{ t.colorRows }}" as="col" hint-placeholder-count="6">
+                          <div onClick="{{ col.onPick }}" style="{{ col.style }}"></div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                    </div>
+                    </sc-if>
+                  </div>
+
+                  <!-- Hotels (aus CRM) -->
+                  <div style="margin-top:16px;border-top:1px solid #F2ECE1;">
+                    <div onClick="{{ t.toggleHotels }}" style="display:flex;align-items:center;gap:9px;padding-top:14px;cursor:pointer;flex-wrap:wrap;">
+                      <span style="font-size:12px;color:#A8542F;width:14px;">{{ t.chevHotels }}</span>
+                      <span style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">Hotels</span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#A8542F;background:#F0E4DC;border-radius:5px;padding:3px 8px;">aus CRM</span>
+                      <span style="margin-left:auto;font-size:11.5px;color:#B4AB9B;">{{ t.hotelsSummary }}</span>
+                    </div>
+                    <sc-if value="{{ t.secHotelsOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding-top:14px;">
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <sc-for list="{{ t.hotels }}" as="h" hint-placeholder-count="2">
+                        <div style="display:flex;gap:13px;align-items:center;border:1px solid #EFE8DC;border-radius:11px;padding:11px 13px;background:#FBF9F4;">
+                          <div style="width:84px;height:60px;border-radius:8px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                            {{ h.imgEl }}
+                            <sc-if value="{{ h.noImg }}" hint-placeholder-val="{{ true }}"><span style="font-size:10px;color:#A99F8D;">Kein Bild</span></sc-if>
+                          </div>
+                          <div style="flex:1;min-width:0;">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#A8542F;text-transform:uppercase;">{{ h.city }}</span>
+                              <span style="display:inline-flex;align-items:center;gap:4px;"><span style="display:inline-flex;align-items:center;gap:3px;background:#C2724A;color:#fff;border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:700;line-height:1;"><span style="font-size:9px;">★</span>{{ h.rating }}</span><span style="font-size:10.5px;color:#9A9082;">/ 10</span></span>
+                            </div>
+                            <div style="font-size:14px;font-weight:600;color:#16242B;">{{ h.name }}</div>
+                            <div style="font-size:12px;color:#9A9082;margin-top:2px;">{{ h.nights }} · {{ h.dist }}</div>
+                          </div>
+                          <button onClick="{{ h.pick }}" style="height:34px;padding:0 13px;background:#14617A;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;" style-hover="background:#0F4F63">{{ h.btnLabel }}</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                    </div>
+                    </sc-if>
+                  </div>
+
+                  <!-- SEO (optional) -->
+                  <div style="margin-top:16px;border-top:1px solid #F2ECE1;">
+                    <div onClick="{{ t.toggleSeo }}" style="display:flex;align-items:center;gap:9px;padding-top:14px;cursor:pointer;flex-wrap:wrap;">
+                      <span style="font-size:12px;color:#A8542F;width:14px;">{{ t.chevSeo }}</span>
+                      <span style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;">SEO</span>
+                      <span style="font-size:11px;color:#A99F8D;background:#F2ECE1;border-radius:5px;padding:3px 8px;">optional</span>
+                      <span style="margin-left:auto;font-size:11.5px;color:#B4AB9B;">{{ t.seoSummary }}</span>
+                    </div>
+                    <sc-if value="{{ t.secSeoOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding-top:14px;">
+                    <div style="background:#fff;border:1px solid #EFE8DC;border-radius:10px;padding:12px 14px;margin-bottom:13px;">
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#3E6B52;margin-bottom:3px;">makarim.de/reise</div>
+                      <div style="font-size:17px;color:#1a0dab;line-height:1.3;margin-bottom:3px;">{{ t.seoSnippetTitle }}</div>
+                      <div style="font-size:12.5px;color:#4d5156;line-height:1.5;">{{ t.seoSnippetDesc }}</div>
+                    </div>
+                    <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Eigener Seitentitel</label>
+                    <input value="{{ t.seoTitle }}" onInput="{{ t.oSeoTitle }}" placeholder="leer = Reisetitel" style="width:100%;height:40px;padding:0 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" />
+                    <div style="font-size:11.5px;color:#B4AB9B;margin:6px 0 13px;">{{ t.seoTitleLen }} Zeichen · ideal 50–60</div>
+                    <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Eigene Meta-Beschreibung</label>
+                    <textarea value="{{ t.seoDesc }}" onInput="{{ t.oSeoDesc }}" rows="2" placeholder="leer = Marketing-Text" style="width:100%;padding:10px 12px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                    <div style="font-size:11.5px;color:#B4AB9B;margin-top:6px;">{{ t.seoDescLen }} Zeichen · ideal 140–158</div>
+                    </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ---------- FAQ ---------- -->
+          <sc-if value="{{ isFaq }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:13px;">
+              <sc-for list="{{ faqRows }}" as="f" hint-placeholder-count="4">
+                <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:18px 20px;">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9A9082;">#{{ f.num }}</span>
+                    <div style="margin-left:auto;display:flex;gap:5px;">
+                      <button onClick="{{ f.up }}" style="width:30px;height:30px;border:1px solid #E2DBCF;background:#fff;border-radius:8px;color:#7C746A;cursor:pointer;font-size:12px;">↑</button>
+                      <button onClick="{{ f.down }}" style="width:30px;height:30px;border:1px solid #E2DBCF;background:#fff;border-radius:8px;color:#7C746A;cursor:pointer;font-size:12px;">↓</button>
+                      <button onClick="{{ f.del }}" style="width:30px;height:30px;border:1px solid #F0DAD3;background:#FBF4F2;border-radius:8px;color:#B0563F;cursor:pointer;font-size:13px;">✕</button>
+                    </div>
+                  </div>
+                  <input value="{{ f.q }}" onInput="{{ f.oQ }}" placeholder="Frage" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;margin-bottom:10px;" />
+                  <textarea value="{{ f.a }}" onInput="{{ f.oA }}" rows="3" placeholder="Antwort" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                </div>
+              </sc-for>
+              <button onClick="{{ addFaq }}" style="height:44px;border:1px dashed #C9C0B1;background:#FBF9F4;border-radius:11px;color:#7C746A;font-size:14px;font-weight:600;cursor:pointer;" style-hover="border-color:#C2724A;color:#A8542F">+ Frage hinzufügen</button>
+            </div>
+          </sc-if>
+
+          <!-- ---------- ÜBER UNS ---------- -->
+          <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;">
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Titel</label>
+              <input value="{{ about.title }}" onInput="{{ about.oTitle }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;margin-bottom:16px;" />
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Text</label>
+              <textarea value="{{ about.body }}" onInput="{{ about.oBody }}" rows="9" style="width:100%;padding:12px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.6;color:#1C2429;outline:none;margin-bottom:16px;"></textarea>
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Bilder</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                  <div style="font-size:11px;color:#9A9082;margin-bottom:7px;">Bild 1 · groß (links)</div>
+                  <div style="display:flex;gap:11px;align-items:center;">
+                    <div style="width:96px;height:64px;border-radius:10px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                      {{ about.imgEl }}
+                      <sc-if value="{{ about.noImg }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;color:#A99F8D;">Kein Bild</span></sc-if>
+                    </div>
+                    <button onClick="{{ about.pick }}" style="height:38px;padding:0 13px;background:#14617A;border:none;border-radius:9px;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;" style-hover="background:#0F4F63">Wählen</button>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:11px;color:#9A9082;margin-bottom:7px;">Bild 2 · überlappend (rechts)</div>
+                  <div style="display:flex;gap:11px;align-items:center;">
+                    <div style="width:96px;height:64px;border-radius:10px;overflow:hidden;border:1px solid #E2DBCF;background:#F4F1EA;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                      {{ about.imgEl2 }}
+                      <sc-if value="{{ about.noImg2 }}" hint-placeholder-val="{{ true }}"><span style="font-size:10px;color:#A99F8D;">Kein Bild</span></sc-if>
+                    </div>
+                    <button onClick="{{ about.pick2 }}" style="height:38px;padding:0 13px;background:#14617A;border:none;border-radius:9px;color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;" style-hover="background:#0F4F63">Wählen</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;margin-top:16px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Abschnitt „Warum Makarim?"</div>
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Überschrift</label>
+              <input value="{{ about.whyTitle }}" onInput="{{ about.oWhyTitle }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;margin-bottom:16px;" />
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Einleitungstext</label>
+              <textarea value="{{ about.whyBody }}" onInput="{{ about.oWhyBody }}" rows="6" style="width:100%;padding:12px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.6;color:#1C2429;outline:none;"></textarea>
+            </div>
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;margin-top:16px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:6px;">Kacheln</div>
+              <div style="font-size:12.5px;color:#9A9082;margin-bottom:16px;">Die Karten unter „Warum Makarim?". Reihenfolge = Anzeigereihenfolge.</div>
+              <div style="display:flex;flex-direction:column;gap:14px;">
+                <sc-for list="{{ about.tiles }}" as="tile" hint-placeholder-count="4">
+                  <div style="border:1px solid #EFE8DC;border-radius:12px;padding:14px 15px;background:#FBF9F4;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A8542F;">Kachel {{ tile.num }}</span>
+                      <button onClick="{{ tile.remove }}" style="margin-left:auto;height:30px;padding:0 11px;background:#fff;border:1px solid #E2D6D0;border-radius:8px;color:#A8542F;font-size:12px;font-weight:600;cursor:pointer;" style-hover="background:#F7ECE4">Entfernen</button>
+                    </div>
+                    <input value="{{ tile.t }}" onInput="{{ tile.oT }}" placeholder="Titel" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;margin-bottom:10px;" />
+                    <textarea value="{{ tile.b }}" onInput="{{ tile.oB }}" rows="3" placeholder="Text" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                  </div>
+                </sc-for>
+                <button onClick="{{ about.addTile }}" style="height:44px;border:1px dashed #C9C0B1;background:#FBF9F4;border-radius:11px;color:#7C746A;font-size:14px;font-weight:600;cursor:pointer;" style-hover="border-color:#C2724A;color:#A8542F">+ Kachel hinzufügen</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---------- SEO ---------- -->
+          <sc-if value="{{ isSeo }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:flex-start;gap:9px;background:#EFEAE1;border:1px solid #E4DBCB;border-radius:11px;padding:12px 14px;margin-bottom:18px;font-size:12.5px;line-height:1.55;color:#7C746A;">
+              <span style="font-weight:700;color:#5A5247;flex-shrink:0;">So funktioniert SEO</span> Titel und Beschreibung erscheinen in den Google-Suchergebnissen. Titel ideal 50–60 Zeichen, Beschreibung 140–158 Zeichen. Reise-Detailseiten erzeugen Titel & Beschreibung automatisch aus Reisetitel und Marketing-Text.
+            </div>
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;margin-bottom:16px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Allgemein</div>
+              <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Seitenname (Titel-Zusatz)</label><input value="{{ seoMeta.siteName }}" onInput="{{ seoMeta.oSite }}" placeholder="z. B. Makarim Reisen" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;outline:none;" /><div style="font-size:11.5px;color:#B4AB9B;margin-top:6px;">Wird an jeden Seitentitel angehängt: „Seitentitel | {{ seoMeta.siteName }}"</div></div>
+              <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Standard-Beschreibung</label>
+              <textarea value="{{ seoMeta.defaultDesc }}" onInput="{{ seoMeta.oDefault }}" rows="3" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+              <div style="font-size:11.5px;color:#B4AB9B;margin-top:6px;">Fallback, wenn eine Seite keine eigene Beschreibung hat.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <sc-for list="{{ seoPages }}" as="p" hint-placeholder-count="5">
+                <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:20px 22px;">
+                  <div style="font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:13px;">{{ p.label }}</div>
+                  <div style="background:#fff;border:1px solid #EFE8DC;border-radius:10px;padding:13px 15px;margin-bottom:15px;">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#3E6B52;margin-bottom:3px;">{{ p.urlPath }}</div>
+                    <div style="font-size:18px;color:#1a0dab;line-height:1.3;margin-bottom:3px;">{{ p.snippetTitle }}</div>
+                    <div style="font-size:13px;color:#4d5156;line-height:1.5;">{{ p.snippetDesc }}</div>
+                  </div>
+                  <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Seitentitel</label>
+                  <input value="{{ p.title }}" onInput="{{ p.oTitle }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;font-weight:600;color:#16242B;outline:none;" />
+                  <div style="font-size:11.5px;color:#B4AB9B;margin:6px 0 14px;">{{ p.titleLen }} Zeichen · ideal 50–60</div>
+                  <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Meta-Beschreibung</label>
+                  <textarea value="{{ p.desc }}" onInput="{{ p.oDesc }}" rows="3" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+                  <div style="font-size:11.5px;color:#B4AB9B;margin-top:6px;">{{ p.descLen }} Zeichen · ideal 140–158</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- ---------- KONTAKT & FOOTER ---------- -->
+          <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;margin-bottom:16px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Kontaktdaten</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Telefon</label><input value="{{ brand.phone }}" onInput="{{ brand.oPhone }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">WhatsApp</label><input value="{{ brand.whatsapp }}" onInput="{{ brand.oWhatsapp }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">E-Mail</label><input value="{{ brand.email }}" onInput="{{ brand.oEmail }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Instagram</label><input value="{{ brand.instagram }}" onInput="{{ brand.oInsta }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Adresse (Zeile 1)</label><input value="{{ brand.address1 }}" onInput="{{ brand.oAddr1 }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Adresse (Zeile 2)</label><input value="{{ brand.address2 }}" onInput="{{ brand.oAddr2 }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+              </div>
+            </div>
+            <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;padding:22px 24px;">
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:16px;">Abschluss-Aufruf (CTA)</div>
+              <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Überschrift</label><input value="{{ cta.headline }}" onInput="{{ cta.oHeadline }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+              <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Text</label><textarea value="{{ cta.sub }}" onInput="{{ cta.oSub }}" rows="2" style="width:100%;padding:11px 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;line-height:1.5;outline:none;"></textarea></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Button 1</label><input value="{{ cta.btnCall }}" onInput="{{ cta.oCall }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+                <div><label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.04em;color:#9A9082;text-transform:uppercase;margin-bottom:7px;">Button 2</label><input value="{{ cta.btnWrite }}" onInput="{{ cta.oWrite }}" style="width:100%;height:42px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;font-size:14px;outline:none;" /></div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ---------- MEDIATHEK ---------- -->
+          <sc-if value="{{ isMedia }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;margin-bottom:16px;">
+              <span style="font-size:13px;color:#7C746A;">{{ stat.media }} Bilder</span>
+              <label style="margin-left:auto;height:40px;padding:0 16px;background:#16242B;color:#fff;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;">+ Bild hochladen<input type="file" accept="image/*" onChange="{{ onUploadLibrary }}" style="display:none;" /></label>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+              <sc-for list="{{ mediaRows }}" as="m" hint-placeholder-count="6">
+                <div style="background:#fff;border:1px solid #EAE3D8;border-radius:12px;overflow:hidden;">
+                  <div style="height:120px;background:#F4F1EA;">{{ m.imgEl }}</div>
+                  <div style="padding:10px 12px;display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:12px;color:#41494A;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.name }}</span>
+                    <button onClick="{{ m.onDelete }}" style="width:28px;height:28px;border:1px solid #F0DAD3;background:#FBF4F2;border-radius:7px;color:#B0563F;cursor:pointer;font-size:12px;flex-shrink:0;">✕</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+      <!-- ============ LIVE PREVIEW COLUMN ============ -->
+      <sc-if value="{{ showPreview }}" hint-placeholder-val="{{ true }}">
+      <div style="width:540px;flex-shrink:0;background:#E5E3DD;border-left:1px solid #DED8CC;overflow-y:auto;">
+        <div style="position:sticky;top:0;z-index:2;background:#E5E3DD;padding:14px 20px 10px;border-bottom:1px solid #DBD4C7;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#8C8576;text-transform:uppercase;">Live-Vorschau</div>
+        </div>
+        <div style="padding:20px;">
+          <div style="background:#F4F1EA;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px rgba(28,24,20,0.15);border:1px solid #D6D1C6;">
+            <div style="height:30px;background:#EDE9E0;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #DED8CC;">
+              <span style="width:9px;height:9px;border-radius:50%;background:#E0857C;"></span><span style="width:9px;height:9px;border-radius:50%;background:#E8C16B;"></span><span style="width:9px;height:9px;border-radius:50%;background:#9BC08A;"></span>
+            </div>
+
+            <!-- HOME preview -->
+            <sc-if value="{{ pv.home }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative;height:260px;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;background:#2a2018;">
+                {{ home.heroEl }}
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,16,10,0.35),rgba(22,16,10,0.66));"></div>
+                <div style="position:relative;padding:0 26px;">
+                  <div style="font-size:11px;letter-spacing:0.06em;color:#F0CDA8;margin-bottom:9px;">{{ home.kicker }}</div>
+                  <div style="font-family:'Newsreader',serif;font-size:30px;font-weight:500;color:#fff;line-height:1.1;margin-bottom:11px;">{{ home.headline }}</div>
+                  <p style="font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.9);margin:0 0 16px;">{{ home.sub }}</p>
+                  <div style="display:flex;gap:9px;justify-content:center;">
+                    <span style="background:#C2724A;color:#fff;font-size:12.5px;font-weight:600;border-radius:9px;padding:9px 16px;">{{ home.btnP }}</span>
+                    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.6);color:#fff;font-size:12.5px;font-weight:600;border-radius:9px;padding:9px 16px;">{{ home.btnS }}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);background:#F8F5EF;border-top:1px solid #E9E2D5;">
+                <sc-for list="{{ trustRows }}" as="t" hint-placeholder-count="4">
+                  <div style="padding:16px 10px;text-align:center;border-right:1px solid #ECE5D8;">
+                    <div style="font-family:'Newsreader',serif;font-size:20px;color:#16242B;">{{ t.value }}</div>
+                    <div style="font-size:10.5px;color:#7C746A;margin-top:3px;line-height:1.3;">{{ t.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <!-- CATEGORIES preview -->
+            <sc-if value="{{ pv.categories }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#16242B;text-align:center;margin-bottom:18px;">Finde deine perfekte Reise</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                  <sc-for list="{{ catRows }}" as="c" hint-placeholder-count="3">
+                    <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;overflow:hidden;">
+                      <div style="height:120px;background:#F4F1EA;">{{ c.imgEl }}</div>
+                      <div style="padding:14px 16px;">
+                        <div style="font-family:'Newsreader',serif;font-size:18px;color:#16242B;margin-bottom:6px;">{{ c.title }}</div>
+                        <p style="font-size:12.5px;line-height:1.5;color:#6B6457;margin:0 0 12px;">{{ c.text }}</p>
+                        <span style="display:inline-block;background:#C2724A;color:#fff;font-size:12px;font-weight:600;border-radius:9px;padding:8px 14px;">Jetzt entdecken</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- TRIPS preview -->
+            <sc-if value="{{ pv.trips }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#16242B;margin-bottom:16px;">Aktuelle Umrah Reisen</div>
+                <div style="display:flex;flex-direction:column;gap:14px;">
+                  <sc-for list="{{ tripRows }}" as="t" hint-placeholder-count="6">
+                    <div style="background:#fff;border:1px solid #EAE3D8;border-radius:14px;overflow:hidden;">
+                      <div style="position:relative;height:120px;background:#F4F1EA;">
+                        {{ t.imgEl }}
+                        <sc-if value="{{ t.bannerOn }}" hint-placeholder-val="{{ true }}">
+                          <div style="position:absolute;left:0;top:30px;background:{{ t.bannerColor }};color:#fff;padding:7px 14px 7px 12px;">
+                            <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:15px;line-height:1;text-transform:uppercase;letter-spacing:0.04em;">{{ t.bannerLine1 }}</div>
+                            <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:9px;line-height:1;text-transform:uppercase;letter-spacing:0.05em;opacity:0.92;margin-top:3px;">{{ t.bannerLine2 }}</div>
+                          </div>
+                        </sc-if>
+                        <span style="position:absolute;top:10px;right:10px;background:#F4F1EA;color:#A8542F;font-weight:700;font-size:12px;border-radius:20px;padding:5px 11px;">ab {{ t.price }} €</span>
+                      </div>
+                      <div style="padding:13px 15px;">
+                        <div style="margin-bottom:8px;"><span style="font-size:10.5px;font-weight:600;border-radius:5px;padding:3px 8px;background:{{ t.pillBg }};color:{{ t.pillFg }};">{{ t.status }}</span></div>
+                        <div style="font-family:'Newsreader',serif;font-size:17px;color:#16242B;line-height:1.2;margin-bottom:5px;">{{ t.title }}</div>
+                        <div style="font-size:12px;font-weight:600;color:#41494A;font-variant-numeric:tabular-nums;margin-bottom:7px;">{{ t.date }}</div>
+                        <p style="font-size:12px;line-height:1.5;color:#6B6457;margin:0;">{{ t.text }}</p>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- FAQ preview -->
+            <sc-if value="{{ pv.faq }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px 20px;">
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#16242B;margin-bottom:16px;">Häufige Fragen</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <sc-for list="{{ faqRows }}" as="f" hint-placeholder-count="4">
+                    <div style="background:#fff;border:1px solid #EAE3D8;border-radius:11px;padding:14px 16px;">
+                      <div style="font-size:14px;font-weight:600;color:#16242B;margin-bottom:6px;">{{ f.q }}</div>
+                      <p style="font-size:12.5px;line-height:1.55;color:#6B6457;margin:0;">{{ f.a }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- ABOUT preview -->
+            <sc-if value="{{ pv.about }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:22px 20px;">
+                <div style="height:160px;border-radius:12px;overflow:hidden;background:#F4F1EA;margin-bottom:16px;">{{ about.imgEl }}</div>
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#16242B;line-height:1.2;margin-bottom:12px;">{{ about.title }}</div>
+                <p style="font-size:13px;line-height:1.65;color:#5A5448;margin:0 0 22px;white-space:pre-wrap;">{{ about.body }}</p>
+                <div style="font-family:'Newsreader',serif;font-size:18px;color:#16242B;line-height:1.2;margin-bottom:9px;">{{ about.whyTitle }}</div>
+                <p style="font-size:12.5px;line-height:1.6;color:#5A5448;margin:0 0 16px;">{{ about.whyBody }}</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <sc-for list="{{ about.tiles }}" as="tile" hint-placeholder-count="4">
+                    <div style="background:#F7ECE4;border-radius:12px;padding:13px 14px;">
+                      <div style="font-family:'Newsreader',serif;font-size:14px;color:#16242B;margin-bottom:6px;line-height:1.25;">{{ tile.t }}</div>
+                      <p style="font-size:11px;line-height:1.55;color:#6B6457;margin:0;">{{ tile.b }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- SETTINGS preview = footer -->
+            <sc-if value="{{ pv.settings }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#16242B;padding:28px 24px;text-align:center;">
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#F4F1EA;margin-bottom:9px;">{{ cta.headline }}</div>
+                <p style="font-size:13px;color:#9DB0AD;margin:0 auto 18px;max-width:300px;line-height:1.55;">{{ cta.sub }}</p>
+                <div style="display:flex;gap:9px;justify-content:center;margin-bottom:26px;">
+                  <span style="background:#C2724A;color:#fff;font-size:12.5px;font-weight:600;border-radius:9px;padding:9px 16px;">{{ cta.btnCall }}</span>
+                  <span style="background:transparent;border:1px solid rgba(244,241,234,0.35);color:#F4F1EA;font-size:12.5px;font-weight:600;border-radius:9px;padding:9px 16px;">{{ cta.btnWrite }}</span>
+                </div>
+                <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:18px;display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#9DB0AD;">
+                  <span style="color:#E6EAE9;font-weight:600;">Makarim &amp; Soultreat</span>
+                  <span>{{ brand.address1 }} · {{ brand.address2 }}</span>
+                  <span>{{ brand.phone }} · {{ brand.email }}</span>
+                  <span>{{ brand.instagram }}</span>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ===================== BILD-PICKER MODAL ===================== -->
+  <sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;background:rgba(22,18,11,0.5);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;padding:30px;" onClick="{{ closePicker }}">
+      <div style="width:640px;max-width:100%;max-height:84vh;background:#F4F1EA;border-radius:16px;box-shadow:0 24px 60px rgba(20,15,8,0.35);display:flex;flex-direction:column;overflow:hidden;" onClick="{{ stop }}">
+        <div style="padding:18px 22px;border-bottom:1px solid #E5DECF;display:flex;align-items:center;gap:12px;">
+          <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;">Bild auswählen</div>
+          <label style="margin-left:auto;height:38px;padding:0 14px;background:#16242B;color:#fff;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;">+ Neu hochladen<input type="file" accept="image/*" onChange="{{ onUploadUse }}" style="display:none;" /></label>
+          <button onClick="{{ closePicker }}" style="width:38px;height:38px;background:#fff;border:1px solid #E2DBCF;border-radius:9px;color:#7C746A;font-size:15px;cursor:pointer;">✕</button>
+        </div>
+        <div style="padding:18px 22px;overflow-y:auto;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;">
+            <sc-for list="{{ pickerRows }}" as="m" hint-placeholder-count="6">
+              <div onClick="{{ m.onPick }}" style="background:#fff;border:1px solid #EAE3D8;border-radius:11px;overflow:hidden;cursor:pointer;" style-hover="border-color:#C2724A;box-shadow:0 6px 18px rgba(20,15,8,0.12)">
+                <div style="height:96px;background:#F4F1EA;">{{ m.imgEl }}</div>
+                <div style="padding:8px 10px;font-size:11.5px;color:#41494A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.name }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== TOAST ===================== -->
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:70;background:#16242B;color:#F4F1EA;font-size:13.5px;font-weight:500;padding:12px 20px;border-radius:11px;box-shadow:0 10px 30px rgba(20,15,8,0.3);">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  bootstrap() {
+    try {
+      const s = JSON.parse(localStorage.getItem('makarim_cms_v1') || 'null');
+      if (s && s.c) return { c: this.migrate(s.c), media: s.media || this.defaultMedia() };
+    } catch (e) {}
+    return { c: this.defaultContent(), media: this.defaultMedia() };
+  }
+
+  migrate(c) {
+    try {
+      const def = this.defaultContent();
+      if (Array.isArray(c.trips)) {
+        c.trips.forEach(tr => {
+          const d = def.trips.find(x => x.vg === tr.vg);
+          if (!Array.isArray(tr.hotels)) {
+            tr.hotels = d ? structuredClone(d.hotels) : [];
+          } else if (d) {
+            tr.hotels.forEach((h, hi) => { if (h.rating == null && d.hotels[hi]) h.rating = d.hotels[hi].rating; });
+          }
+        });
+      }
+    } catch (e) {}
+    if (c.about) {
+      const da = this.defaultContent().about;
+      if (c.about.whyTitle == null) c.about.whyTitle = da.whyTitle;
+      if (c.about.whyBody == null) c.about.whyBody = da.whyBody;
+      if (!Array.isArray(c.about.tiles)) c.about.tiles = structuredClone(da.tiles);
+    }
+    if (c.seo == null) c.seo = this.defaultContent().seo;
+    return c;
+  }
+
+  defaultMedia() {
+    return [
+      { id: 'm_hero_b', name: 'Medina – Sonnenuntergang', url: 'assets/examples/hero-b.jpg' },
+      { id: 'm_hero_a', name: 'Medina – Abendlicht', url: 'assets/examples/hero-a.jpg' },
+      { id: 'm_cat_umrah', name: 'Umrah – Innenhof', url: 'assets/examples/cat-umrah.jpg' },
+      { id: 'm_cat_hajj', name: 'Kaaba', url: 'assets/examples/cat-hajj.jpg' },
+      { id: 'm_cat_kultur', name: 'Kulturreise', url: 'assets/examples/cat-kultur.jpg' },
+      { id: 'm_t1', name: 'Reise – Studierende', url: 'assets/examples/trip-sep-studierende.jpg' },
+      { id: 'm_t2', name: 'Reise – Comfort', url: 'assets/examples/trip-sep-comfort.jpg' },
+      { id: 'm_t3', name: 'Reise – Hessen', url: 'assets/examples/trip-okt-hessen.jpg' },
+      { id: 'm_t4', name: 'Reise – Economy', url: 'assets/examples/trip-nov-economy.jpg' },
+      { id: 'm_t5', name: 'Reise – Yunus', url: 'assets/examples/trip-nov-yunus.jpg' },
+      { id: 'm_t6', name: 'Reise – Winter', url: 'assets/examples/trip-winter-ferid.jpg' },
+    ];
+  }
+
+  defaultContent() {
+    return {
+      home: {
+        kicker: 'Hajj · Umrah · Kulturreisen',
+        headline: 'Reisen für die Seele',
+        sub: 'Über 40 Jahre Erfahrung, Rundum-Sorglos-Service und persönliche Betreuung. Werde Teil der Makarim-Familie und erlebe eine Reise, die dein Leben verändert.',
+        btnP: 'Reisen entdecken',
+        btnS: 'Mehr erfahren',
+        heroUrl: 'assets/examples/hero-b.jpg',
+        trust: [
+          { value: '40+', label: 'Jahre Erfahrung' },
+          { value: '10.000+', label: 'Pilger betreut' },
+          { value: '300+', label: 'organisierte Reisen' },
+          { value: '100%', label: 'aus einer Hand' },
+        ],
+      },
+      categories: [
+        { title: 'Umrah Reisen', text: 'Über 40 Jahre Erfahrung in der Organisation von Umrah Reisen aus Deutschland — begleitet von Vertrauen und religiöser Kompetenz.', url: 'assets/examples/cat-umrah.jpg' },
+        { title: 'Hajj Reisen', text: 'Vollziehe deine Hajj aus Deutschland. Wir begleiten dich von der Nusuk-Registrierung bis zur Rückkehr mit religiöser Begleitung.', url: 'assets/examples/cat-hajj.jpg' },
+        { title: 'Kulturreisen', text: 'Islamkonforme Kulturreisen verbinden einzigartige Erlebnisse mit tiefem Verständnis für Geschichte, Tradition und Kultur.', url: 'assets/examples/cat-kultur.jpg' },
+      ],
+      trips: [
+        { vg: '2026-0912', startseite: true, title: 'September Umrah für Studierende', typ: 'Umrah', date: '14.09.2026 – 24.09.2026', price: '1.290', status: 'Warteliste', text: 'Geförderte Studierenden-Umrah – für junge Menschen, die Spiritualität, Gemeinschaft und Wissen verbinden möchten.', url: 'assets/examples/trip-sep-studierende.jpg', hotels: [ { city: 'Medina', name: 'Dar Al Eiman Royal', rating: '8,6', nights: '4 Nächte', dist: 'ca. 300 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Al Kiswah Towers', rating: '8,2', nights: '5 Nächte', dist: 'ca. 700 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-0913', startseite: true, title: 'September Umrah Reise – Comfort', typ: 'Umrah', date: '14.09.2026 – 24.09.2026', price: '1.690', status: 'noch 4 Plätze', text: 'Zentral gelegene Hotels und Frühstück im Hotel – konzentrier dich ganz auf deine Ibada.', url: 'assets/examples/trip-sep-comfort.jpg', hotels: [ { city: 'Medina', name: 'Anwar Al Madinah Mövenpick', rating: '9,1', nights: '4 Nächte', dist: 'ca. 150 m zum Haram', stars: '5★', photo: '' }, { city: 'Mekka', name: 'Swissôtel Al Maqam', rating: '9,0', nights: '5 Nächte', dist: 'ca. 200 m zum Haram', stars: '5★', photo: '' } ] },
+        { vg: '2026-1007', startseite: true, title: 'Herbst Umrah Reise – Hessen', typ: 'Umrah', date: '07.10.2026 – 17.10.2026', price: '1.890', status: 'noch 6 Plätze', text: 'Herbst-Umrah in den Hessenferien – entspannt, gut betreut und ideal für Familien.', url: 'assets/examples/trip-okt-hessen.jpg', hotels: [ { city: 'Medina', name: 'Dallah Taibah', rating: '8,4', nights: '4 Nächte', dist: 'ca. 250 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Makkah Towers', rating: '8,1', nights: '5 Nächte', dist: 'ca. 400 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-1104', startseite: false, title: 'November Umrah Reise – Economy', typ: 'Umrah', date: '04.11.2026 – 14.11.2026', price: '1.490', status: 'verfügbar', text: 'Günstige, bewusst reduzierte Umrah – gut organisiert nach Mekka und Medina.', url: 'assets/examples/trip-nov-economy.jpg', hotels: [ { city: 'Medina', name: 'Al Eiman Taibah', rating: '8,3', nights: '4 Nächte', dist: 'ca. 400 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Al Ghufran Safwah', rating: '8,0', nights: '5 Nächte', dist: 'ca. 800 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-1106', startseite: false, title: 'Umrah mit Ustadh Sarikli Yunus', typ: 'Umrah', date: '06.11.2026 – 18.11.2026', price: '1.990', status: 'noch 9 Plätze', text: 'Alles aus einer Hand. Du reist entspannt und konzentrierst dich ganz auf deine Umrah.', url: 'assets/examples/trip-nov-yunus.jpg', hotels: [ { city: 'Medina', name: 'Frontel Al Harithia', rating: '8,7', nights: '4 Nächte', dist: 'ca. 200 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Hilton Suites Makkah', rating: '9,2', nights: '5 Nächte', dist: 'ca. 300 m zum Haram', stars: '5★', photo: '' } ] },
+        { vg: '2026-1223', startseite: false, title: 'Winter Umrah mit Sheikh Ferid Heider', typ: 'Umrah', date: '23.12.2026 – 02.01.2027', price: '1.995', status: 'begrenzte Plätze', text: 'Umrah in den Weihnachtsferien mit intensiver Betreuung und Kinderbetreuung.', url: 'assets/examples/trip-winter-ferid.jpg', hotels: [ { city: 'Medina', name: 'Pullman Zamzam Madina', rating: '9,3', nights: '5 Nächte', dist: 'ca. 150 m zum Haram', stars: '5★', photo: '' }, { city: 'Mekka', name: 'Fairmont Makkah Clock Tower', rating: '9,4', nights: '5 Nächte', dist: 'ca. 100 m zum Haram', stars: '5★', photo: '' } ] },
+      ],
+      faq: [
+        { q: 'Wie läuft die Buchung ab?', a: 'Du wählst deine Reise, sendest eine unverbindliche Anfrage und wir melden uns persönlich. Die Zahlung erfolgt per Überweisung mit deiner Vorgangsnummer als Verwendungszweck.' },
+        { q: 'Sind Flüge im Preis enthalten?', a: 'Ja, Hin- und Rückflug ab Frankfurt, Düsseldorf und Berlin sind enthalten.' },
+        { q: 'Wie weit sind die Hotels von der Moschee entfernt?', a: 'Unsere Hotels liegen fußläufig zum Haram – in Mekka und Medina nur wenige Minuten entfernt.' },
+        { q: 'Kümmert ihr euch um das Visum?', a: 'Ja, wir erledigen für dich alle Formalitäten der Visabeschaffung.' },
+      ],
+      about: {
+        title: 'Makarim & Soultreat – Gemeinsam für deine spirituelle Reise',
+        body: 'Unser Doppelname steht für die Verbindung zweier starker Partner, die ihre Expertise und Erfahrung vereinen, um dir das Beste zu bieten.\n\nSeit über 40 Jahren begleiten wir Muslime aus Deutschland auf ihren Hajj- und Umrah Reisen nach Mekka und Medina. Als Teil der Makarim-Familie erlebst du nicht nur eine Pilgerreise, sondern eine Zeit, die dich langfristig prägt.',
+        url: 'assets/examples/cat-umrah.jpg',
+        whyTitle: 'Warum Makarim?',
+        whyBody: 'Bei Makarim geht es um mehr als nur eine Umrah Reise nach Mekka und Medina. Unser Anspruch ist es, eine Atmosphäre von Vertrauen, Gemeinschaft und Fürsorge zu schaffen, in der sich unsere Pilger sowohl organisatorisch als auch spirituell gut aufgehoben fühlen. Wir begleiten dich während deiner gesamten Umrah Reise aus Deutschland – von der Planung über die Durchführung bis zur Rückkehr. Als Teil der Makarim-Familie erlebst du nicht nur eine Pilgerreise, sondern eine Zeit, die dich langfristig prägt.',
+        tiles: [
+          { t: 'Die Makarim-Familie', b: 'Seit über 40 Jahren begleiten wir Muslime aus Deutschland auf ihren Hajj- und Umrah Reisen nach Mekka und Medina. Unser Gründer, Muhammad Siddiq, legte mit der ersten organisierten Pilgerreise den Grundstein für eine Tradition, die bis heute lebendig ist – ein Gemeinschaftserlebnis, das von Herzen kommt.' },
+          { t: 'Deine Reise, unsere Mission', b: 'Bei Makarim stehst Du im Mittelpunkt. Wir wissen, wie bedeutsam die Hajj und die Umra in Deinem Leben sind. Deshalb sorgen wir dafür, dass Du Dich von Anfang an wie in einer Familie willkommen und aufgehoben fühlst.' },
+          { t: 'Erfahrung, Vertrauen und Rundum-Betreuung', b: 'Mit unserer jahrzehntelangen Erfahrung bieten wir Dir eine Rundum-Betreuung: von der Visumsbeantragung über die Buchung von Flügen und Hotels bis zur spirituellen Begleitung während der gesamten Reise. So kannst Du Dich voll und ganz auf Deine Verbindung zu Allah konzentrieren.' },
+          { t: 'Ein Ort für die ganze Familie', b: 'Ein besonderes Highlight ist unser Programm Makarim-Kids, das speziell auf die Bedürfnisse unserer jüngsten Reisenden abgestimmt ist. Als Elternteil genießt Du Deine eigene spirituelle Reise in Ruhe, während Deine Kinder bestens betreut werden.' },
+        ],
+      },
+      cta: {
+        headline: 'Bereit für deine Reise?',
+        sub: 'Lass dich unverbindlich beraten. Wir finden gemeinsam die perfekte Reise für dich und deine Familie.',
+        btnCall: 'Jetzt anrufen',
+        btnWrite: 'Schreib uns',
+      },
+      brand: {
+        phone: '+49 6134 55 79 070',
+        whatsapp: '+49 6134 55 79 070',
+        email: 'info@makarim.de',
+        instagram: '@makarim.reisen',
+        address1: 'Anton-Hehn-Straße 5',
+        address2: '55246 Mainz-Kostheim',
+      },
+      seo: {
+        siteName: 'Makarim Reisen',
+        defaultDesc: 'Hajj, Umrah und islamkonforme Kulturreisen aus Deutschland – über 40 Jahre Erfahrung, persönliche Betreuung und Hotels in Gehweite zum Haram.',
+        home: { title: 'Makarim Reisen – Hajj & Umrah aus Deutschland', desc: 'Geführte Umrah- und Hajj Reisen aus Deutschland. Über 40 Jahre Erfahrung, Rundum-Betreuung und Hotels nah am Haram.' },
+        umrah: { title: 'Umrah Reisen aus Deutschland', desc: 'Geführte Umrah Reisen ab Deutschland – mit persönlicher Betreuung, Frühstück im Hotel und kurzen Wegen zum Haram.' },
+        hajj: { title: 'Hajj Reisen aus Deutschland', desc: 'Vollziehe deine Hajj aus Deutschland – von der Nusuk-Registrierung bis zur Rückkehr mit religiöser Begleitung.' },
+        kultur: { title: 'Islamkonforme Kulturreisen', desc: 'Islamkonforme Kulturreisen, die einzigartige Erlebnisse mit Geschichte, Tradition und Kultur verbinden.' },
+        about: { title: 'Über uns – die Makarim-Familie', desc: 'Seit über 40 Jahren begleiten wir Muslime aus Deutschland auf ihren Hajj- und Umrah Reisen nach Mekka und Medina.' },
+      },
+    };
+  }
+
+  constructor(props) {
+    super(props);
+    const b = this.bootstrap();
+    this.state = { c: b.c, media: b.media, section: 'dashboard', pickerFor: null, toast: '', expanded: {} };
+  }
+
+  toggleSec(key) { this.setState(s => ({ expanded: { ...s.expanded, [key]: !s.expanded[key] } })); }
+
+  persist = () => {
+    try { localStorage.setItem('makarim_cms_v1', JSON.stringify({ c: this.state.c, media: this.state.media })); } catch (e) {}
+  };
+
+  upd(fn) {
+    this.setState(s => { const c = structuredClone(s.c); fn(c); return { c }; }, this.persist);
+  }
+  updMedia(fn) {
+    this.setState(s => { const media = structuredClone(s.media); fn(media); return { media }; }, this.persist);
+  }
+
+  showToast(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2200);
+  }
+
+  downscale(file) {
+    return new Promise(resolve => {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 1280;
+          const scale = Math.min(1, max / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(cv.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => resolve(fr.result);
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  async uploadFile(file) {
+    const url = await this.downscale(file);
+    const item = { id: 'm' + Date.now() + Math.floor(Math.random() * 999), name: file.name.replace(/\.[^.]+$/, ''), url };
+    this.updMedia(m => m.unshift(item));
+    return item;
+  }
+
+  applyImage(loc, url) {
+    if (!loc) return;
+    this.upd(c => {
+      if (loc.t === 'home') c.home.heroUrl = url;
+      else if (loc.t === 'cat') c.categories[loc.i].url = url;
+      else if (loc.t === 'trip') c.trips[loc.i].url = url;
+      else if (loc.t === 'hotel') c.trips[loc.i].hotels[loc.h].photo = url;
+      else if (loc.t === 'about') c.about.url = url;
+      else if (loc.t === 'about2') c.about.url2 = url;
+    });
+    this.setState({ pickerFor: null });
+  }
+
+  onUploadUse = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const item = await this.uploadFile(f);
+    const loc = this.state.pickerFor;
+    if (loc) this.applyImage(loc, item.url);
+    this.showToast('Bild hochgeladen');
+    e.target.value = '';
+  };
+  onUploadLibrary = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    await this.uploadFile(f);
+    this.showToast('Zur Mediathek hinzugefügt');
+    e.target.value = '';
+  };
+
+  bannerPalette() { return ['#C2724A', '#16242B', '#3E6B7A', '#A8542F', '#5A6B52', '#8a513a', '#3d88c9', '#ff751f', '#a8bb4a', '#b23232', '#6ea3ab', '#1b86a2', '#ddc385']; }
+
+  hashIdx(key, n) { let h = 0; const s = String(key || ''); for (let k = 0; k < s.length; k++) { h = (h * 31 + s.charCodeAt(k)) >>> 0; } return h % n; }
+
+  monthName(date) {
+    const names = { '01': 'JANUAR', '02': 'FEBRUAR', '03': 'MÄRZ', '04': 'APRIL', '05': 'MAI', '06': 'JUNI', '07': 'JULI', '08': 'AUGUST', '09': 'SEPTEMBER', '10': 'OKTOBER', '11': 'NOVEMBER', '12': 'DEZEMBER' };
+    const m = (date || '').match(/^\d{2}\.(\d{2})\./);
+    return m ? (names[m[1]] || '') : '';
+  }
+
+  resolveBanner(tr, i) {
+    const b = tr.banner || {};
+    const pal = this.bannerPalette();
+    return {
+      on: b.on !== undefined ? b.on : true,
+      color: b.color || pal[this.hashIdx(tr.vg, pal.length)],
+      line1: b.line1 !== undefined ? b.line1 : this.monthName(tr.date),
+      line2: b.line2 !== undefined ? b.line2 : tr.typ,
+    };
+  }
+
+  setBanner(i, patch) {
+    this.upd(c => {
+      const tr = c.trips[i];
+      const cur = this.resolveBanner(tr, i);
+      tr.banner = { on: cur.on, color: cur.color, line1: cur.line1, line2: cur.line2, ...patch };
+    });
+  }
+
+  pill(status) {
+    if (status === 'Warteliste') return { bg: '#E4ECEF', fg: '#3E6B7A' };
+    if (status === 'verfügbar') return { bg: '#E3EEE4', fg: '#2E6B48' };
+    return { bg: '#F6ECD9', fg: '#956214' };
+  }
+
+  seatsOf(tr) {
+    if (typeof tr.seats === 'number') return tr.seats;
+    const s = tr.status || '';
+    const m = s.match(/(\d+)/);
+    if (m) return parseInt(m[1], 10);
+    if (/Warteliste|ausgebucht/i.test(s)) return 0;
+    if (/begrenzte/i.test(s)) return 20;
+    return 22;
+  }
+  waitlistOf(tr) { return tr.waitlist !== undefined ? tr.waitlist : true; }
+  derive(tr) {
+    const seats = this.seatsOf(tr);
+    const wl = this.waitlistOf(tr);
+    let label, kind;
+    if (seats > 18) { label = 'begrenzte Plätze'; kind = 'limited'; }
+    else if (seats >= 1) { label = 'noch ' + seats + (seats === 1 ? ' Platz' : ' Plätze'); kind = 'count'; }
+    else if (wl) { label = 'Warteliste'; kind = 'wait'; }
+    else { label = 'ausgebucht'; kind = 'sold'; }
+    const palette = {
+      limited: { bg: '#EDEFEA', fg: '#5A6B52' },
+      count: { bg: '#F6ECD9', fg: '#956214' },
+      wait: { bg: '#F7D85A', fg: '#5A4A12' },
+      sold: { bg: '#B23232', fg: '#FFFFFF' },
+    };
+    return { seats, waitlist: wl, label, bg: palette[kind].bg, fg: palette[kind].fg };
+  }
+
+  renderVals() {
+    const c = this.state.c;
+    const section = this.state.section;
+    const cover = (url) => url ? React.createElement('img', { src: url, style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } }) : null;
+    const heroCover = (url) => url ? React.createElement('img', { src: url, style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } }) : null;
+    const navDef = [
+      { id: 'dashboard', label: 'Übersicht', icon: '◇' },
+      { id: 'home', label: 'Startseite', icon: '⌂' },
+      { id: 'categories', label: 'Kategorien', icon: '▦' },
+      { id: 'trips', label: 'Reisen', icon: '✈' },
+      { id: 'faq', label: 'FAQ', icon: '?' },
+      { id: 'about', label: 'Über uns', icon: '❝' },
+      { id: 'seo', label: 'SEO', icon: '◎' },
+      { id: 'media', label: 'Mediathek', icon: '▣' },
+      { id: 'settings', label: 'Kontakt & Footer', icon: '⚙' },
+    ];
+    const titles = {
+      dashboard: ['Übersicht', 'Inhalte der Website verwalten'],
+      home: ['Startseite', 'Hero, Texte und Kennzahlen'],
+      categories: ['Kategorien', 'Umrah · Hajj · Kulturreisen'],
+      trips: ['Reisen', 'Aus dem CRM · Bild & Marketing-Text ergänzen'],
+      faq: ['FAQ', 'Häufige Fragen verwalten'],
+      about: ['Über uns', 'Inhaltsseite bearbeiten'],
+      seo: ['SEO', 'Seitentitel & Google-Beschreibungen'],
+      media: ['Mediathek', 'Bilder hochladen und verwalten'],
+      settings: ['Kontakt & Footer', 'Kontaktdaten und Abschluss-Aufruf'],
+    };
+    const baseNav = 'display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;font-size:14px;cursor:pointer;';
+    const nav = navDef.map(n => ({
+      ...n,
+      style: baseNav + (n.id === section ? 'background:#C2724A;color:#fff;font-weight:600;' : 'color:#A9B4B2;'),
+      onClick: () => this.setState({ section: n.id }),
+    }));
+
+    const mkText = (path) => (e) => this.upd(c => { path(c).v = e.target.value; });
+    // simpler explicit handlers below
+
+    const home = {
+      kicker: c.home.kicker, headline: c.home.headline, sub: c.home.sub, btnP: c.home.btnP, btnS: c.home.btnS,
+      heroUrl: c.home.heroUrl, hasHero: !!c.home.heroUrl, noHero: !c.home.heroUrl,
+      thumbEl: cover(c.home.heroUrl), heroEl: heroCover(c.home.heroUrl),
+      oKicker: e => this.upd(c => c.home.kicker = e.target.value),
+      oHeadline: e => this.upd(c => c.home.headline = e.target.value),
+      oSub: e => this.upd(c => c.home.sub = e.target.value),
+      oBtnP: e => this.upd(c => c.home.btnP = e.target.value),
+      oBtnS: e => this.upd(c => c.home.btnS = e.target.value),
+      pickHero: () => this.setState({ pickerFor: { t: 'home' } }),
+    };
+    const trustRows = c.home.trust.map((t, i) => ({
+      value: t.value, label: t.label,
+      oVal: e => this.upd(c => c.home.trust[i].value = e.target.value),
+      oLabel: e => this.upd(c => c.home.trust[i].label = e.target.value),
+    }));
+    const catRows = c.categories.map((cat, i) => ({
+      title: cat.title, text: cat.text, url: cat.url, hasImg: !!cat.url, noImg: !cat.url, imgEl: cover(cat.url),
+      oTitle: e => this.upd(c => c.categories[i].title = e.target.value),
+      oText: e => this.upd(c => c.categories[i].text = e.target.value),
+      pick: () => this.setState({ pickerFor: { t: 'cat', i } }),
+    }));
+    const tripRows = c.trips.map((tr, i) => {
+      const d = this.derive(tr);
+      const b = this.resolveBanner(tr, i);
+      const colorRows = this.bannerPalette().map(col => ({
+        onPick: () => this.setBanner(i, { color: col }),
+        style: 'width:30px;height:30px;border-radius:8px;cursor:pointer;background:' + col + ';' +
+          (col.toLowerCase() === (b.color || '').toLowerCase() ? 'box-shadow:0 0 0 2px #fff,0 0 0 4px ' + col + ';' : 'box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08);'),
+      }));
+      const knobX = b.on ? '18px' : '2px';
+      return {
+        vg: tr.vg, title: tr.title, typ: tr.typ, date: tr.date, price: tr.price, status: d.label,
+        startseite: !!tr.startseite,
+        published: tr.published !== false,
+        statusChipStyle: 'display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;border-radius:20px;padding:4px 10px;' + (tr.published !== false ? 'background:#E3EEE4;color:#2E6B48;' : 'background:#F6ECD9;color:#956214;'),
+        statusChipLabel: tr.published !== false ? '● Veröffentlicht' : '● Entwurf',
+        pubBtnStyle: 'height:30px;padding:0 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid ' + (tr.published !== false ? '#E2DBCF;background:#fff;color:#7C746A;' : '#C2724A;background:#C2724A;color:#fff;'),
+        pubBtnLabel: tr.published !== false ? 'Zurückziehen' : 'Veröffentlichen',
+        togglePublish: () => this.upd(c => { c.trips[i].published = (c.trips[i].published === false); }),
+        toggleStart: () => this.upd(c => { c.trips[i].startseite = !c.trips[i].startseite; }),
+        startChipStyle: 'display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:20px;padding:4px 11px;cursor:pointer;' + (tr.startseite ? 'border:1px solid #E7C9B6;background:#F0E4DC;color:#A8542F;' : 'border:1px solid #E2DBCF;background:#fff;color:#9A9082;'),
+        text: tr.text, url: tr.url, hasImg: !!tr.url, noImg: !tr.url, pillBg: d.bg, pillFg: d.fg, imgEl: cover(tr.url),
+        seats: d.seats, waitlistLabel: d.waitlist ? 'Warteliste' : 'Ausgebucht',
+        oSeats: e => this.upd(c => { const v = parseInt(e.target.value, 10); c.trips[i].seats = isNaN(v) ? 0 : Math.max(0, v); }),
+        toggleWaitlist: () => this.upd(c => { c.trips[i].waitlist = !this.waitlistOf(c.trips[i]); }),
+        wlTrack: 'position:relative;width:38px;height:22px;border-radius:12px;cursor:pointer;transition:background .15s;background:' + (d.waitlist ? '#3E6B7A' : '#D9D2C5') + ';',
+        wlKnob: 'position:absolute;top:2px;left:' + (d.waitlist ? '18px' : '2px') + ';width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,0.25);',
+        oText: e => this.upd(c => c.trips[i].text = e.target.value),
+        secInhaltOpen: !!this.state.expanded['inhalt:' + i],
+        secHotelsOpen: !!this.state.expanded['hotels:' + i],
+        secSeoOpen: !!this.state.expanded['seo:' + i],
+        chevInhalt: this.state.expanded['inhalt:' + i] ? '▾' : '▸',
+        chevHotels: this.state.expanded['hotels:' + i] ? '▾' : '▸',
+        chevSeo: this.state.expanded['seo:' + i] ? '▾' : '▸',
+        inhaltSummary: (tr.url ? 'Bild ✓' : 'kein Bild') + ' · ' + (tr.text ? (tr.text.length + ' Zeichen Text') : 'kein Text'),
+        hotelsSummary: (tr.hotels || []).length + ' Hotels',
+        seoSummary: (tr.seoTitle || tr.seoDesc) ? 'eigene Angaben' : 'automatisch',
+        toggleInhalt: () => this.toggleSec('inhalt:' + i),
+        toggleHotels: () => this.toggleSec('hotels:' + i),
+        toggleSeo: () => this.toggleSec('seo:' + i),
+        seoTitle: tr.seoTitle || '', seoDesc: tr.seoDesc || '',
+        seoTitleLen: (tr.seoTitle || '').length, seoDescLen: (tr.seoDesc || '').length,
+        seoSnippetTitle: (tr.seoTitle || tr.title) + ' | ' + ((c.seo && c.seo.siteName) || 'Makarim Reisen'),
+        seoSnippetDesc: (() => { const d2 = tr.seoDesc || tr.text || ''; return d2.length > 158 ? d2.slice(0, 157).trimEnd() + '…' : d2; })(),
+        oSeoTitle: e => this.upd(c => c.trips[i].seoTitle = e.target.value),
+        oSeoDesc: e => this.upd(c => c.trips[i].seoDesc = e.target.value),
+        pick: () => this.setState({ pickerFor: { t: 'trip', i } }),
+        hotels: (tr.hotels || []).map((h, hi) => ({
+          city: h.city, name: h.name, nights: h.nights, dist: h.dist, stars: h.stars, rating: h.rating,
+          hasImg: !!h.photo, noImg: !h.photo, imgEl: cover(h.photo),
+          btnLabel: h.photo ? 'Bild ändern' : 'Bild wählen',
+          pick: () => this.setState({ pickerFor: { t: 'hotel', i, h: hi } }),
+        })),
+        bannerOn: b.on, bannerColor: b.color, bannerLine1: b.line1, bannerLine2: b.line2, colorRows,
+        bannerOnLabel: b.on ? 'Eingeblendet' : 'Ausgeblendet',
+        toggleBanner: () => this.setBanner(i, { on: !b.on }),
+        oLine1: e => this.setBanner(i, { line1: e.target.value }),
+        oLine2: e => this.setBanner(i, { line2: e.target.value }),
+        switchTrack: 'position:relative;width:38px;height:22px;border-radius:12px;cursor:pointer;transition:background .15s;background:' + (b.on ? '#3E6B7A' : '#D9D2C5') + ';',
+        switchKnob: 'position:absolute;top:2px;left:' + knobX + ';width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,0.25);',
+        bannerPreviewStyle: 'background:' + b.color + ';color:#fff;padding:5px 11px 5px 9px;border-radius:3px;' + (b.on ? '' : 'opacity:0.35;'),
+        bannerFieldsStyle: b.on ? '' : 'opacity:0.45;pointer-events:none;',
+        moveUp: () => this.upd(c => { if (i > 0) { const x = c.trips.splice(i, 1)[0]; c.trips.splice(i - 1, 0, x); } }),
+        moveDown: () => this.upd(c => { if (i < c.trips.length - 1) { const x = c.trips.splice(i, 1)[0]; c.trips.splice(i + 1, 0, x); } }),
+        upStyle: 'width:30px;height:30px;border:1px solid #E2DBCF;border-radius:8px;cursor:pointer;font-size:12px;color:#7C746A;' + (i === 0 ? 'background:#F2EDE3;opacity:0.4;' : 'background:#fff;'),
+        downStyle: 'width:30px;height:30px;border:1px solid #E2DBCF;border-radius:8px;cursor:pointer;font-size:12px;color:#7C746A;' + (i === c.trips.length - 1 ? 'background:#F2EDE3;opacity:0.4;' : 'background:#fff;'),
+      };
+    });
+    const faqRows = c.faq.map((f, i) => ({
+      q: f.q, a: f.a, num: i + 1,
+      oQ: e => this.upd(c => c.faq[i].q = e.target.value),
+      oA: e => this.upd(c => c.faq[i].a = e.target.value),
+      del: () => this.upd(c => c.faq.splice(i, 1)),
+      up: () => this.upd(c => { if (i > 0) { const x = c.faq.splice(i, 1)[0]; c.faq.splice(i - 1, 0, x); } }),
+      down: () => this.upd(c => { if (i < c.faq.length - 1) { const x = c.faq.splice(i, 1)[0]; c.faq.splice(i + 1, 0, x); } }),
+    }));
+    const about = {
+      title: c.about.title, body: c.about.body, url: c.about.url, hasImg: !!c.about.url, noImg: !c.about.url, imgEl: cover(c.about.url),
+      url2: c.about.url2, hasImg2: !!c.about.url2, noImg2: !c.about.url2, imgEl2: cover(c.about.url2),
+      pick2: () => this.setState({ pickerFor: { t: 'about2' } }),
+      oTitle: e => this.upd(c => c.about.title = e.target.value),
+      oBody: e => this.upd(c => c.about.body = e.target.value),
+      pick: () => this.setState({ pickerFor: { t: 'about' } }),
+      whyTitle: c.about.whyTitle, whyBody: c.about.whyBody,
+      oWhyTitle: e => this.upd(c => c.about.whyTitle = e.target.value),
+      oWhyBody: e => this.upd(c => c.about.whyBody = e.target.value),
+      tiles: (c.about.tiles || []).map((tl, ti) => ({
+        t: tl.t, b: tl.b, num: ti + 1,
+        oT: e => this.upd(c => c.about.tiles[ti].t = e.target.value),
+        oB: e => this.upd(c => c.about.tiles[ti].b = e.target.value),
+        remove: () => this.upd(c => c.about.tiles.splice(ti, 1)),
+      })),
+      addTile: () => this.upd(c => c.about.tiles.push({ t: 'Neue Kachel', b: '' })),
+    };
+    const seoC = c.seo || {};
+    const mkSeo = (key, label, urlPath) => {
+      const o = seoC[key] || {};
+      return {
+        key, label, urlPath,
+        title: o.title || '', desc: o.desc || '',
+        titleLen: (o.title || '').length, descLen: (o.desc || '').length,
+        snippetTitle: (o.title || label) + ' | ' + (seoC.siteName || 'Makarim Reisen'),
+        snippetDesc: ((o.desc || seoC.defaultDesc || '').length > 158 ? (o.desc || seoC.defaultDesc || '').slice(0, 157).trimEnd() + '…' : (o.desc || seoC.defaultDesc || '')),
+        oTitle: e => this.upd(c => { c.seo[key] = c.seo[key] || {}; c.seo[key].title = e.target.value; }),
+        oDesc: e => this.upd(c => { c.seo[key] = c.seo[key] || {}; c.seo[key].desc = e.target.value; }),
+      };
+    };
+    const seoPages = [
+      mkSeo('home', 'Startseite', 'makarim.de'),
+      mkSeo('umrah', 'Umrah Reisen', 'makarim.de/umrah'),
+      mkSeo('hajj', 'Hajj Reisen', 'makarim.de/hajj'),
+      mkSeo('kultur', 'Kulturreisen', 'makarim.de/kulturreisen'),
+      mkSeo('about', 'Über uns', 'makarim.de/ueber-uns'),
+    ];
+    const seoMeta = {
+      siteName: seoC.siteName || '', defaultDesc: seoC.defaultDesc || '',
+      oSite: e => this.upd(c => c.seo.siteName = e.target.value),
+      oDefault: e => this.upd(c => c.seo.defaultDesc = e.target.value),
+    };
+    const cta = {
+      headline: c.cta.headline, sub: c.cta.sub, btnCall: c.cta.btnCall, btnWrite: c.cta.btnWrite,
+      oHeadline: e => this.upd(c => c.cta.headline = e.target.value),
+      oSub: e => this.upd(c => c.cta.sub = e.target.value),
+      oCall: e => this.upd(c => c.cta.btnCall = e.target.value),
+      oWrite: e => this.upd(c => c.cta.btnWrite = e.target.value),
+    };
+    const brand = {
+      phone: c.brand.phone, whatsapp: c.brand.whatsapp, email: c.brand.email, instagram: c.brand.instagram,
+      address1: c.brand.address1, address2: c.brand.address2,
+      oPhone: e => this.upd(c => c.brand.phone = e.target.value),
+      oWhatsapp: e => this.upd(c => c.brand.whatsapp = e.target.value),
+      oEmail: e => this.upd(c => c.brand.email = e.target.value),
+      oInsta: e => this.upd(c => c.brand.instagram = e.target.value),
+      oAddr1: e => this.upd(c => c.brand.address1 = e.target.value),
+      oAddr2: e => this.upd(c => c.brand.address2 = e.target.value),
+    };
+    const mediaRows = this.state.media.map(m => ({
+      id: m.id, name: m.name, url: m.url, hasUrl: !!m.url, imgEl: cover(m.url),
+      onDelete: () => this.updMedia(arr => { const idx = arr.findIndex(x => x.id === m.id); if (idx >= 0) arr.splice(idx, 1); }),
+    }));
+    const pickerRows = this.state.media.map(m => ({
+      name: m.name, url: m.url, hasUrl: !!m.url, imgEl: cover(m.url),
+      onPick: () => this.applyImage(this.state.pickerFor, m.url),
+    }));
+
+    const quickLinks = [
+      { icon: '⌂', label: 'Startseite', hint: 'Hero & Texte', onClick: () => this.setState({ section: 'home' }) },
+      { icon: '✈', label: 'Reisen', hint: 'Bilder & Texte', onClick: () => this.setState({ section: 'trips' }) },
+      { icon: '?', label: 'FAQ', hint: 'Fragen pflegen', onClick: () => this.setState({ section: 'faq' }) },
+      { icon: '▣', label: 'Mediathek', hint: 'Bilder verwalten', onClick: () => this.setState({ section: 'media' }) },
+    ];
+
+    return {
+      nav,
+      sectionTitle: titles[section][0],
+      sectionSub: titles[section][1],
+      isDashboard: section === 'dashboard',
+      isHome: section === 'home',
+      isCategories: section === 'categories',
+      isTrips: section === 'trips',
+      isFaq: section === 'faq',
+      isAbout: section === 'about',
+      isSeo: section === 'seo',
+      isMedia: section === 'media',
+      isSettings: section === 'settings',
+      showPreview: section !== 'dashboard' && section !== 'media' && section !== 'seo',
+      pv: {
+        home: section === 'home', categories: section === 'categories', trips: section === 'trips',
+        faq: section === 'faq', about: section === 'about', settings: section === 'settings',
+        seo: section === 'seo',
+      },
+      home, trustRows, catRows, tripRows, faqRows, about, cta, brand, mediaRows, pickerRows, quickLinks, seoPages, seoMeta,
+      stat: { trips: c.trips.length, faq: c.faq.length, media: this.state.media.length },
+      addFaq: () => this.upd(c => c.faq.push({ q: 'Neue Frage', a: 'Antwort …' })),
+      syncCRM: () => this.showToast('Reisen aus dem CRM aktualisiert'),
+      publish: () => {
+        const drafts = c.trips.filter(t => t.published === false).length;
+        if (drafts > 0) { this.upd(c => c.trips.forEach(t => { t.published = true; })); this.showToast(drafts + (drafts === 1 ? ' Reise veröffentlicht' : ' Reisen veröffentlicht')); }
+        else { this.showToast('Veröffentlicht – die Website ist aktuell'); }
+      },
+      pubStatus: (c.trips.filter(t => t.published === false).length > 0)
+        ? { style: 'display:flex;align-items:center;gap:7px;font-size:12.5px;color:#B07A2E;', dotStyle: 'width:7px;height:7px;border-radius:50%;background:#E0A23C;', label: c.trips.filter(t => t.published === false).length + ' im Entwurf' }
+        : { style: 'display:flex;align-items:center;gap:7px;font-size:12.5px;color:#7C9A88;', dotStyle: 'width:7px;height:7px;border-radius:50%;background:#7FBE9A;', label: 'Alles veröffentlicht' },
+      publishBtnStyle: 'height:38px;padding:0 16px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;color:#fff;' + (c.trips.filter(t => t.published === false).length > 0 ? 'background:#C2724A;' : 'background:#A9B0AA;'),
+      publishLabel: (c.trips.filter(t => t.published === false).length > 0) ? 'Veröffentlichen' : 'Veröffentlicht ✓',
+      onUploadUse: this.onUploadUse,
+      onUploadLibrary: this.onUploadLibrary,
+      pickerOpen: !!this.state.pickerFor,
+      closePicker: () => this.setState({ pickerFor: null }),
+      stop: (e) => e.stopPropagation(),
+      hasToast: !!this.state.toast,
+      toast: this.state.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

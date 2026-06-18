@@ -1,0 +1,158 @@
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { loadContent } from '@/lib/db';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: 'Anfrage eingegangen – Makarim Reisen' };
+}
+
+export default async function ConfirmPage({
+  params,
+}: {
+  params: Promise<{ category: string; slug: string }>;
+}) {
+  const { category, slug } = await params;
+  const content = await loadContent();
+
+  const trip = content.c.trips.find(
+    (t) => t.slug === slug && t.category === category && t.published !== false
+  );
+  if (!trip) notFound();
+
+  const bank = content.c.brand.bank;
+
+  return (
+    <main className="min-h-screen bg-page">
+      <div className="container-max py-16 max-w-2xl">
+
+        {/* ── Success circle + heading ───────────────────────────────── */}
+        <div className="text-center mb-12">
+          {/* 74px success check circle */}
+          <div
+            className="mx-auto mb-6 flex items-center justify-center rounded-full"
+            style={{ width: '74px', height: '74px', backgroundColor: '#EAF0E8' }}
+          >
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path
+                d="M6 16l7 7 13-13"
+                stroke="#3E6B52"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+
+          <h1
+            className="font-serif font-normal text-ink mb-4"
+            style={{ fontSize: '38px', lineHeight: '1.2' }}
+          >
+            Deine Buchungsanfrage ist eingegangen
+          </h1>
+          <p style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7' }}>
+            Vielen Dank für deine Anfrage für <strong>{trip.title}</strong>.<br />
+            Wir prüfen die Verfügbarkeit und melden uns innerhalb von 24 Stunden bei dir.
+          </p>
+        </div>
+
+        {/* ── Nächste Schritte / Bankdaten ──────────────────────────── */}
+        <div
+          className="rounded-card p-8 mb-8"
+          style={{ backgroundColor: 'white', border: '1px solid #EAE3D8', boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}
+        >
+          <h2
+            className="font-serif font-normal text-ink mb-6"
+            style={{ fontSize: '22px' }}
+          >
+            So schließt du deine Buchung ab
+          </h2>
+
+          <ol className="space-y-5">
+            <li className="flex gap-4">
+              <span
+                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
+                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
+              >
+                1
+              </span>
+              <div>
+                <p className="font-medium text-ink text-sm mb-1">Warte auf unsere Bestätigung</p>
+                <p className="text-body-sm text-body">Wir senden dir innerhalb von 24 Stunden eine Bestätigungs-E-Mail mit dem verbindlichen Reisepreis.</p>
+              </div>
+            </li>
+
+            <li className="flex gap-4">
+              <span
+                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
+                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
+              >
+                2
+              </span>
+              <div>
+                <p className="font-medium text-ink text-sm mb-1">Anzahlung überweisen</p>
+                <p className="text-body-sm text-body">
+                  Überweise die Anzahlung per Banküberweisung. Gib als Verwendungszweck die Vorgangsnummer{' '}
+                  <strong className="font-mono" style={{ color: '#A8542F' }}>VG {trip.vg}</strong> an.
+                </p>
+              </div>
+            </li>
+
+            <li className="flex gap-4">
+              <span
+                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
+                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
+              >
+                3
+              </span>
+              <div>
+                <p className="font-medium text-ink text-sm mb-1">Reiseunterlagen erhalten</p>
+                <p className="text-body-sm text-body">Nach Zahlungseingang erhältst du alle Reisedokumente per E-Mail.</p>
+              </div>
+            </li>
+          </ol>
+
+          {/* Bank details */}
+          <div
+            className="mt-8 p-5 rounded-card"
+            style={{ backgroundColor: '#F4F1EA' }}
+          >
+            <p className="font-mono uppercase text-body-light mb-4" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>
+              Bankverbindung
+            </p>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              <dt className="text-body">Kontoinhaber</dt>
+              <dd className="font-medium text-ink">{bank.inhaber}</dd>
+              <dt className="text-body">Bank</dt>
+              <dd className="font-medium text-ink">{bank.name}</dd>
+              <dt className="text-body">IBAN</dt>
+              <dd className="font-mono font-medium text-ink tracking-wide">{bank.iban}</dd>
+              <dt className="text-body">BIC</dt>
+              <dd className="font-mono font-medium text-ink">{bank.bic}</dd>
+              <dt className="text-body">Verwendungszweck</dt>
+              <dd className="font-mono font-semibold" style={{ color: '#A8542F' }}>VG {trip.vg}</dd>
+            </dl>
+          </div>
+        </div>
+
+        {/* ── Back to trip / Home ────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link
+            href={`/${category}/${slug}`}
+            className="inline-flex items-center justify-center font-medium text-white transition-colors"
+            style={{ backgroundColor: '#C2724A', height: '48px', borderRadius: '9px', padding: '0 28px', fontSize: '15px' }}
+          >
+            Zurück zur Reise
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center font-medium text-body hover:text-primary transition-colors"
+            style={{ height: '48px', padding: '0 28px', fontSize: '15px' }}
+          >
+            Zur Startseite →
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}

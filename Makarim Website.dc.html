@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#16242B"/><rect x="38" y="28" width="24" height="24" rx="2" fill="#0e1a20"/><rect x="38" y="38" width="24" height="3.5" fill="#C2724A"/><rect x="30" y="64" width="40" height="5" rx="2.5" fill="#F4F1EA"/><rect x="38" y="76" width="24" height="4" rx="2" fill="#6E807E"/></svg></template>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Schibsted Grotesk',system-ui,sans-serif;color:#1C2429;background:#F4F1EA;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+</style>
+</helmet>
+
+<div style="background:#F4F1EA;min-height:100vh;">
+
+  <!-- ===================== NAV ===================== -->
+  <header style="position:sticky;top:0;z-index:30;background:rgba(248,245,239,0.92);backdrop-filter:blur(10px);border-bottom:1px solid #E9E2D5;">
+    <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:30px;padding:16px 40px;">
+      <img onClick="{{ goHome }}" src="assets/makarim_soultreat.png" alt="Makarim &amp; Soultreat" style="height:48px;width:auto;cursor:pointer;" />
+      <nav style="margin-left:auto;display:flex;align-items:center;gap:34px;font-size:16.5px;color:#3F4A44;">
+        <span onClick="{{ openUmrah }}" style="cursor:pointer;" style-hover="color:#A8542F">Umrah</span>
+        <span onClick="{{ openHajj }}" style="cursor:pointer;" style-hover="color:#A8542F">Hajj</span>
+        <span onClick="{{ openKultur }}" style="cursor:pointer;" style-hover="color:#A8542F">Kulturreisen</span>
+        <span onClick="{{ openAbout }}" style="cursor:pointer;" style-hover="color:#A8542F">Über uns</span>
+        <span style="cursor:pointer;" style-hover="color:#A8542F">FAQ</span>
+      </nav>
+      <button style="height:44px;padding:0 22px;background:#C2724A;border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Kontakt</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <!-- ===================== HERO ===================== -->
+  <section style="position:relative;height:560px;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;background:#241a12;">
+    {{ heroEl }}
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,8,0.32),rgba(20,14,8,0.62));"></div>
+    <div style="position:relative;max-width:760px;padding:0 28px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.2em;color:#F0CDA8;text-transform:uppercase;margin-bottom:22px;">{{ home.kicker }}</div>
+      <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:62px;line-height:1.05;letter-spacing:-0.015em;color:#fff;margin:0 0 22px;">{{ home.headline }}</h1>
+      <p style="font-size:18px;line-height:1.6;color:rgba(255,255,255,0.92);margin:0 auto 34px;max-width:580px;">{{ home.sub }}</p>
+      <div style="display:flex;gap:13px;justify-content:center;">
+        <button onClick="{{ onDiscover }}" style="height:54px;padding:0 30px;background:#C2724A;border:none;border-radius:13px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 10px 26px rgba(194,114,74,0.4);" style-hover="background:#A8542F">{{ home.btnP }}</button>
+        <button onClick="{{ openAbout }}" style="height:54px;padding:0 28px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.6);border-radius:13px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;" style-hover="background:rgba(255,255,255,0.22)">{{ home.btnS }}</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TRUST ===================== -->
+  <section style="background:#F8F5EF;border-bottom:1px solid #EDE6D9;">
+    <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);padding:0 40px;">
+      <sc-for list="{{ trustRows }}" as="t" hint-placeholder-count="4">
+        <div style="{{ t.style }}">
+          <div style="font-family:'Newsreader',serif;font-size:34px;color:#16242B;line-height:1;">{{ t.value }}</div>
+          <div style="font-size:13.5px;color:#6B6457;margin-top:7px;">{{ t.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===================== WARUM / GRÜNDE ===================== -->
+  <section style="max-width:1200px;margin:0 auto;padding:80px 40px 0;text-align:center;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;">Warum wir</div>
+    <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:42px;color:#16242B;margin:12px 0 0;">Vier gute Gründe, mit uns zu reisen</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:46px;text-align:left;">
+      <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:28px 24px;box-shadow:0 6px 22px rgba(40,30,20,0.05);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#A8542F;width:42px;height:42px;border-radius:50%;background:#F0E4DC;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">01</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:20px;color:#16242B;margin:0 0 10px;">Rundum-Sorglos-Paket</h3>
+        <p style="font-size:14px;line-height:1.6;color:#6B6457;margin:0;">Bei Makarim stehst Du im Mittelpunkt. Wir sorgen dafür, dass Du Dich von Anfang an wie in einer Familie willkommen und aufgehoben fühlst.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:28px 24px;box-shadow:0 6px 22px rgba(40,30,20,0.05);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#A8542F;width:42px;height:42px;border-radius:50%;background:#F0E4DC;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">02</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:20px;color:#16242B;margin:0 0 10px;">Jahrzehntelange Erfahrung</h3>
+        <p style="font-size:14px;line-height:1.6;color:#6B6457;margin:0;">Über 40 Jahre Erfahrung in Hajj- und Umrah Reisen stehen für Vertrauen, Qualität und eine verlässliche Organisation.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:28px 24px;box-shadow:0 6px 22px rgba(40,30,20,0.05);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#A8542F;width:42px;height:42px;border-radius:50%;background:#F0E4DC;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">03</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:20px;color:#16242B;margin:0 0 10px;">Alles aus einer Hand</h3>
+        <p style="font-size:14px;line-height:1.6;color:#6B6457;margin:0;">Visum, Flüge, Hotels und Verpflegung – wir kümmern uns um jedes Detail. So kannst Du Dich ganz auf Deine Umrah und Deine spirituelle Erfahrung konzentrieren.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:28px 24px;box-shadow:0 6px 22px rgba(40,30,20,0.05);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#A8542F;width:42px;height:42px;border-radius:50%;background:#F0E4DC;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">04</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:20px;color:#16242B;margin:0 0 10px;">Erstklassiger Service</h3>
+        <p style="font-size:14px;line-height:1.6;color:#6B6457;margin:0;">Professionelles Team mit 24/7 Kontakt während Deiner gesamten Reise – organisatorisch und persönlich bestens betreut.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== KATEGORIEN ===================== -->
+  <section id="kategorien" style="max-width:1200px;margin:0 auto;padding:80px 40px 30px;text-align:center;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;">Unsere Reisekategorien</div>
+    <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:42px;color:#16242B;margin:12px 0 10px;">Finde deine perfekte Reise</h2>
+    <p style="font-size:16px;color:#6B6457;margin:0 auto;max-width:540px;">Von der kleinen Umrah bis zur großen Hajj — wir haben das passende Paket für dich.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px;text-align:left;">
+      <sc-for list="{{ catRows }}" as="c" hint-placeholder-count="3">
+        <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(40,30,20,0.05);display:flex;flex-direction:column;">
+          <div style="aspect-ratio:4/3;background:#F4F1EA;overflow:hidden;">{{ c.imgEl }}</div>
+          <div style="padding:24px;display:flex;flex-direction:column;flex:1;">
+            <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:24px;color:#16242B;margin:0 0 10px;">{{ c.title }}</h3>
+            <p style="font-size:14.5px;line-height:1.6;color:#6B6457;margin:0 0 22px;">{{ c.text }}</p>
+            <button onClick="{{ c.open }}" style="margin-top:auto;height:48px;background:#C2724A;border:none;border-radius:11px;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Jetzt entdecken</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===================== REISEN-ÜBERSICHT ===================== -->
+  <section style="max-width:1200px;margin:0 auto;padding:60px 40px 20px;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:34px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;margin-bottom:10px;">Aktuelle Termine</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:42px;color:#16242B;margin:0;">Unsere Umrah Reisen</h2>
+      </div>
+      <div onClick="{{ openUmrah }}" style="font-size:14px;color:#8a513a;font-weight:600;border-bottom:1.5px solid #C2724A;padding-bottom:2px;cursor:pointer;">Alle Reisen ansehen →</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;">
+      <sc-for list="{{ tripRows }}" as="t" hint-placeholder-count="6">
+        <div onClick="{{ t.openDetail }}" style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(40,30,20,0.05);display:flex;flex-direction:column;cursor:pointer;" style-hover="box-shadow:0 16px 36px rgba(40,30,20,0.13)">
+          <div style="position:relative;height:188px;background:#F4F1EA;overflow:hidden;">
+            {{ t.imgEl }}
+<sc-if value="{{ t.bannerOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;left:0;top:42px;background:{{ t.bannerColor }};color:#fff;padding:9px 18px 9px 16px;">
+              <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:0.04em;text-transform:uppercase;">{{ t.bannerLine1 }}</div>
+              <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:12px;line-height:1;opacity:0.92;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">{{ t.bannerLine2 }}</div>
+            </div>
+            </sc-if>
+            <div style="position:absolute;top:12px;right:12px;background:#F4F1EA;color:#A8542F;font-weight:700;font-size:13px;border-radius:20px;padding:6px 14px;box-shadow:0 3px 10px rgba(0,0,0,0.14);">ab {{ t.price }} €</div>
+          </div>
+          <div style="padding:20px 20px 22px;display:flex;flex-direction:column;flex:1;">
+            <div style="margin-bottom:12px;">
+              <span style="font-size:11px;font-weight:600;border-radius:6px;padding:4px 10px;background:{{ t.pillBg }};color:{{ t.pillFg }};">{{ t.status }}</span>
+            </div>
+            <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:21px;color:#16242B;line-height:1.22;margin:0 0 9px;">{{ t.title }}</h3>
+            <div style="font-size:13.5px;font-weight:600;color:#41494A;font-variant-numeric:tabular-nums;margin-bottom:11px;">{{ t.date }}</div>
+            <p style="font-size:14px;line-height:1.55;color:#6B6457;margin:0 0 20px;">{{ t.text }}</p>
+            <button onClick="{{ t.openDetail }}" style="margin-top:auto;align-self:flex-start;height:44px;padding:0 22px;background:#C2724A;border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Jetzt entdecken</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section style="max-width:840px;margin:0 auto;padding:80px 40px 20px;">
+    <div style="text-align:center;margin-bottom:38px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;">Gut zu wissen</div>
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;color:#16242B;margin:12px 0 0;">Häufige Fragen</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <sc-for list="{{ faqRows }}" as="f" hint-placeholder-count="4">
+        <div onClick="{{ f.toggle }}" style="background:#fff;border:1px solid #EAE3D8;border-radius:13px;padding:18px 22px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <span style="font-size:16.5px;font-weight:600;color:#16242B;flex:1;">{{ f.q }}</span>
+            <span style="{{ f.iconStyle }}">+</span>
+          </div>
+          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:14.5px;line-height:1.65;color:#6B6457;margin:13px 0 0;">{{ f.a }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section style="max-width:1200px;margin:80px auto 0;padding:0 40px;">
+    <div style="background:#16242B;border-radius:24px;padding:64px 40px;text-align:center;">
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;color:#F4F1EA;margin:0 0 14px;">{{ cta.headline }}</h2>
+      <p style="font-size:16.5px;color:#9DB0AD;max-width:540px;margin:0 auto 30px;line-height:1.6;">{{ cta.sub }}</p>
+      <div style="display:flex;gap:13px;justify-content:center;">
+        <button style="height:52px;padding:0 28px;background:#C2724A;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">{{ cta.btnCall }}</button>
+        <button style="height:52px;padding:0 28px;background:transparent;border:1.5px solid rgba(244,241,234,0.35);border-radius:12px;color:#F4F1EA;font-size:15px;font-weight:600;cursor:pointer;" style-hover="background:rgba(244,241,234,0.08)">{{ cta.btnWrite }}</button>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ===================== KATEGORIE-LISTE ===================== -->
+  <sc-if value="{{ isCategory }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1200px;margin:0 auto;padding:48px 40px 6px;">
+    <span onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#7C746A;cursor:pointer;" style-hover="color:#A8542F">← Zurück zur Startseite</span>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;margin:26px 0 10px;">Alle Termine</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:46px;color:#16242B;margin:0 0 10px;">{{ categoryTitle }}</h1>
+    <p style="font-size:16px;color:#6B6457;margin:0;max-width:560px;">{{ categoryLead }}</p>
+  </section>
+  <section style="max-width:1200px;margin:0 auto;padding:34px 40px 80px;">
+    <sc-if value="{{ categoryEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px dashed #D9D0C0;border-radius:18px;padding:60px 40px;text-align:center;">
+        <div style="font-family:'Newsreader',serif;font-size:24px;color:#16242B;margin-bottom:8px;">Bald verfügbar</div>
+        <p style="font-size:15px;color:#6B6457;margin:0 auto 22px;max-width:420px;">Für diese Kategorie sind aktuell keine Termine ausgeschrieben. Sprich uns gern an – wir beraten dich persönlich.</p>
+        <button onClick="{{ goHome }}" style="height:46px;padding:0 22px;background:#C2724A;border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Zur Startseite</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ categoryCount }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;">
+      <sc-for list="{{ catTrips }}" as="t" hint-placeholder-count="6">
+        <div onClick="{{ t.openDetail }}" style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(40,30,20,0.05);display:flex;flex-direction:column;cursor:pointer;" style-hover="box-shadow:0 16px 36px rgba(40,30,20,0.13)">
+          <div style="position:relative;height:188px;background:#F4F1EA;overflow:hidden;">
+            {{ t.imgEl }}
+            <sc-if value="{{ t.bannerOn }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;left:0;top:42px;background:{{ t.bannerColor }};color:#fff;padding:9px 18px 9px 16px;">
+              <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:22px;line-height:1;letter-spacing:0.04em;text-transform:uppercase;">{{ t.bannerLine1 }}</div>
+              <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:12px;line-height:1;opacity:0.92;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">{{ t.bannerLine2 }}</div>
+            </div>
+            </sc-if>
+            <div style="position:absolute;top:12px;right:12px;background:#F4F1EA;color:#A8542F;font-weight:700;font-size:13px;border-radius:20px;padding:6px 14px;box-shadow:0 3px 10px rgba(0,0,0,0.14);">ab {{ t.price }} €</div>
+          </div>
+          <div style="padding:20px 20px 22px;display:flex;flex-direction:column;flex:1;">
+            <div style="margin-bottom:12px;">
+              <span style="font-size:11px;font-weight:600;border-radius:6px;padding:4px 10px;background:{{ t.pillBg }};color:{{ t.pillFg }};">{{ t.status }}</span>
+            </div>
+            <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:21px;color:#16242B;line-height:1.22;margin:0 0 9px;">{{ t.title }}</h3>
+            <div style="font-size:13.5px;font-weight:600;color:#41494A;font-variant-numeric:tabular-nums;margin-bottom:11px;">{{ t.date }}</div>
+            <p style="font-size:14px;line-height:1.55;color:#6B6457;margin:0 0 20px;">{{ t.text }}</p>
+            <button onClick="{{ t.openDetail }}" style="margin-top:auto;align-self:flex-start;height:44px;padding:0 22px;background:#C2724A;border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Jetzt entdecken</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <!-- ===================== ÜBER UNS ===================== -->
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1200px;margin:0 auto;padding:48px 40px 0;">
+    <span onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#7C746A;cursor:pointer;" style-hover="color:#A8542F">← Zurück zur Startseite</span>
+  </section>
+  <section style="max-width:1200px;margin:0 auto;padding:26px 40px 10px;display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;margin-bottom:14px;">Über uns</div>
+      <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1.12;color:#16242B;margin:0 0 22px;">{{ about.title }}</h1>
+      <p style="font-size:16px;line-height:1.75;color:#5A5448;margin:0;white-space:pre-wrap;">{{ about.body }}</p>
+    </div>
+    <div style="position:relative;min-height:440px;">
+      <div style="position:absolute;top:0;left:0;width:80%;height:300px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#EAE3D8,#EAE3D8 10px,#E3DBCC 10px,#E3DBCC 20px);box-shadow:0 14px 34px rgba(40,30,20,0.14);">{{ about.imgEl }}</div>
+      <div style="position:absolute;bottom:0;right:0;width:72%;height:300px;border-radius:16px;overflow:hidden;border:7px solid #F4F1EA;background:repeating-linear-gradient(135deg,#E7DFD2,#E7DFD2 10px,#DED5C6 10px,#DED5C6 20px);box-shadow:0 14px 34px rgba(40,30,20,0.14);display:flex;align-items:center;justify-content:center;">{{ about.imgEl2 }}<sc-if value="{{ about.noImg2 }}" hint-placeholder-val="{{ true }}"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.1em;color:#A99F8D;">Foto Mekka / Medina</span></sc-if></div>
+    </div>
+  </section>
+  <section style="max-width:1100px;margin:0 auto;padding:46px 40px 90px;">
+    <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:30px;color:#16242B;margin:0 0 16px;">{{ about.whyTitle }}</h2>
+    <p style="font-size:15.5px;line-height:1.75;color:#5A5448;margin:0 0 40px;">{{ about.whyBody }}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;">
+      <sc-for list="{{ about.tiles }}" as="tile" hint-placeholder-count="4">
+        <div style="background:#F7ECE4;border-radius:18px;padding:28px 30px;">
+          <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:22px;color:#16242B;margin:0 0 12px;">{{ tile.t }}</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6B6457;margin:0;">{{ tile.b }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ===================== DETAIL ===================== -->
+  <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1200px;margin:0 auto;padding:24px 40px 0;">
+    <span onClick="{{ goHome }}" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#7C746A;cursor:pointer;" style-hover="color:#A8542F">← Zurück zur Übersicht</span>
+  </div>
+  <section style="max-width:1200px;margin:0 auto;padding:16px 40px 0;">
+    <div style="position:relative;height:360px;border-radius:22px;overflow:hidden;background:#241a12;">
+      {{ detail.heroEl }}
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,8,0.1),rgba(20,14,8,0.72));"></div>
+      <sc-if value="{{ detail.bannerOn }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;left:0;top:30px;background:{{ detail.bannerColor }};color:#fff;padding:10px 22px 10px 18px;">
+          <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:24px;line-height:1;letter-spacing:0.04em;text-transform:uppercase;">{{ detail.bannerLine1 }}</div>
+          <div style="font-family:'Quicksand',sans-serif;font-weight:600;font-size:13px;line-height:1;opacity:0.92;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">{{ detail.bannerLine2 }}</div>
+        </div>
+      </sc-if>
+      <div style="position:absolute;left:0;bottom:0;right:0;padding:34px 38px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.18em;color:#F0CDA8;text-transform:uppercase;margin-bottom:12px;">{{ detail.typ }} · {{ detail.duration }}</div>
+        <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:44px;line-height:1.06;color:#fff;margin:0;max-width:760px;">{{ detail.title }}</h1>
+      </div>
+    </div>
+  </section>
+  <section style="max-width:1200px;margin:0 auto;padding:36px 40px 70px;display:grid;grid-template-columns:1fr 372px;gap:44px;align-items:start;">
+    <div>
+      <p style="font-size:16.5px;line-height:1.7;color:#5A5448;margin:0 0 38px;">{{ detail.text }}</p>
+
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:28px;color:#16242B;margin:0 0 20px;">Enthaltene Leistungen</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px 26px;margin-bottom:44px;">
+        <sc-for list="{{ detail.included }}" as="inc" hint-placeholder-count="8">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#EAF0E8;color:#3E6B52;font-size:13px;flex-shrink:0;">✓</span>
+            <span style="font-size:14.5px;color:#41494A;">{{ inc }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:28px;color:#16242B;margin:0 0 22px;">Deine Hotels</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:44px;">
+        <sc-for list="{{ detail.hotels }}" as="h" hint-placeholder-count="2">
+          <div style="background:#fff;border:1px solid #EAE3D8;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
+            <sc-if value="{{ h.hasPhoto }}" hint-placeholder-val="{{ false }}">
+              <div style="height:158px;background:#F4F1EA;overflow:hidden;">{{ h.photoEl }}</div>
+            </sc-if>
+            <div style="padding:20px 22px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#A8542F;text-transform:uppercase;">{{ h.city }}</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-flex;align-items:center;gap:4px;background:#C2724A;color:#fff;border-radius:7px;padding:3px 8px;font-size:12.5px;font-weight:700;line-height:1;"><span style="font-size:10px;">★</span>{{ h.rating }}</span><span style="font-size:11.5px;color:#9A9082;">/ 10</span></span>
+              </div>
+              <div style="font-family:'Newsreader',serif;font-size:19px;color:#16242B;margin-bottom:11px;">{{ h.name }}</div>
+              <div style="font-size:13px;color:#6B6457;margin-bottom:11px;">{{ h.nights }}</div>
+              <sc-if value="{{ h.isMedina }}" hint-placeholder-val="{{ true }}">
+                <div style="display:inline-flex;align-items:center;gap:6px;background:#EAF1EC;color:#3E7256;border-radius:16px;padding:4px 10px;font-size:12px;font-weight:500;"><span style="display:inline-block;width:12px;height:7px;background:#3E7256;border-radius:50% 50% 0 0 / 100% 100% 0 0;flex-shrink:0;"></span>{{ h.dist }}</div>
+              </sc-if>
+              <sc-if value="{{ h.isMekka }}" hint-placeholder-val="{{ false }}">
+                <div style="display:inline-flex;align-items:center;gap:6px;background:#F2E8DF;color:#A8542F;border-radius:16px;padding:4px 10px;font-size:12px;font-weight:500;"><span style="font-size:12px;line-height:1;">🕋</span>{{ h.dist }}</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:28px;color:#16242B;margin:0 0 22px;">Dein Programm</h2>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <sc-for list="{{ detail.program }}" as="p" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:18px 1fr;gap:18px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:13px;height:13px;border-radius:50%;background:#C2724A;margin-top:4px;flex-shrink:0;"></div>
+              <div style="width:2px;flex:1;background:#E4DBCD;margin:4px 0;"></div>
+            </div>
+            <div style="padding-bottom:26px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#A8542F;text-transform:uppercase;margin-bottom:5px;">{{ p.day }}</div>
+              <div style="font-family:'Newsreader',serif;font-size:20px;color:#16242B;margin-bottom:6px;">{{ p.title }}</div>
+              <p style="font-size:14.5px;line-height:1.6;color:#6B6457;margin:0;">{{ p.text }}</p>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <aside style="position:sticky;top:96px;background:#fff;border:1px solid #EAE3D8;border-radius:20px;padding:26px;box-shadow:0 10px 30px rgba(40,30,20,0.08);">
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:4px;">
+        <span style="font-size:13px;color:#9A9082;">ab</span>
+        <span style="font-family:'Newsreader',serif;font-size:40px;color:#16242B;line-height:1;">{{ detail.price }} €</span>
+      </div>
+      <div style="font-size:13px;color:#9A9082;margin-bottom:16px;">pro Person im Doppelzimmer</div>
+      <div style="display:inline-flex;font-size:12.5px;font-weight:600;border-radius:20px;padding:6px 14px;background:{{ detail.pillBg }};color:{{ detail.pillFg }};margin-bottom:20px;">{{ detail.seatsLine }}</div>
+      <div style="display:flex;flex-direction:column;gap:11px;padding:16px 0;border-top:1px solid #F0EADF;border-bottom:1px solid #F0EADF;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:#9A9082;">Termin</span><span style="color:#16242B;font-weight:600;font-variant-numeric:tabular-nums;">{{ detail.date }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:#9A9082;">Dauer</span><span style="color:#16242B;font-weight:600;">{{ detail.duration }}</span></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:#9A9082;text-transform:uppercase;margin-bottom:12px;">Zimmerkategorien</div>
+      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px;">
+        <sc-for list="{{ detail.rooms }}" as="r" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1px solid #EFE8DC;border-radius:11px;">
+            <div><div style="font-size:14px;font-weight:600;color:#16242B;">{{ r.type }}</div><div style="font-size:11.5px;color:#9A9082;margin-top:2px;">{{ r.sub }}</div></div>
+            <div style="text-align:right;"><span style="font-size:11px;color:#9A9082;">ab </span><span style="font-size:15px;font-weight:700;color:#16242B;">{{ r.adult }} €</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <button onClick="{{ openBooking }}" style="width:100%;height:54px;background:#C2724A;border:none;border-radius:13px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(194,114,74,0.32);" style-hover="background:#A8542F">Zur Buchung</button>
+      <div style="text-align:center;font-size:12.5px;color:#9A9082;margin-top:12px;">Unverbindliche Anfrage · keine Online-Zahlung</div>
+    </aside>
+  </section>
+  </sc-if>
+
+  <!-- ===================== BUCHUNG ===================== -->
+  <sc-if value="{{ isBooking }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1100px;margin:0 auto;padding:24px 40px 0;">
+    <span onClick="{{ backToDetail }}" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#7C746A;cursor:pointer;" style-hover="color:#A8542F">← Zurück zur Reise</span>
+  </div>
+  <section style="max-width:1100px;margin:0 auto;padding:14px 40px 70px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.2em;color:#A8542F;text-transform:uppercase;margin-bottom:10px;">Buchungsanfrage</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:38px;color:#16242B;margin:0 0 6px;">{{ booking.tripTitle }}</h1>
+    <div style="font-size:14.5px;color:#6B6457;margin-bottom:30px;font-variant-numeric:tabular-nums;">{{ booking.date }} · {{ booking.duration }}</div>
+
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:38px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:24px;">
+          <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:21px;color:#16242B;margin:0 0 16px;">Preise pro Person</h3>
+          <div style="border:1px solid #EFE8DC;border-radius:13px;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;background:#16242B;color:#F4F1EA;">
+              <div style="padding:13px 16px;font-size:12.5px;font-weight:600;">Zimmer</div>
+              <div style="padding:13px 10px;font-size:12.5px;font-weight:600;text-align:right;">Erwachsener</div>
+              <div style="padding:13px 10px;font-size:12.5px;font-weight:600;text-align:right;">Kind <span style="color:#9DB0AD;font-weight:400;">2–11</span></div>
+              <div style="padding:13px 16px;font-size:12.5px;font-weight:600;text-align:right;">Baby <span style="color:#9DB0AD;font-weight:400;">0–1</span></div>
+            </div>
+            <sc-for list="{{ detail.rooms }}" as="r" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;border-top:1px solid #F0EADF;align-items:center;">
+                <div style="padding:13px 16px;font-size:14px;font-weight:600;color:#16242B;">{{ r.type }}</div>
+                <div style="padding:13px 10px;text-align:right;font-size:14px;font-weight:700;color:#16242B;font-variant-numeric:tabular-nums;">{{ r.adult }} €</div>
+                <div style="padding:13px 10px;text-align:right;font-size:14px;font-weight:600;color:#41494A;font-variant-numeric:tabular-nums;">{{ r.child }} €</div>
+                <div style="padding:13px 16px;text-align:right;font-size:14px;font-weight:600;color:#41494A;font-variant-numeric:tabular-nums;">{{ r.baby }} €</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size:12px;color:#9A9082;margin-top:12px;line-height:1.55;">Preise pro Person inkl. Flug, Hotel &amp; Visum. Die Alterskategorie ergibt sich automatisch aus dem Geburtsdatum (Stand Reisedatum).</div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:24px;">
+          <div style="display:flex;align-items:center;margin-bottom:16px;">
+            <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:21px;color:#16242B;margin:0;">Reisende</h3>
+            <span style="margin-left:auto;font-size:12.5px;color:#9A9082;">Eigene Zimmerkategorie pro Person wählbar</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <sc-for list="{{ booking.travelerRows }}" as="p" hint-placeholder-count="1">
+              <div style="border:1px solid #F0EADF;border-radius:13px;padding:15px 16px;background:#FCFBF7;">
+                <div style="display:flex;align-items:center;margin-bottom:11px;">
+                  <span style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:#A8542F;text-transform:uppercase;">Person {{ p.num }}</span>
+                  <sc-if value="{{ p.canRemove }}" hint-placeholder-val="{{ false }}">
+                    <span onClick="{{ p.remove }}" style="margin-left:auto;font-size:12.5px;color:#B0563F;cursor:pointer;">Entfernen</span>
+                  </sc-if>
+                </div>
+                <div style="display:grid;grid-template-columns:130px 1fr 1fr;gap:10px;margin-bottom:10px;">
+                  <select value="{{ p.anrede }}" onChange="{{ p.oAnrede }}" style="height:44px;padding:0 11px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;">
+                    <option>Bruder</option><option>Schwester</option>
+                  </select>
+                  <input value="{{ p.vorname }}" onInput="{{ p.oVorname }}" placeholder="Vorname" style="height:44px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;" />
+                  <input value="{{ p.nachname }}" onInput="{{ p.oNachname }}" placeholder="Nachname" style="height:44px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;" />
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;">
+                  <input value="{{ p.geburtstag }}" onInput="{{ p.oGeb }}" placeholder="Geburtsdatum (TT.MM.JJJJ)" style="height:44px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;font-variant-numeric:tabular-nums;" />
+                  <select value="{{ p.roomIdx }}" onChange="{{ p.oRoom }}" style="height:44px;padding:0 11px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14px;color:#1C2429;outline:none;">
+                    <option value="0">Doppelzimmer</option><option value="1">Dreibettzimmer</option><option value="2">Vierbettzimmer</option>
+                  </select>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <span style="{{ p.catStyle }}">{{ p.catLabel }}</span>
+                  <span style="font-size:13.5px;color:#6B6457;">{{ p.roomName }} · <strong style="color:#16242B;">{{ p.catPrice }} €</strong></span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ addTraveler }}" style="margin-top:14px;height:44px;width:100%;border:1px dashed #C9C0B1;background:#FBF9F4;border-radius:11px;color:#7C746A;font-size:14px;font-weight:600;cursor:pointer;" style-hover="border-color:#C2724A;color:#A8542F">+ Weitere Person hinzufügen</button>
+        </div>
+
+        <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:24px;">
+          <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:21px;color:#16242B;margin:0 0 16px;">Kontaktperson</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <input value="{{ booking.contact.vorname }}" onInput="{{ booking.oCVorname }}" placeholder="Vorname" style="height:46px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14.5px;color:#1C2429;outline:none;" />
+            <input value="{{ booking.contact.nachname }}" onInput="{{ booking.oCNachname }}" placeholder="Nachname" style="height:46px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14.5px;color:#1C2429;outline:none;" />
+            <input value="{{ booking.contact.email }}" onInput="{{ booking.oCEmail }}" placeholder="E-Mail" style="height:46px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14.5px;color:#1C2429;outline:none;" />
+            <input value="{{ booking.contact.telefon }}" onInput="{{ booking.oCTelefon }}" placeholder="Telefon" style="height:46px;padding:0 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14.5px;color:#1C2429;outline:none;" />
+          </div>
+          <textarea value="{{ booking.notes }}" onInput="{{ booking.oNotes }}" rows="3" placeholder="Anmerkung (optional) – z. B. Abflughafen, Wünsche" style="margin-top:12px;width:100%;padding:12px 13px;border:1px solid #E2DBCF;border-radius:10px;background:#fff;font-size:14.5px;line-height:1.5;color:#1C2429;outline:none;"></textarea>
+        </div>
+
+      </div>
+
+      <aside style="position:sticky;top:96px;background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(40,30,20,0.08);">
+        <div style="font-family:'Newsreader',serif;font-size:20px;color:#16242B;margin-bottom:16px;">Zusammenfassung</div>
+        <div style="display:flex;flex-direction:column;gap:11px;font-size:14px;padding-bottom:16px;border-bottom:1px solid #F0EADF;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:#9A9082;">Reise</span><span style="color:#16242B;font-weight:600;text-align:right;">{{ booking.tripTitle }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:#9A9082;">Zimmer</span><span style="color:#16242B;font-weight:600;text-align:right;">{{ booking.roomsSummary }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:#9A9082;">Reisende</span><span style="color:#16242B;font-weight:600;text-align:right;">{{ booking.breakdown }}</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;">
+          <span style="font-size:14px;color:#9A9082;">Gesamtsumme</span>
+          <span style="font-family:'Newsreader',serif;font-size:28px;color:#16242B;">{{ booking.estimate }} €</span>
+        </div>
+        <div onClick="{{ booking.toggleAgb }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;margin-bottom:18px;">
+          <div style="{{ booking.agbBox }}">{{ booking.agbCheck }}</div>
+          <span style="font-size:12.5px;line-height:1.5;color:#6B6457;">Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
+        </div>
+        <button onClick="{{ booking.submit }}" style="width:100%;height:54px;background:#16242B;border:none;border-radius:13px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;" style-hover="background:#22343d">Jetzt buchen</button>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:12px;color:#9A9082;margin-top:12px;">Zahlung später bequem per Überweisung</div>
+      </aside>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ===================== BESTÄTIGUNG ===================== -->
+  <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:760px;margin:0 auto;padding:48px 40px 80px;">
+    <div style="text-align:center;margin-bottom:34px;">
+      <div style="width:74px;height:74px;border-radius:50%;background:#EAF0E8;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px;color:#3E6B52;">✓</div>
+      <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:38px;color:#16242B;line-height:1.12;margin:0 0 14px;">Deine Buchungsanfrage ist eingegangen</h1>
+      <p style="font-size:16px;line-height:1.65;color:#5A5448;margin:0 auto;max-width:520px;">Jazakallahu khairan, {{ confirm.contactName }}. Wir haben dir eine Bestätigung an <strong style="color:#16242B;">{{ confirm.email }}</strong> gesendet und melden uns persönlich bei dir.</p>
+    </div>
+
+    <div style="background:#16242B;border-radius:18px;padding:26px 28px;text-align:center;margin-bottom:22px;">
+      <div style="font-size:12px;font-weight:600;letter-spacing:0.12em;color:#9DB0AD;text-transform:uppercase;margin-bottom:9px;">Deine Vorgangsnummer</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:500;color:#F4F1EA;letter-spacing:0.04em;">{{ confirm.vg }}</div>
+      <div style="font-size:13px;color:#9DB0AD;margin-top:9px;">Bitte als Verwendungszweck bei der Überweisung angeben</div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:26px 28px;margin-bottom:22px;">
+      <h3 style="font-family:'Newsreader',serif;font-weight:500;font-size:22px;color:#16242B;margin:0 0 6px;">So schließt du deine Buchung ab</h3>
+      <p style="font-size:14.5px;line-height:1.6;color:#6B6457;margin:0 0 20px;">Überweise den Reisebetrag auf das folgende Konto. Den genauen Betrag bestätigen wir dir nach der Anfrage.</p>
+      <div style="display:flex;flex-direction:column;gap:0;border:1px solid #F0EADF;border-radius:13px;overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;padding:13px 16px;background:#FCFBF7;"><span style="font-size:13.5px;color:#9A9082;">Kontoinhaber</span><span style="font-size:13.5px;color:#16242B;font-weight:600;">{{ confirm.bankInhaber }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:13px 16px;border-top:1px solid #F0EADF;"><span style="font-size:13.5px;color:#9A9082;">IBAN</span><span style="font-size:13.5px;color:#16242B;font-weight:600;font-variant-numeric:tabular-nums;">{{ confirm.bankIban }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:13px 16px;background:#FCFBF7;border-top:1px solid #F0EADF;"><span style="font-size:13.5px;color:#9A9082;">BIC</span><span style="font-size:13.5px;color:#16242B;font-weight:600;">{{ confirm.bankBic }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:13px 16px;border-top:1px solid #F0EADF;"><span style="font-size:13.5px;color:#9A9082;">Bank</span><span style="font-size:13.5px;color:#16242B;font-weight:600;">{{ confirm.bankName }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:13px 16px;background:#FBF3EC;border-top:1px solid #F0EADF;"><span style="font-size:13.5px;color:#A8542F;font-weight:600;">Verwendungszweck</span><span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;color:#A8542F;font-weight:600;">{{ confirm.vg }}</span></div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #EAE3D8;border-radius:18px;padding:24px 28px;margin-bottom:30px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:#9A9082;text-transform:uppercase;margin-bottom:14px;">Deine Buchung</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;"><span style="color:#9A9082;">Reise</span><span style="color:#16242B;font-weight:600;text-align:right;">{{ confirm.tripTitle }}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#9A9082;">Termin</span><span style="color:#16242B;font-weight:600;font-variant-numeric:tabular-nums;">{{ confirm.date }}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#9A9082;">Zimmer</span><span style="color:#16242B;font-weight:600;">{{ confirm.room }}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="color:#9A9082;">Reisende</span><span style="color:#16242B;font-weight:600;">{{ confirm.travelers }}</span></div>
+        <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #F0EADF;"><span style="color:#9A9082;">Gesamtsumme</span><span style="color:#16242B;font-weight:700;">{{ confirm.total }} €</span></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button onClick="{{ goHome }}" style="height:52px;padding:0 30px;background:#C2724A;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;" style-hover="background:#A8542F">Zurück zur Startseite</button>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer style="margin-top:70px;border-top:1px solid #E9E2D5;background:#F8F5EF;">
+    <div style="max-width:1200px;margin:0 auto;padding:48px 40px 30px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px;">
+      <div>
+        <img src="assets/makarim_soultreat.png" alt="Makarim &amp; Soultreat" style="height:34px;width:auto;margin-bottom:16px;" />
+        <div style="font-size:14px;color:#6B6457;line-height:1.6;">{{ brand.address1 }}<br/>{{ brand.address2 }}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:#9A9082;text-transform:uppercase;margin-bottom:14px;">Reisen</div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:14px;color:#41494A;">
+          <span style="cursor:pointer;" style-hover="color:#A8542F">Umrah Reisen</span>
+          <span style="cursor:pointer;" style-hover="color:#A8542F">Hajj Reisen</span>
+          <span style="cursor:pointer;" style-hover="color:#A8542F">Kulturreisen</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:#9A9082;text-transform:uppercase;margin-bottom:14px;">Kontakt</div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:14px;color:#41494A;">
+          <span>{{ brand.email }}</span>
+          <span style="font-variant-numeric:tabular-nums;">{{ brand.phone }}</span>
+          <span>{{ brand.instagram }}</span>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #EDE6D9;padding:18px 40px;text-align:center;font-size:13px;color:#9A9082;">Copyright © 2026 Makarim &amp; Soultreat · Reisen für die Seele &nbsp;·&nbsp; AGB · Datenschutz · Impressum</div>
+  </footer>
+
+  <!-- ===================== WHATSAPP ===================== -->
+  <a href="https://wa.me/4961345579070" target="_blank" rel="noopener" aria-label="WhatsApp" style="position:fixed;bottom:26px;right:26px;z-index:40;width:60px;height:60px;border-radius:50%;background:#25D366;box-shadow:0 8px 24px rgba(37,211,102,0.45);display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;"><svg viewBox="0 0 24 24" width="34" height="34" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></a>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:50;background:#16242B;color:#F4F1EA;font-size:14px;font-weight:500;padding:13px 22px;border-radius:12px;box-shadow:0 10px 30px rgba(20,15,8,0.3);">{{ toastMsg }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  defaultContent() {
+    return {
+      home: {
+        kicker: 'Hajj · Umrah · Kulturreisen',
+        headline: 'Reisen für die Seele',
+        sub: 'Über 40 Jahre Erfahrung, Rundum-Sorglos-Service und persönliche Betreuung. Werde Teil der Makarim-Familie und erlebe eine Reise, die dein Leben verändert.',
+        btnP: 'Reisen entdecken',
+        btnS: 'Mehr erfahren',
+        heroUrl: 'assets/examples/hero-b.jpg',
+        trust: [
+          { value: '40+', label: 'Jahre Erfahrung' },
+          { value: '10.000+', label: 'Pilger betreut' },
+          { value: '300+', label: 'organisierte Reisen' },
+          { value: '100%', label: 'aus einer Hand' },
+        ],
+      },
+      categories: [
+        { title: 'Umrah Reisen', text: 'Über 40 Jahre Erfahrung in der Organisation von Umrah Reisen aus Deutschland — begleitet von Vertrauen und religiöser Kompetenz.', url: 'assets/examples/cat-umrah.jpg' },
+        { title: 'Hajj Reisen', text: 'Vollziehe deine Hajj aus Deutschland. Wir begleiten dich von der Nusuk-Registrierung bis zur Rückkehr mit religiöser Begleitung.', url: 'assets/examples/cat-hajj.jpg' },
+        { title: 'Kulturreisen', text: 'Islamkonforme Kulturreisen verbinden einzigartige Erlebnisse mit tiefem Verständnis für Geschichte, Tradition und Kultur.', url: 'assets/examples/cat-kultur.jpg' },
+      ],
+      trips: [
+        { vg: '2026-0912', startseite: true, title: 'September Umrah für Studierende', typ: 'Umrah', date: '14.09.2026 – 24.09.2026', price: '1.290', status: 'Warteliste', text: 'Geförderte Studierenden-Umrah – für junge Menschen, die Spiritualität, Gemeinschaft und Wissen verbinden möchten.', url: 'assets/examples/trip-sep-studierende.jpg', hotels: [ { city: 'Medina', name: 'Dar Al Eiman Royal', rating: '8,6', nights: '4 Nächte', dist: 'ca. 300 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Al Kiswah Towers', rating: '8,2', nights: '5 Nächte', dist: 'ca. 700 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-0913', startseite: true, title: 'September Umrah Reise – Comfort', typ: 'Umrah', date: '14.09.2026 – 24.09.2026', price: '1.690', status: 'noch 4 Plätze', text: 'Zentral gelegene Hotels und Frühstück im Hotel – konzentrier dich ganz auf deine Ibada.', url: 'assets/examples/trip-sep-comfort.jpg', hotels: [ { city: 'Medina', name: 'Anwar Al Madinah Mövenpick', rating: '9,1', nights: '4 Nächte', dist: 'ca. 150 m zum Haram', stars: '5★', photo: '' }, { city: 'Mekka', name: 'Swissôtel Al Maqam', rating: '9,0', nights: '5 Nächte', dist: 'ca. 200 m zum Haram', stars: '5★', photo: '' } ] },
+        { vg: '2026-1007', startseite: true, title: 'Herbst Umrah Reise – Hessen', typ: 'Umrah', date: '07.10.2026 – 17.10.2026', price: '1.890', status: 'noch 6 Plätze', text: 'Herbst-Umrah in den Hessenferien – entspannt, gut betreut und ideal für Familien.', url: 'assets/examples/trip-okt-hessen.jpg', hotels: [ { city: 'Medina', name: 'Dallah Taibah', rating: '8,4', nights: '4 Nächte', dist: 'ca. 250 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Makkah Towers', rating: '8,1', nights: '5 Nächte', dist: 'ca. 400 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-1104', startseite: false, title: 'November Umrah Reise – Economy', typ: 'Umrah', date: '04.11.2026 – 14.11.2026', price: '1.490', status: 'verfügbar', text: 'Günstige, bewusst reduzierte Umrah – gut organisiert nach Mekka und Medina.', url: 'assets/examples/trip-nov-economy.jpg', hotels: [ { city: 'Medina', name: 'Al Eiman Taibah', rating: '8,3', nights: '4 Nächte', dist: 'ca. 400 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Al Ghufran Safwah', rating: '8,0', nights: '5 Nächte', dist: 'ca. 800 m zum Haram', stars: '4★', photo: '' } ] },
+        { vg: '2026-1106', startseite: false, title: 'Umrah mit Ustadh Sarikli Yunus', typ: 'Umrah', date: '06.11.2026 – 18.11.2026', price: '1.990', status: 'noch 9 Plätze', text: 'Alles aus einer Hand. Du reist entspannt und konzentrierst dich ganz auf deine Umrah.', url: 'assets/examples/trip-nov-yunus.jpg', hotels: [ { city: 'Medina', name: 'Frontel Al Harithia', rating: '8,7', nights: '4 Nächte', dist: 'ca. 200 m zum Haram', stars: '4★', photo: '' }, { city: 'Mekka', name: 'Hilton Suites Makkah', rating: '9,2', nights: '5 Nächte', dist: 'ca. 300 m zum Haram', stars: '5★', photo: '' } ] },
+        { vg: '2026-1223', startseite: false, title: 'Winter Umrah mit Sheikh Ferid Heider', typ: 'Umrah', date: '23.12.2026 – 02.01.2027', price: '1.995', status: 'begrenzte Plätze', text: 'Umrah in den Weihnachtsferien mit intensiver Betreuung und Kinderbetreuung.', url: 'assets/examples/trip-winter-ferid.jpg', hotels: [ { city: 'Medina', name: 'Pullman Zamzam Madina', rating: '9,3', nights: '5 Nächte', dist: 'ca. 150 m zum Haram', stars: '5★', photo: '' }, { city: 'Mekka', name: 'Fairmont Makkah Clock Tower', rating: '9,4', nights: '5 Nächte', dist: 'ca. 100 m zum Haram', stars: '5★', photo: '' } ] },
+      ],
+      faq: [
+        { q: 'Wie läuft die Buchung ab?', a: 'Du wählst deine Reise, sendest eine unverbindliche Anfrage und wir melden uns persönlich. Die Zahlung erfolgt per Überweisung mit deiner Vorgangsnummer als Verwendungszweck.' },
+        { q: 'Sind Flüge im Preis enthalten?', a: 'Ja, Hin- und Rückflug ab Frankfurt, Düsseldorf und Berlin sind enthalten.' },
+        { q: 'Wie weit sind die Hotels von der Moschee entfernt?', a: 'Unsere Hotels liegen fußläufig zum Haram – in Mekka und Medina nur wenige Minuten entfernt.' },
+        { q: 'Kümmert ihr euch um das Visum?', a: 'Ja, wir erledigen für dich alle Formalitäten der Visabeschaffung.' },
+      ],
+      cta: {
+        headline: 'Bereit für deine Reise?',
+        sub: 'Lass dich unverbindlich beraten. Wir finden gemeinsam die perfekte Reise für dich und deine Familie.',
+        btnCall: 'Jetzt anrufen',
+        btnWrite: 'Schreib uns',
+      },
+      brand: {
+        phone: '+49 6134 55 79 070',
+        whatsapp: '+49 6134 55 79 070',
+        email: 'info@makarim.de',
+        instagram: '@makarim.reisen',
+        address1: 'Anton-Hehn-Straße 5',
+        address2: '55246 Mainz-Kostheim',
+        bank: { inhaber: 'Makarim & Soultreat GmbH', iban: 'DE00 0000 0000 0000 0000 00', bic: 'GENODEF1XXX', name: 'Bankname (im CMS hinterlegen)' },
+      },
+      seo: {
+        siteName: 'Makarim Reisen',
+        defaultDesc: 'Hajj, Umrah und islamkonforme Kulturreisen aus Deutschland – über 40 Jahre Erfahrung, persönliche Betreuung und Hotels in Gehweite zum Haram.',
+        home: { title: 'Makarim Reisen – Hajj & Umrah aus Deutschland', desc: 'Geführte Umrah- und Hajj Reisen aus Deutschland. Über 40 Jahre Erfahrung, Rundum-Betreuung und Hotels nah am Haram.' },
+        umrah: { title: 'Umrah Reisen aus Deutschland', desc: 'Geführte Umrah Reisen ab Deutschland – mit persönlicher Betreuung, Frühstück im Hotel und kurzen Wegen zum Haram.' },
+        hajj: { title: 'Hajj Reisen aus Deutschland', desc: 'Vollziehe deine Hajj aus Deutschland – von der Nusuk-Registrierung bis zur Rückkehr mit religiöser Begleitung.' },
+        kultur: { title: 'Islamkonforme Kulturreisen', desc: 'Islamkonforme Kulturreisen, die einzigartige Erlebnisse mit Geschichte, Tradition und Kultur verbinden.' },
+        about: { title: 'Über uns – die Makarim-Familie', desc: 'Seit über 40 Jahren begleiten wir Muslime aus Deutschland auf ihren Hajj- und Umrah Reisen nach Mekka und Medina.' },
+      },
+    };
+  }
+
+  loadContent() {
+    try {
+      const s = JSON.parse(localStorage.getItem('makarim_cms_v1') || 'null');
+      if (s && s.c) return this.migrate(s.c);
+    } catch (e) {}
+    return this.defaultContent();
+  }
+
+  migrate(c) {
+    try {
+      const def = this.defaultContent();
+      if (Array.isArray(c.trips)) {
+        c.trips.forEach(tr => {
+          const d = def.trips.find(x => x.vg === tr.vg);
+          if (!Array.isArray(tr.hotels)) {
+            tr.hotels = d ? structuredClone(d.hotels) : [];
+          } else if (d) {
+            tr.hotels.forEach((h, hi) => { if (h.rating == null && d.hotels[hi]) h.rating = d.hotels[hi].rating; });
+          }
+        });
+      }
+    } catch (e) {}
+    if (c.about && (c.about.whyTitle == null || !Array.isArray(c.about.tiles) || c.about.tiles.length === 0)) {
+      const dt = [
+        { t: 'Die Makarim-Familie', b: 'Seit über 40 Jahren begleiten wir Muslime aus Deutschland auf ihren Hajj- und Umrah Reisen nach Mekka und Medina. Unser Gründer, Muhammad Siddiq, legte mit der ersten organisierten Pilgerreise den Grundstein für eine Tradition, die bis heute lebendig ist – ein Gemeinschaftserlebnis, das von Herzen kommt.' },
+        { t: 'Deine Reise, unsere Mission', b: 'Bei Makarim stehst Du im Mittelpunkt. Wir wissen, wie bedeutsam die Hajj und die Umra in Deinem Leben sind. Deshalb sorgen wir dafür, dass Du Dich von Anfang an wie in einer Familie willkommen und aufgehoben fühlst.' },
+        { t: 'Erfahrung, Vertrauen und Rundum-Betreuung', b: 'Mit unserer jahrzehntelangen Erfahrung bieten wir Dir eine Rundum-Betreuung: von der Visumsbeantragung über die Buchung von Flügen und Hotels bis zur spirituellen Begleitung während der gesamten Reise. So kannst Du Dich voll und ganz auf Deine Verbindung zu Allah konzentrieren.' },
+        { t: 'Ein Ort für die ganze Familie', b: 'Ein besonderes Highlight ist unser Programm Makarim-Kids, das speziell auf die Bedürfnisse unserer jüngsten Reisenden abgestimmt ist. Als Elternteil genießt Du Deine eigene spirituelle Reise in Ruhe, während Deine Kinder bestens betreut werden.' },
+      ];
+      if (c.about.whyTitle == null) c.about.whyTitle = 'Warum Makarim?';
+      if (c.about.whyBody == null) c.about.whyBody = 'Bei Makarim geht es um mehr als nur eine Umrah Reise nach Mekka und Medina. Unser Anspruch ist es, eine Atmosphäre von Vertrauen, Gemeinschaft und Fürsorge zu schaffen, in der sich unsere Pilger sowohl organisatorisch als auch spirituell gut aufgehoben fühlen. Wir begleiten dich während deiner gesamten Umrah Reise aus Deutschland – von der Planung über die Durchführung bis zur Rückkehr. Als Teil der Makarim-Familie erlebst du nicht nur eine Pilgerreise, sondern eine Zeit, die dich langfristig prägt.';
+      if (!Array.isArray(c.about.tiles) || c.about.tiles.length === 0) c.about.tiles = dt;
+    }
+    if (c.seo == null) c.seo = this.defaultContent().seo;
+    return c;
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      c: this.loadContent(), openFaq: 0,
+      view: 'home', tripIdx: 0,
+      booking: {
+        roomIdx: 0,
+        travelers: [{ anrede: 'Bruder', vorname: '', nachname: '', geburtstag: '', roomIdx: 0 }],
+        contact: { vorname: '', nachname: '', email: '', telefon: '' },
+        notes: '', agb: false,
+      },
+      submission: null, toastMsg: '',
+    };
+  }
+
+  componentDidMount() {
+    this._onStorage = (e) => { if (e.key === 'makarim_cms_v1') this.setState({ c: this.loadContent() }); };
+    window.addEventListener('storage', this._onStorage);
+    this.applySeo();
+  }
+  componentDidUpdate() {
+    this.applySeo();
+  }
+
+  clip(s, n) { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s; }
+
+  seoFor() {
+    const c = this.state.c;
+    const seo = c.seo || {};
+    const site = seo.siteName || 'Makarim Reisen';
+    const v = this.state.view;
+    const withSite = (t) => t ? (t + ' | ' + site) : site;
+    let title = '', desc = '';
+    if (v === 'detail') {
+      const t = (c.trips || [])[this.state.tripIdx] || {};
+      title = withSite(t.seoTitle || t.title); desc = t.seoDesc || t.text;
+    } else if (v === 'category') {
+      const o = seo[this.state.categoryType] || {};
+      const fb = { umrah: 'Umrah Reisen', hajj: 'Hajj Reisen', kultur: 'Kulturreisen' }[this.state.categoryType] || 'Reisen';
+      title = withSite(o.title || fb); desc = o.desc;
+    } else if (v === 'about') {
+      const o = seo.about || {};
+      title = withSite(o.title || 'Über uns'); desc = o.desc || (c.about && c.about.body);
+    } else if (v === 'booking') {
+      const t = (c.trips || [])[this.state.tripIdx] || {};
+      title = withSite('Buchungsanfrage' + (t.title ? ' – ' + t.title : ''));
+    } else if (v === 'confirm') {
+      title = withSite('Buchungsanfrage eingegangen');
+    } else {
+      const o = seo.home || {};
+      title = o.title || site; desc = o.desc;
+    }
+    if (!desc) desc = seo.defaultDesc || '';
+    return { title, desc: this.clip(desc, 158) };
+  }
+
+  applySeo() {
+    try {
+      const { title, desc } = this.seoFor();
+      if (title) document.title = title;
+      let m = document.querySelector('meta[name="description"]');
+      if (!m) { m = document.createElement('meta'); m.setAttribute('name', 'description'); document.head.appendChild(m); }
+      m.setAttribute('content', desc);
+    } catch (e) {}
+  }
+  componentWillUnmount() {
+    window.removeEventListener('storage', this._onStorage);
+  }
+
+  pill(status) {
+    if (status === 'Warteliste') return { bg: '#E4ECEF', fg: '#3E6B7A' };
+    if (status === 'verfügbar') return { bg: '#E3EEE4', fg: '#2E6B48' };
+    return { bg: '#F6ECD9', fg: '#956214' };
+  }
+
+  scrollTop() { try { window.scrollTo(0, 0); } catch (e) {} }
+  go(view) { this.setState({ view }, () => this.scrollTop()); }
+  openDetail(i) { this.setState({ tripIdx: i, view: 'detail' }, () => this.scrollTop()); }
+  toastMsgShow(msg) { this.setState({ toastMsg: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toastMsg: '' }), 2800); }
+
+  parsePrice(p) { return parseInt(String(p || '').replace(/[^0-9]/g, ''), 10) || 0; }
+  formatPrice(n) { return (n || 0).toLocaleString('de-DE'); }
+
+  bankInfo() {
+    const b = (this.state.c.brand && this.state.c.brand.bank) || {};
+    return {
+      inhaber: b.inhaber || 'Makarim & Soultreat GmbH',
+      iban: b.iban || 'DE00 0000 0000 0000 0000 00',
+      bic: b.bic || 'GENODEF1XXX',
+      name: b.name || 'Bankname (im CMS hinterlegen)',
+    };
+  }
+
+  roomsFor(tr) {
+    const base = this.parsePrice(tr.price);
+    const def = [
+      { type: 'Doppelzimmer', sub: '2 Personen pro Zimmer', dAdult: 0, dChild: 300 },
+      { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', dAdult: 150, dChild: 420 },
+      { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', dAdult: 260, dChild: 520 },
+    ];
+    return def.map(r => ({ type: r.type, sub: r.sub, adult: Math.max(0, base - r.dAdult), child: Math.max(0, base - r.dChild), baby: 250 }));
+  }
+
+  durationOf(range) {
+    const m = (range || '').match(/(\d{2})\.(\d{2})\.(\d{4}).*?(\d{2})\.(\d{2})\.(\d{4})/);
+    if (!m) return '';
+    const a = new Date(+m[3], +m[2] - 1, +m[1]); const b = new Date(+m[6], +m[5] - 1, +m[4]);
+    const days = Math.round((b - a) / 86400000);
+    return (days + 1) + ' Tage · ' + days + ' Nächte';
+  }
+
+  detailProgram() {
+    return [
+      { day: 'Tag 1', title: 'Abflug aus Deutschland', text: 'Gemeinsamer Abflug ab Frankfurt. Begrüßung und Betreuung durch deine Reiseleitung bereits am Flughafen.' },
+      { day: 'Tag 2–4', title: 'Medina – Stadt des Propheten ﷺ', text: 'Gebete in der Prophetenmoschee (Masjid an-Nabawi), Besuch des Rawdah und Ziyarat der historischen Stätten.' },
+      { day: 'Tag 5', title: 'Fahrt nach Mekka & Ihram', text: 'Transfer nach Mekka, Anlegen des Ihram am Miqat und gemeinsame Durchführung der Umrah (Tawaf & Sa’i).' },
+      { day: 'Tag 6–9', title: 'Mekka – Tage der Ibada', text: 'Freie Zeit für Gebete im Haram, weitere Umrah-Möglichkeiten und ein begleitetes Ziyarat-Programm in und um Mekka.' },
+      { day: 'Tag 10', title: 'Abschied & Rückflug', text: 'Abschieds-Tawaf (Tawaf al-Wada) und gemeinsamer Rückflug nach Deutschland.' },
+    ];
+  }
+  detailHotels() {
+    return [
+      { city: 'Medina', name: 'Hotel nahe Masjid an-Nabawi', nights: '3 Nächte', dist: 'ca. 250 m zum Haram', stars: '4★' },
+      { city: 'Mekka', name: 'Hotel im Ajyad-Viertel', nights: '5 Nächte', dist: 'ca. 400 m zum Haram', stars: '4★' },
+    ];
+  }
+  detailIncluded() {
+    return ['Hin- und Rückflug ab Deutschland', 'Alle Transfers vor Ort', 'Hotels in Mekka & Medina', 'Visum & komplette Bearbeitung', 'Tägliches Frühstück', 'Deutschsprachige Reiseleitung', 'Begleitetes Ziyarat-Programm', '24/7 Betreuung vor Ort'];
+  }
+
+  ageCategoryFor(geb, refStr) {
+    const g = (geb || '').match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+    if (!g) return 'adult';
+    const bd = new Date(+g[3], +g[2] - 1, +g[1]);
+    const r = (refStr || '').match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    const ref = r ? new Date(+r[3], +r[2] - 1, +r[1]) : new Date();
+    let age = ref.getFullYear() - bd.getFullYear();
+    const mo = ref.getMonth() - bd.getMonth();
+    if (mo < 0 || (mo === 0 && ref.getDate() < bd.getDate())) age--;
+    if (age < 2) return 'baby';
+    if (age < 12) return 'child';
+    return 'adult';
+  }
+  catLabel(cat) { return cat === 'baby' ? 'Baby' : cat === 'child' ? 'Kind' : 'Erwachsener'; }
+  roomPriceFor(room, cat) { return cat === 'baby' ? room.baby : cat === 'child' ? room.child : room.adult; }
+  catBadge(cat) {
+    const c = cat === 'baby' ? { bg: '#E4ECEF', fg: '#3E6B7A' } : cat === 'child' ? { bg: '#F3ECDB', fg: '#8A6A20' } : { bg: '#EAF0E8', fg: '#3E6B52' };
+    return 'font-size:12px;font-weight:600;border-radius:20px;padding:6px 12px;white-space:nowrap;background:' + c.bg + ';color:' + c.fg + ';';
+  }
+  roomsSummaryOf(travelers, rooms) {
+    const counts = {};
+    travelers.forEach(t => { const name = rooms[t.roomIdx || 0].type; counts[name] = (counts[name] || 0) + 1; });
+    return Object.keys(counts).map(k => counts[k] + '× ' + k).join(' · ') || '—';
+  }
+
+  setRoom(i) { this.setState(s => ({ booking: { ...s.booking, roomIdx: i } })); }
+  setTravelerRoom(idx, roomIdx) { this.setState(s => ({ booking: { ...s.booking, travelers: s.booking.travelers.map((t, k) => k === idx ? { ...t, roomIdx } : t) } })); }
+  setTravelerField(idx, field, val) { this.setState(s => ({ booking: { ...s.booking, travelers: s.booking.travelers.map((t, k) => k === idx ? { ...t, [field]: val } : t) } })); }
+  addTraveler() { this.setState(s => ({ booking: { ...s.booking, travelers: [...s.booking.travelers, { anrede: 'Bruder', vorname: '', nachname: '', geburtstag: '', roomIdx: 0 }] } })); }
+  removeTraveler(idx) { this.setState(s => (s.booking.travelers.length <= 1 ? {} : { booking: { ...s.booking, travelers: s.booking.travelers.filter((_, k) => k !== idx) } })); }
+  setContactField(field, val) { this.setState(s => ({ booking: { ...s.booking, contact: { ...s.booking.contact, [field]: val } } })); }
+  setNotes(val) { this.setState(s => ({ booking: { ...s.booking, notes: val } })); }
+  toggleAgb() { this.setState(s => ({ booking: { ...s.booking, agb: !s.booking.agb } })); }
+
+  submitBooking() {
+    const b = this.state.booking;
+    const t0 = b.travelers[0] || {};
+    if (!t0.vorname || !t0.nachname) { this.toastMsgShow('Bitte mindestens einen Reisenden mit Vor- und Nachnamen angeben.'); return; }
+    if (!b.contact.email) { this.toastMsgShow('Bitte eine E-Mail für die Kontaktperson angeben.'); return; }
+    if (!b.agb) { this.toastMsgShow('Bitte bestätige die Reisebedingungen.'); return; }
+    const tr = this.state.c.trips[this.state.tripIdx];
+    const n = Math.floor(10000 + Math.random() * 89999);
+    const vg = 'UM-' + (new Date().getFullYear()) + '-' + n;
+    const rooms = this.roomsFor(tr);
+    const total = b.travelers.reduce((sum, t) => sum + this.roomPriceFor(rooms[t.roomIdx || 0], this.ageCategoryFor(t.geburtstag, tr.date)), 0);
+    const roomsSummary = this.roomsSummaryOf(b.travelers, rooms);
+    const submission = { vg, tripTitle: tr.title, date: tr.date, room: roomsSummary, travelers: b.travelers.length, total, email: b.contact.email, contactName: (b.contact.vorname + ' ' + b.contact.nachname).trim() };
+    this.setState({ submission, view: 'confirm' }, () => this.scrollTop());
+  }
+
+  bannerPalette() { return ['#C2724A', '#16242B', '#3E6B7A', '#A8542F', '#5A6B52', '#8a513a', '#3d88c9', '#ff751f', '#a8bb4a', '#b23232', '#6ea3ab', '#1b86a2', '#ddc385']; }
+
+  seatsOf(tr) {
+    if (typeof tr.seats === 'number') return tr.seats;
+    const s = tr.status || '';
+    const m = s.match(/(\d+)/);
+    if (m) return parseInt(m[1], 10);
+    if (/Warteliste|ausgebucht/i.test(s)) return 0;
+    if (/begrenzte/i.test(s)) return 20;
+    return 22;
+  }
+  waitlistOf(tr) { return tr.waitlist !== undefined ? tr.waitlist : true; }
+  derive(tr) {
+    const seats = this.seatsOf(tr);
+    const wl = this.waitlistOf(tr);
+    let label, kind;
+    if (seats > 18) { label = 'begrenzte Plätze'; kind = 'limited'; }
+    else if (seats >= 1) { label = 'noch ' + seats + (seats === 1 ? ' Platz' : ' Plätze'); kind = 'count'; }
+    else if (wl) { label = 'Warteliste'; kind = 'wait'; }
+    else { label = 'ausgebucht'; kind = 'sold'; }
+    const palette = {
+      limited: { bg: '#EDEFEA', fg: '#5A6B52' },
+      count: { bg: '#F6ECD9', fg: '#956214' },
+      wait: { bg: '#F7D85A', fg: '#5A4A12' },
+      sold: { bg: '#B23232', fg: '#FFFFFF' },
+    };
+    return { seats, waitlist: wl, label, bg: palette[kind].bg, fg: palette[kind].fg };
+  }
+
+  hashIdx(key, n) { let h = 0; const s = String(key || ''); for (let k = 0; k < s.length; k++) { h = (h * 31 + s.charCodeAt(k)) >>> 0; } return h % n; }
+
+  resolveBanner(tr, i) {
+    const b = tr.banner || {};
+    const pal = this.bannerPalette();
+    return {
+      on: b.on !== undefined ? b.on : true,
+      color: b.color || pal[this.hashIdx(tr.vg, pal.length)],
+      line1: b.line1 !== undefined ? b.line1 : this.monthName(tr.date),
+      line2: b.line2 !== undefined ? b.line2 : tr.typ,
+    };
+  }
+
+  monthName(date) {
+    const names = { '01': 'JANUAR', '02': 'FEBRUAR', '03': 'MÄRZ', '04': 'APRIL', '05': 'MAI', '06': 'JUNI', '07': 'JULI', '08': 'AUGUST', '09': 'SEPTEMBER', '10': 'OKTOBER', '11': 'NOVEMBER', '12': 'DEZEMBER' };
+    const m = (date || '').match(/^\d{2}\.(\d{2})\./);
+    return m ? (names[m[1]] || '') : '';
+  }
+
+  renderVals() {
+    const c = this.state.c;
+    const cover = (url, alt) => url ? React.createElement('img', { src: url, alt: alt || '', style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } }) : null;
+    const heroCover = (url, alt) => url ? React.createElement('img', { src: url, alt: alt || '', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } }) : null;
+
+    const home = {
+      kicker: c.home.kicker, headline: c.home.headline, sub: c.home.sub, btnP: c.home.btnP, btnS: c.home.btnS,
+    };
+    const heroEl = heroCover(c.home.heroUrl, c.home.headline || 'Makarim Reisen');
+    const ab = c.about || {};
+    const about = { title: ab.title || 'Makarim & Soultreat', body: ab.body || '', imgEl: cover(ab.url, ab.title || 'Makarim & Soultreat'), imgEl2: cover(ab.url2, 'Mekka und Medina'), noImg2: !ab.url2, whyTitle: ab.whyTitle || 'Warum Makarim?', whyBody: ab.whyBody || '', tiles: ab.tiles || [] };
+
+    const trustRows = c.home.trust.map((t, i) => ({
+      value: t.value, label: t.label,
+      style: 'padding:30px 22px;text-align:center;' + (i < c.home.trust.length - 1 ? 'border-right:1px solid #ECE5D8;' : ''),
+    }));
+
+    const categoryMap = { umrah: 'Umrah Reisen', hajj: 'Hajj Reisen', kultur: 'Kulturreisen' };
+    const categoryLead = { umrah: 'Geführte Umrah Reisen ab Deutschland – mit Betreuung und Nähe zum Haram.', hajj: 'Unsere Hajj Reisen – von der Registrierung bis zur Rückkehr begleitet.', kultur: 'Islamkonforme Kulturreisen mit Tiefe, Geschichte und Erlebnis.' };
+    const openCategory = (type) => this.setState({ view: 'category', categoryType: type }, () => this.scrollTop());
+
+    const tile = (tr) => {
+      const i = c.trips.indexOf(tr);
+      const d = this.derive(tr);
+      const b = this.resolveBanner(tr, i);
+      return {
+        title: tr.title, typ: tr.typ, date: tr.date, price: tr.price, status: d.label, text: tr.text,
+        imgEl: cover(tr.url, tr.title), pillBg: d.bg, pillFg: d.fg,
+        bannerOn: b.on, bannerColor: b.color, bannerLine1: b.line1, bannerLine2: b.line2,
+        openDetail: () => this.openDetail(i),
+      };
+    };
+
+    let featured = c.trips.filter(t => t.published !== false && t.startseite === true);
+    if (featured.length === 0) featured = c.trips.filter(t => t.published !== false).slice(0, 3);
+    const tripRows = featured.slice(0, 3).map(tile);
+
+    const catType = this.state.categoryType || 'umrah';
+    const catTrips = c.trips.filter(t => t.published !== false && (t.typ || '').toLowerCase().includes(catType)).map(tile);
+
+    const catRows = c.categories.map(cat => {
+      const t = /hajj/i.test(cat.title) ? 'hajj' : (/kultur/i.test(cat.title) ? 'kultur' : 'umrah');
+      return { title: cat.title, text: cat.text, imgEl: cover(cat.url, cat.title), open: () => openCategory(t) };
+    });
+
+    const faqRows = c.faq.map((f, i) => ({
+      q: f.q, a: f.a, open: this.state.openFaq === i,
+      iconStyle: 'display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#F0E4DC;color:#A8542F;font-size:18px;flex-shrink:0;transition:transform .2s;' + (this.state.openFaq === i ? 'transform:rotate(45deg);' : ''),
+      toggle: () => this.setState(s => ({ openFaq: s.openFaq === i ? -1 : i })),
+    }));
+
+    const view = this.state.view;
+    const tr = c.trips[this.state.tripIdx] || c.trips[0] || {};
+    const dv = this.derive(tr);
+    const bn = this.resolveBanner(tr, this.state.tripIdx);
+    const rooms = this.roomsFor(tr);
+    const bk = this.state.booking;
+
+    const detail = {
+      title: tr.title, typ: tr.typ, date: tr.date, price: tr.price, text: tr.text,
+      heroEl: heroCover(tr.url),
+      status: dv.label, pillBg: dv.bg, pillFg: dv.fg, seats: dv.seats,
+      seatsLine: dv.seats > 18 ? 'Begrenzte Plätze verfügbar' : (dv.seats >= 1 ? 'Nur noch ' + dv.seats + ' Plätze frei' : (dv.waitlist ? 'Warteliste – sichere dir deinen Platz' : 'Diese Reise ist ausgebucht')),
+      duration: this.durationOf(tr.date),
+      bannerOn: bn.on, bannerColor: bn.color, bannerLine1: bn.line1, bannerLine2: bn.line2,
+      program: this.detailProgram(),
+      hotels: ((tr.hotels && tr.hotels.length) ? tr.hotels : this.detailHotels()).map(h => {
+        const dm = (String(h.dist || '').match(/(\d+)/) || [])[1];
+        return {
+        city: h.city, name: h.name, nights: h.nights, dist: h.dist, stars: h.stars, rating: h.rating,
+        isMekka: /mekka|makkah/i.test(h.city), isMedina: /medina|madinah/i.test(h.city),
+        distLabel: dm ? dm + ' m' : h.dist,
+        walk: dm ? '~' + Math.max(1, Math.round(dm / 80)) + ' Min zu Fuß' : 'fußläufig zum Haram',
+        hasPhoto: !!h.photo,
+        photoEl: h.photo ? React.createElement('img', { src: h.photo, alt: (h.name || 'Hotel') + ', ' + (h.city || ''), style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } }) : null,
+        };
+      }),
+      included: this.detailIncluded(),
+      rooms: rooms.map(r => ({ type: r.type, sub: r.sub, adult: this.formatPrice(r.adult), child: this.formatPrice(r.child), baby: this.formatPrice(r.baby) })),
+    };
+
+    const bTotal = bk.travelers.reduce((sum, t) => sum + this.roomPriceFor(rooms[t.roomIdx || 0], this.ageCategoryFor(t.geburtstag, tr.date)), 0);
+    const bCounts = { adult: 0, child: 0, baby: 0 };
+    bk.travelers.forEach(t => { bCounts[this.ageCategoryFor(t.geburtstag, tr.date)]++; });
+    const bParts = [];
+    if (bCounts.adult) bParts.push(bCounts.adult + (bCounts.adult === 1 ? ' Erwachsener' : ' Erwachsene'));
+    if (bCounts.child) bParts.push(bCounts.child + (bCounts.child === 1 ? ' Kind' : ' Kinder'));
+    if (bCounts.baby) bParts.push(bCounts.baby + (bCounts.baby === 1 ? ' Baby' : ' Babys'));
+    const bBreakdown = bParts.join(' · ') || '—';
+
+    const booking = {
+      tripTitle: tr.title, date: tr.date, duration: this.durationOf(tr.date),
+      roomOptions: rooms.map((r, i) => {
+        const sel = bk.roomIdx === i;
+        return {
+          type: r.type, sub: r.sub, price: this.formatPrice(r.adult), selected: sel,
+          onPick: () => this.setRoom(i),
+          rowStyle: 'display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:12px;cursor:pointer;border:1.5px solid ' + (sel ? '#C2724A' : '#E7E0D4') + ';background:' + (sel ? '#FBF3EC' : '#fff') + ';',
+          radioStyle: 'width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid ' + (sel ? '#C2724A' : '#CFC6B6') + ';' + (sel ? 'background:#C2724A;box-shadow:inset 0 0 0 3px #fff;' : ''),
+        };
+      }),
+      travelerRows: bk.travelers.map((t, idx) => {
+        const ri = t.roomIdx || 0;
+        const cat = this.ageCategoryFor(t.geburtstag, tr.date);
+        const price = this.roomPriceFor(rooms[ri], cat);
+        return {
+          idx, num: idx + 1, anrede: t.anrede, vorname: t.vorname, nachname: t.nachname, geburtstag: t.geburtstag,
+          roomIdx: ri, roomName: rooms[ri].type,
+          canRemove: bk.travelers.length > 1,
+          catLabel: this.catLabel(cat), catPrice: this.formatPrice(price), catStyle: this.catBadge(cat),
+          oAnrede: e => this.setTravelerField(idx, 'anrede', e.target.value),
+          oVorname: e => this.setTravelerField(idx, 'vorname', e.target.value),
+          oNachname: e => this.setTravelerField(idx, 'nachname', e.target.value),
+          oGeb: e => this.setTravelerField(idx, 'geburtstag', e.target.value),
+          oRoom: e => this.setTravelerRoom(idx, parseInt(e.target.value, 10) || 0),
+          remove: () => this.removeTraveler(idx),
+        };
+      }),
+      contact: bk.contact,
+      oCVorname: e => this.setContactField('vorname', e.target.value),
+      oCNachname: e => this.setContactField('nachname', e.target.value),
+      oCEmail: e => this.setContactField('email', e.target.value),
+      oCTelefon: e => this.setContactField('telefon', e.target.value),
+      notes: bk.notes, oNotes: e => this.setNotes(e.target.value),
+      agb: bk.agb, toggleAgb: () => this.toggleAgb(),
+      agbBox: 'width:22px;height:22px;border-radius:6px;flex-shrink:0;cursor:pointer;border:1.5px solid ' + (bk.agb ? '#C2724A' : '#CFC6B6') + ';background:' + (bk.agb ? '#C2724A' : '#fff') + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;',
+      agbCheck: bk.agb ? '✓' : '',
+      roomName: rooms[bk.roomIdx].type,
+      roomsSummary: this.roomsSummaryOf(bk.travelers, rooms),
+      travelerCount: bk.travelers.length,
+      breakdown: bBreakdown,
+      estimate: this.formatPrice(bTotal),
+      submit: () => this.submitBooking(),
+    };
+
+    const bank = this.bankInfo();
+    const sub = this.state.submission || {};
+    const confirm = {
+      vg: sub.vg || '', email: sub.email || '', contactName: sub.contactName || '',
+      tripTitle: sub.tripTitle || '', date: sub.date || '', room: sub.room || '', travelers: sub.travelers || 0,
+      total: this.formatPrice(sub.total || 0),
+      bankInhaber: bank.inhaber, bankIban: bank.iban, bankBic: bank.bic, bankName: bank.name,
+    };
+
+    return {
+      isHome: view === 'home', isDetail: view === 'detail', isBooking: view === 'booking', isConfirm: view === 'confirm', isCategory: view === 'category', isAbout: view === 'about',
+      about, openAbout: () => this.go('about'),
+      onDiscover: () => { const el = document.getElementById('kategorien'); if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 70); },
+      home, heroEl, trustRows, catRows, tripRows, faqRows,
+      catTrips, categoryTitle: categoryMap[catType] || 'Reisen', categoryLead: categoryLead[catType] || '', categoryCount: catTrips.length, categoryEmpty: catTrips.length === 0,
+      openCategory,
+      openUmrah: () => openCategory('umrah'), openHajj: () => openCategory('hajj'), openKultur: () => openCategory('kultur'),
+      cta: c.cta, brand: c.brand,
+      detail, booking, confirm,
+      goHome: () => this.go('home'),
+      backToDetail: () => this.go('detail'),
+      openBooking: () => this.go('booking'),
+      addTraveler: () => this.addTraveler(),
+      hasToast: !!this.state.toastMsg, toastMsg: this.state.toastMsg,
+    };
+  }
+}
+</script>
+</body>
+</html>

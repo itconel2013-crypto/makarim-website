@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Sleep -Seconds 3; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/umrah\" -UseBasicParsing -TimeoutSec 15; Write-Output \"Status: $\\($r.StatusCode\\)\"; Write-Output \"Body length: $\\($r.Content.Length\\)\"; $r.Content | Select-String -Pattern \"Alle Termine|Umrah|verfügbar|begrenzte\" | Select-Object -First 10 } catch { Write-Output \"Error: $_\" })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing -TimeoutSec 10; Write-Output \"Status: $\\($r.StatusCode\\)\" } catch { Write-Output \"Error: $_\" })",
+      "PowerShell(Start-Sleep -Seconds 8; try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/umrah\" -UseBasicParsing -TimeoutSec 20; Write-Output \"Status: $\\($r.StatusCode\\)\"; $r.Content | Select-String -Pattern \"Alle Termine|verfügbar|begrenzte|ausgebucht\" | Select-Object -First 5 } catch { Write-Output \"Error: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(netstat -ano)",
+      "PowerShell(Get-Content \"$env:TEMP\\\\makarim-dev.log\" | Select-Object -Last 30)",
+      "PowerShell(Start-Sleep -Seconds 14; Get-Content \"$env:TEMP\\\\makarim-dev2.log\" | Select-Object -Last 10)"
+    ]
+  }
+}
