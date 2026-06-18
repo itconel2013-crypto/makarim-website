@@ -56,7 +56,7 @@ function normalizeContent(content: any): CMSStore {
  * Get or create database connection
  */
 export function getDb(): Database.Database {
-  const dbPath = `${process.cwd()}/makarim.db`;
+  const dbPath = process.env.DATABASE_PATH ?? `${process.cwd()}/makarim.db`;
   const db = new Database(dbPath);
   db.pragma('journal_mode = WAL');
   return db;
@@ -96,13 +96,28 @@ export async function initializeDb(): Promise<void> {
  */
 export async function loadContent(): Promise<CMSStore> {
   const db = getDb();
-  const row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
-  db.close();
-  
+
+  // Auto-initialize table + seed if this is a fresh deployment (no DB file)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS cms_content (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      data TEXT NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  let row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
+
   if (!row) {
+    db.prepare('INSERT INTO cms_content (id, data) VALUES (1, ?)').run(
+      JSON.stringify(defaultContent)
+    );
+    db.close();
     return defaultContent;
   }
-  
+
+  db.close();
+
   try {
     const parsed = JSON.parse(row.data);
     return normalizeContent(parsed);
