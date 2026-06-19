@@ -37,7 +37,7 @@ export default function ReisenManager() {
       <PublishBar title="Reisen" subtitle={`${store.c.trips.length} Reisen gesamt`} showCRMSync />
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 flex flex-col overflow-auto" style={{ maxWidth: '640px' }}>
+        <div className="flex-1 flex flex-col overflow-auto">
           {/* Filter tabs */}
           <div className="px-7 pt-5 flex items-center gap-1 flex-wrap">
             {FILTER_TABS.map(({ key, label }) => {
@@ -84,7 +84,7 @@ export default function ReisenManager() {
           </main>
         </div>
 
-        <LivePreviewPane url="makarim-reisen.de/umrah" outerWidth={500}>
+        <LivePreviewPane url="makarim-reisen.de/umrah" outerWidth={500} fill>
           <ReisenPreview />
         </LivePreviewPane>
       </div>

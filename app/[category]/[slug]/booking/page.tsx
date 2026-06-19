@@ -42,6 +42,7 @@ export default async function BookingPage({
         </Link>
 
         {/* Heading */}
+        <p style={{ fontFamily: 'monospace', fontSize: '12px', letterSpacing: '0.18em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>Buchungsanfrage</p>
         <h1
           className="font-serif font-normal text-ink mb-2"
           style={{ fontSize: '38px', lineHeight: '1.2' }}
@@ -49,7 +50,7 @@ export default async function BookingPage({
           {trip.title}
         </h1>
         <p className="font-mono font-semibold text-body-dark mb-10 tabular-nums" style={{ fontSize: '13.5px' }}>
-          {trip.date} · {trip.nights} Nächte
+          {trip.date} · {trip.nights + 1} Tage · {trip.nights} Nächte
         </p>
 
         <BookingForm trip={trip} brand={content.c.brand} />
