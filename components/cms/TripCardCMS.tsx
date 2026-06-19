@@ -9,8 +9,8 @@ interface Props { trip: Trip; }
 type TabKey = 'inhalt' | 'hotels' | 'seo';
 
 const BANNER_COLORS = [
-  '#C2724A', '#16242B', '#C06B3E', '#4A7C59', '#6B4E3D',
-  '#3A5A8A', '#E07B39', '#A83232', '#4A7585', '#2D5A42', '#8A7A3D',
+  '#C2724A', '#16242B', '#3E6B7A', '#A8542F', '#5A6B52',
+  '#8A513A', '#3D88C9', '#FF751F', '#A8BB4A', '#B23232', '#6EA3AB', '#1B86A2', '#DDC385',
 ];
 
 function Toggle({ checked, onChange, colorOn = '#3E6B52' }: { checked: boolean; onChange: () => void; colorOn?: string }) {
