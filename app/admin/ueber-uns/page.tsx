@@ -18,7 +18,8 @@ export default function UeberUnsEditor() {
     <>
       <PublishBar title="Über uns" subtitle="Intro, Warum Makarim, Kacheln" />
       <div className="flex flex-1 overflow-hidden">
-      <main className="flex-1 p-8 overflow-auto" style={{ maxWidth: '640px' }}>
+      <main className="flex-1 overflow-auto p-8">
+        <div style={{ maxWidth: '560px' }}>
 
         <FormSection title="Einleitung">
           <Field label="Hauptüberschrift">
@@ -66,8 +67,9 @@ export default function UeberUnsEditor() {
           ))}
         </FormSection>
 
+        </div>
       </main>
-      <LivePreviewPane url="makarim-reisen.de/ueber-uns">
+      <LivePreviewPane url="makarim-reisen.de/ueber-uns" fill noScale>
         <UeberUnsPreview />
       </LivePreviewPane>
       </div>

@@ -9,44 +9,48 @@ export function UeberUnsPreview() {
   const { about } = store.c;
 
   return (
-    <div style={{ fontFamily: "'Schibsted Grotesk', sans-serif", backgroundColor: '#F4F1EA' }}>
-      {/* Intro */}
-      <section style={{ padding: '96px 64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
-        <div>
-          <p style={{ fontFamily: 'monospace', fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F', marginBottom: '20px', textTransform: 'uppercase' }}>
-            Über uns
-          </p>
-          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '40px', lineHeight: '1.15', fontWeight: 400, color: '#16242B', marginBottom: '24px' }}>
-            {about.title}
-          </h1>
-          <p style={{ fontSize: '17px', color: '#5A5448', lineHeight: '1.7' }}>
-            {about.body}
-          </p>
-        </div>
-        <div style={{ backgroundColor: '#D5CEBC', borderRadius: '16px', aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '48px' }}>🕌</span>
-        </div>
-      </section>
+    <div style={{ fontFamily: "'Schibsted Grotesk', sans-serif", backgroundColor: '#F4F1EA', padding: '22px 20px' }}>
+
+      {/* Image placeholder */}
+      <div style={{ height: '160px', borderRadius: '12px', overflow: 'hidden', background: '#D5CEBC', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {about.url ? (
+          <img src={about.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <span style={{ fontSize: '40px', opacity: 0.3 }}>🕌</span>
+        )}
+      </div>
+
+      {/* Title */}
+      <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.2, marginBottom: '12px' }}>
+        {about.title}
+      </div>
+
+      {/* Body */}
+      <p style={{ fontSize: '13px', lineHeight: 1.65, color: '#5A5448', margin: '0 0 22px', whiteSpace: 'pre-wrap' }}>
+        {about.body}
+      </p>
 
       {/* Why Makarim */}
-      <section style={{ padding: '80px 64px', backgroundColor: 'white' }}>
-        <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '30px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>
-          {about.whyTitle}
-        </h2>
-        <p style={{ fontSize: '17px', color: '#5A5448', lineHeight: '1.7', maxWidth: '700px', marginBottom: '48px' }}>
-          {about.whyBody}
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-          {about.tiles.map((tile, i) => (
-            <div key={i} style={{ backgroundColor: '#F7ECE4', borderRadius: '12px', padding: '28px' }}>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '10px' }}>
-                {tile.t}
-              </h3>
-              <p style={{ fontSize: '15px', color: '#5A5448', lineHeight: '1.6' }}>{tile.b}</p>
+      <div style={{ fontFamily: "'Newsreader', serif", fontSize: '18px', color: '#16242B', lineHeight: 1.2, marginBottom: '9px' }}>
+        {about.whyTitle}
+      </div>
+      <p style={{ fontSize: '12.5px', lineHeight: 1.6, color: '#5A5448', margin: '0 0 16px' }}>
+        {about.whyBody}
+      </p>
+
+      {/* Tiles 2-col */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        {about.tiles.map((tile, i) => (
+          <div key={i} style={{ background: '#F7ECE4', borderRadius: '12px', padding: '13px 14px' }}>
+            <div style={{ fontFamily: "'Newsreader', serif", fontSize: '14px', color: '#16242B', marginBottom: '6px', lineHeight: 1.25 }}>
+              {tile.t}
             </div>
-          ))}
-        </div>
-      </section>
+            <p style={{ fontSize: '11px', lineHeight: 1.55, color: '#6B6457', margin: 0 }}>
+              {tile.b}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
