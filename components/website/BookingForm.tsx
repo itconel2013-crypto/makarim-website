@@ -31,8 +31,8 @@ function personPrice(geburtstag: string, zimmer: string, basePrice: number): num
   return cat === 'Kind' ? Math.round(rp * 0.82) : rp;
 }
 
-interface Traveler { anrede: string; vorname: string; nachname: string; geburtstag: string; zimmer: string; }
-const defaultTraveler = (): Traveler => ({ anrede: 'Bruder', vorname: '', nachname: '', geburtstag: '', zimmer: 'VZ' });
+interface Traveler { anrede: string; vorname: string; nachname: string; geburtstag: string; zimmer: string; nationalitaet: string; }
+const defaultTraveler = (): Traveler => ({ anrede: 'Herr', vorname: '', nachname: '', geburtstag: '', zimmer: 'VZ', nationalitaet: '' });
 
 interface BookingFormProps { trip: Trip; brand: Brand; }
 
@@ -165,11 +165,9 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                       )}
                     </div>
 
-                    {/* Row 1 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                    {/* Row 1: Anrede + Vorname + Nachname */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
                       <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
-                        <option>Bruder</option>
-                        <option>Schwester</option>
                         <option>Herr</option>
                         <option>Frau</option>
                       </select>
@@ -177,9 +175,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                       <input type="text" value={t.nachname} onChange={(e) => updTraveler(idx, 'nachname', e.target.value)} placeholder="Nachname" style={inputStyle} required />
                     </div>
 
-                    {/* Row 2 */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-                      <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} placeholder="Geburtsdatum (TT.MM.JJJJ)" style={inputStyle} required />
+                    {/* Row 2: Geburtsdatum + Nationalität + Zimmer */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                      <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
+                      <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="Nationalität" style={inputStyle} />
                       <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
                         {ROOM_TYPES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                       </select>
