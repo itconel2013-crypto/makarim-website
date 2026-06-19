@@ -52,11 +52,11 @@ export function TripCard({ trip }: TripCardProps) {
         {/* Banner overlay bottom-left */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
           <div
-            className="absolute bottom-3 left-3 px-3 py-2 rounded-button font-bold text-white leading-tight"
-            style={{ backgroundColor: trip.banner.color, fontSize: '13px' }}
+            className="absolute bottom-3 left-3 px-3 py-2 rounded-button text-white leading-tight"
+            style={{ backgroundColor: trip.banner.color }}
           >
-            {trip.banner.line1 && <div className="uppercase tracking-wide">{trip.banner.line1}</div>}
-            {trip.banner.line2 && <div className="font-normal opacity-90 text-xs">{trip.banner.line2}</div>}
+            {trip.banner.line1 && <div className="font-bold uppercase tracking-widest" style={{ fontSize: '14px' }}>{trip.banner.line1}</div>}
+            {trip.banner.line2 && <div className="font-normal uppercase tracking-wider opacity-90" style={{ fontSize: '11px' }}>{trip.banner.line2}</div>}
           </div>
         )}
 
@@ -77,18 +77,18 @@ export function TripCard({ trip }: TripCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="font-serif font-normal text-ink mb-2 group-hover:text-primary transition-colors leading-snug" style={{ fontSize: '20px' }}>
+        <h3 className="font-serif font-normal mb-2 leading-snug transition-colors group-hover:opacity-80" style={{ fontSize: '20px', color: '#16242B' }}>
           {trip.title}
         </h3>
 
         {/* Date */}
-        <p className="font-mono text-body-dark mb-3" style={{ fontSize: '13px', fontWeight: 600 }}>
+        <p className="font-mono mb-3" style={{ fontSize: '13px', fontWeight: 600, color: '#5A5448' }}>
           {trip.date}
-          {trip.nights > 0 && <span className="text-body-light font-normal ml-2">· {trip.nights} Nächte</span>}
+          {trip.nights > 0 && <span className="font-normal ml-2" style={{ color: '#9A9082' }}>· {trip.nights} Nächte</span>}
         </p>
 
         {/* Description */}
-        <p className="text-sm text-body line-clamp-2 flex-1 mb-5" style={{ lineHeight: '1.6' }}>
+        <p className="text-sm line-clamp-2 flex-1 mb-5" style={{ lineHeight: '1.6', color: '#6B6457' }}>
           {trip.description || trip.text}
         </p>
 
