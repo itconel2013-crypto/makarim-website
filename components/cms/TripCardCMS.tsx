@@ -273,14 +273,44 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
   return (
     <div className="space-y-5">
       {trip.hotels.map((hotel, i) => (
-        <div key={i} className="p-4 rounded-button" style={{ backgroundColor: '#F8F5F0', border: '1px solid #EAE3D8' }}>
-          <p className="font-medium text-sm text-ink mb-3">Hotel {i + 1} – {hotel.city}</p>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Stadt"><TextInput value={hotel.city} onChange={(v) => updHotel(i, { city: v })} /></Field>
-            <Field label="Hotelname"><TextInput value={hotel.name} onChange={(v) => updHotel(i, { name: v })} /></Field>
-            <Field label="Nächte"><TextInput value={hotel.nights} onChange={(v) => updHotel(i, { nights: v })} placeholder="5 Nächte" /></Field>
-            <Field label="Bewertung"><TextInput value={hotel.rating} onChange={(v) => updHotel(i, { rating: v })} placeholder="9,3" /></Field>
-            <Field label="Distanz"><TextInput value={hotel.dist} onChange={(v) => updHotel(i, { dist: v })} placeholder="ca. 150 m zum Haram" /></Field>
+        <div key={i} className="rounded-button overflow-hidden" style={{ border: '1px solid #EAE3D8' }}>
+          {/* Hotel photo */}
+          <div className="relative" style={{ height: '120px', backgroundColor: '#F4F1EA' }}>
+            {hotel.photo ? (
+              <img src={hotel.photo} alt={hotel.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span style={{ fontSize: '32px', opacity: 0.3 }}>🏨</span>
+              </div>
+            )}
+            <label className="absolute bottom-2 right-2 cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => updHotel(i, { photo: ev.target?.result as string });
+                  reader.readAsDataURL(file);
+                }}
+              />
+              <span className="px-2 py-1 text-xs font-medium text-white rounded" style={{ backgroundColor: '#16242B' }}>
+                Bild wählen
+              </span>
+            </label>
+          </div>
+          {/* Fields */}
+          <div className="p-4" style={{ backgroundColor: '#F8F5F0' }}>
+            <p className="font-medium text-sm text-ink mb-3">Hotel {i + 1} – {hotel.city}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Stadt"><TextInput value={hotel.city} onChange={(v) => updHotel(i, { city: v })} /></Field>
+              <Field label="Hotelname"><TextInput value={hotel.name} onChange={(v) => updHotel(i, { name: v })} /></Field>
+              <Field label="Nächte"><TextInput value={hotel.nights} onChange={(v) => updHotel(i, { nights: v })} placeholder="5 Nächte" /></Field>
+              <Field label="Bewertung"><TextInput value={hotel.rating} onChange={(v) => updHotel(i, { rating: v })} placeholder="9,3" /></Field>
+              <Field label="Distanz"><TextInput value={hotel.dist} onChange={(v) => updHotel(i, { dist: v })} placeholder="ca. 150 m zum Haram" /></Field>
+            </div>
           </div>
         </div>
       ))}

@@ -261,13 +261,12 @@ export default async function TripDetailPage({
                             {hotel.city}
                           </span>
 
-                          {/* Rating badge — terracotta pill, ★ score / 10 */}
-                          <span
-                            className="inline-flex items-center gap-1 text-white font-medium"
-                            style={{ fontSize: '12px', backgroundColor: '#C2724A', borderRadius: '20px', padding: '2px 10px' }}
-                          >
-                            ★ {hotel.rating}
-                            <span style={{ color: 'rgba(255,255,255,0.65)', marginLeft: '2px' }}>/ 10</span>
+                          {/* Rating badge — only score highlighted, /10 outside */}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#C2724A', color: '#fff', borderRadius: '7px', padding: '3px 8px', fontSize: '12.5px', fontWeight: 700, lineHeight: 1 }}>
+                              <span style={{ fontSize: '10px' }}>★</span>{hotel.rating}
+                            </span>
+                            <span style={{ fontSize: '11.5px', color: '#9A9082' }}>/ 10</span>
                           </span>
                         </div>
 
@@ -301,39 +300,28 @@ export default async function TripDetailPage({
                   Dein Programm
                 </h2>
 
-                {/* Vertical timeline */}
-                <div className="relative">
-                  {/* Vertical line */}
-                  <div
-                    className="absolute top-0 bottom-0"
-                    style={{ left: '19px', width: '2px', backgroundColor: '#EAE3D8' }}
-                  />
+                <div>
 
-                  <div className="space-y-0">
+                  <div>
                     {trip.program.map((day, i) => (
-                      <div key={i} className="relative flex gap-6 pb-8">
-                        {/* Day circle */}
-                        <div
-                          className="relative z-10 flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white"
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            backgroundColor: '#C2724A',
-                            fontSize: '12px',
-                          }}
-                        >
-                          {day.day}
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '18px 1fr', gap: '18px' }}>
+                        {/* Dot + vertical line */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{ width: '13px', height: '13px', borderRadius: '50%', backgroundColor: '#C2724A', marginTop: '4px', flexShrink: 0 }} />
+                          {i < trip.program!.length - 1 && (
+                            <div style={{ width: '2px', flex: 1, backgroundColor: '#E4DBCD', margin: '4px 0' }} />
+                          )}
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 pt-2">
-                          <h4
-                            className="font-serif font-normal text-ink mb-1"
-                            style={{ fontSize: '17px' }}
-                          >
+                        <div style={{ paddingBottom: '26px' }}>
+                          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', letterSpacing: '0.12em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '5px' }}>
+                            {typeof day.day === 'number' ? `Tag ${day.day}` : day.day}
+                          </div>
+                          <div style={{ fontFamily: "'Newsreader', serif", fontSize: '20px', color: '#16242B', marginBottom: '6px' }}>
                             {day.title}
-                          </h4>
-                          <p className="text-body-sm text-body leading-relaxed">
+                          </div>
+                          <p style={{ fontSize: '14.5px', lineHeight: '1.6', color: '#6B6457', margin: 0 }}>
                             {day.description}
                           </p>
                         </div>
@@ -348,86 +336,66 @@ export default async function TripDetailPage({
           {/* ── Sticky Sidebar — 372px ────────────────────────────────── */}
           <aside
             className="hidden lg:block flex-shrink-0"
-            style={{ width: '372px', position: 'sticky', top: '88px' }}
+            style={{ width: '372px', position: 'sticky', top: '96px' }}
           >
-            <div
-              className="overflow-hidden rounded-card bg-white"
-              style={{ border: '1px solid #EAE3D8', boxShadow: '0 14px 34px rgba(40,30,20,0.10)' }}
-            >
-              {/* Price block */}
-              <div className="p-7 border-b border-border-light">
-                <p className="font-mono uppercase text-body-light mb-1" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>
-                  Preis pro Person
-                </p>
-                <p className="font-serif text-ink mb-1" style={{ fontSize: '38px', lineHeight: '1.1' }}>
-                  €{trip.price?.toLocaleString('de-DE')}
-                </p>
-                <p className="text-body-sm text-body">inkl. Hotel & Führung, zzgl. Flug</p>
+            <div style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '20px', padding: '26px', boxShadow: '0 10px 30px rgba(40,30,20,0.08)' }}>
+              {/* Price */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
+                <span style={{ fontFamily: "'Newsreader', serif", fontSize: '40px', color: '#16242B', lineHeight: 1 }}>
+                  {trip.price?.toLocaleString('de-DE')} €
+                </span>
+              </div>
+              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im Doppelzimmer</div>
+
+              {/* Status badge */}
+              <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '20px' }}>
+                {status === 'begrenzte Plätze' ? `Nur noch ${trip.seats} Plätze frei` : status === 'verfügbar' ? `${trip.seats} Plätze verfügbar` : status}
               </div>
 
-              {/* Date + duration */}
-              <div className="px-7 py-5 border-b border-border-light">
-                <div className="flex items-center justify-between text-body-sm">
-                  <span className="text-body">Reisedaten</span>
-                  <span className="font-semibold text-ink tabular-nums">{trip.date}</span>
+              {/* Termin + Dauer */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', padding: '16px 0', borderTop: '1px solid #F0EADF', borderBottom: '1px solid #F0EADF', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                  <span style={{ color: '#9A9082' }}>Termin</span>
+                  <span style={{ color: '#16242B', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{trip.date}</span>
                 </div>
-                <div className="flex items-center justify-between text-body-sm mt-2">
-                  <span className="text-body">Dauer</span>
-                  <span className="font-semibold text-ink">{trip.nights} Nächte</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                  <span style={{ color: '#9A9082' }}>Dauer</span>
+                  <span style={{ color: '#16242B', fontWeight: 600 }}>{trip.nights + 1} Tage · {trip.nights} Nächte</span>
                 </div>
               </div>
 
-              {/* Availability */}
-              <div className="px-7 py-5 border-b border-border-light">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: pill.dot }}
-                  />
-                  <span className="text-body-sm font-medium" style={{ color: pill.color }}>
-                    {status}
-                  </span>
-                </div>
-                {trip.seats > 0 && (
-                  <p className="text-body-sm text-body-light mt-1">
-                    Noch {trip.seats} Plätze verfügbar
-                  </p>
-                )}
+              {/* Zimmerkategorien */}
+              <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: '#9A9082', textTransform: 'uppercase', marginBottom: '12px' }}>Zimmerkategorien</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '22px' }}>
+                {[
+                  { type: 'Doppelzimmer', sub: '2 Personen pro Zimmer', price: trip.price },
+                  { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
+                  { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', price: Math.round(trip.price * 0.85) },
+                ].map((r) => (
+                  <div key={r.type} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: '1px solid #EFE8DC', borderRadius: '11px' }}>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>{r.type}</div>
+                      <div style={{ fontSize: '11.5px', color: '#9A9082', marginTop: '2px' }}>{r.sub}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '11px', color: '#9A9082' }}>ab </span>
+                      <span style={{ fontSize: '15px', fontWeight: 700, color: '#16242B' }}>{r.price?.toLocaleString('de-DE')} €</span>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* CTA */}
-              <div className="p-7">
-                <Link
-                  href={`/${category}/${slug}/booking`}
-                  className="block w-full text-center text-white font-medium transition-colors mb-3"
-                  style={{
-                    backgroundColor: '#C2724A',
-                    height: '54px',
-                    lineHeight: '54px',
-                    borderRadius: '13px',
-                    fontSize: '16px',
-                  }}
-                >
-                  Jetzt anfragen
-                </Link>
-                <p className="text-xs text-center text-body-light">
-                  Unverbindliche Buchungsanfrage · Kostenlos
-                </p>
-              </div>
-            </div>
-
-            {/* Contact block */}
-            <div
-              className="mt-4 p-5 rounded-card text-center"
-              style={{ backgroundColor: '#F4F1EA', border: '1px solid #EAE3D8' }}
-            >
-              <p className="text-body-sm text-body mb-2">Fragen? Wir beraten gerne persönlich.</p>
-              <a
-                href={`tel:${content.c.brand.phone}`}
-                className="text-primary font-medium text-sm hover:text-primary-dark transition-colors"
+              <Link
+                href={`/${category}/${slug}/booking`}
+                className="block w-full text-center text-white transition-colors"
+                style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A8542F')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#C2724A')}
               >
-                {content.c.brand.phone}
-              </a>
+                Jetzt anfragen
+              </Link>
             </div>
           </aside>
         </div>
