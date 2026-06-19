@@ -1,15 +1,17 @@
 'use client';
 
+import React from 'react';
 import { useCMS } from '@/components/cms/CMSProvider';
 import { PublishBar } from '@/components/cms/PublishBar';
 import { Field, TextInput } from '@/components/cms/FormEditor';
 import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { KategorienPreview } from '@/components/cms/previews/KategorienPreview';
-import { ImageUpload } from '@/components/cms/ImageUpload';
+import { MediaPickerModal } from '@/components/cms/MediaPickerModal';
 import { Category } from '@/lib/content-schema';
 
 export default function KategorienEditor() {
   const { store, updateSection } = useCMS();
+  const [pickerFor, setPickerFor] = React.useState<number | null>(null);
   if (!store) return null;
 
   const categories = store.c.categories;
@@ -50,26 +52,14 @@ export default function KategorienEditor() {
                       <p className="font-serif text-ink" style={{ fontSize: '18px' }}>{cat.title || cat.key}</p>
                       <p className="text-xs text-body-light mt-0.5">{cat.description?.slice(0, 60)}{cat.description?.length > 60 ? '…' : ''}</p>
                     </div>
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onload = (ev) => updCat(i, { imageUrl: ev.target?.result as string });
-                          reader.readAsDataURL(file);
-                        }}
-                      />
-                      <span
-                        className="px-3 py-1.5 rounded-button text-xs font-medium text-white"
-                        style={{ backgroundColor: '#16242B' }}
-                      >
-                        Bild ändern
-                      </span>
-                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setPickerFor(i)}
+                      className="px-3 py-1.5 rounded-button text-xs font-medium text-white"
+                      style={{ backgroundColor: '#16242B', border: 'none', cursor: 'pointer' }}
+                    >
+                      Bild wählen
+                    </button>
                   </div>
                 </div>
 
@@ -95,6 +85,13 @@ export default function KategorienEditor() {
           <KategorienPreview />
         </LivePreviewPane>
       </div>
+
+      {pickerFor !== null && (
+        <MediaPickerModal
+          onSelect={(url) => { updCat(pickerFor, { imageUrl: url }); setPickerFor(null); }}
+          onClose={() => setPickerFor(null)}
+        />
+      )}
     </>
   );
 }
