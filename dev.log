@@ -13,3 +13,83 @@
  ✓ Ready in 2.5s
  ○ Compiling / ...
  ✓ Compiled / in 4.8s (676 modules)
+ GET / 200 in 5314ms
+ GET / 200 in 251ms
+ ○ Compiling /[category] ...
+ ✓ Compiled /[category] in 1049ms (691 modules)
+ GET / 200 in 285ms
+ GET /favicon.ico 404 in 2232ms
+ ✓ Compiled /[category]/[slug] in 376ms (683 modules)
+ GET /umrah/umrah-luxus-fruehjahr 200 in 1170ms
+ GET /umrah-fruehjahr-luxus 404 in 292ms
+ GET /umrah/umrah-fruehjahr-luxus 404 in 189ms
+ ○ Compiling /[category]/[slug]/booking ...
+ ✓ Compiled /[category]/[slug]/booking in 530ms (691 modules)
+ GET /umrah/umrah-luxus-fruehjahr/booking 200 in 1341ms
+ GET / 200 in 50ms
+ ○ Compiling /api/content ...
+ ✓ Compiled /api/content in 582ms (706 modules)
+ GET /api/content 200 in 764ms
+ ✓ Compiled in 837ms (701 modules)
+ ✓ Compiled in 505ms (701 modules)
+ ✓ Compiled in 869ms (701 modules)
+ ✓ Compiled /api/content in 156ms (455 modules)
+ PATCH /api/content 200 in 330ms
+ ✓ Compiled in 343ms (265 modules)
+ ✓ Compiled in 216ms (265 modules)
+ ✓ Compiled in 420ms (713 modules)
+ ✓ Compiled in 184ms (265 modules)
+ ✓ Compiled in 410ms (699 modules)
+ GET / 200 in 368ms
+ ○ Compiling /faq ...
+ ✓ Compiled /faq in 605ms (691 modules)
+ GET /faq 200 in 860ms
+ ✓ Compiled /kontakt in 301ms (693 modules)
+ GET /kontakt 200 in 444ms
+ GET / 200 in 245ms
+ ○ Compiling /[category] ...
+ ✓ Compiled /[category] in 553ms (441 modules)
+ GET /umrah 200 in 751ms
+ GET /umrah-budget-authentisch 404 in 434ms
+ GET /umrah-fruehjahr-luxus 404 in 438ms
+ ○ Compiling /ueber-uns ...
+ ✓ Compiled /ueber-uns in 595ms (708 modules)
+ GET /ueber-uns 200 in 945ms
+ ✓ Compiled in 353ms (265 modules)
+ GET /ueber-uns 200 in 114ms
+ GET /ueber-uns 200 in 53ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 673ms (699 modules)
+ GET /assets/examples/about-1.jpg 404 in 980ms
+ GET /assets/examples/about-2.jpg 404 in 977ms
+ GET / 200 in 51ms
+ ✓ Compiled in 374ms (443 modules)
+ ✓ Compiled in 343ms (265 modules)
+ ✓ Compiled in 765ms (708 modules)
+ ✓ Compiled in 605ms (709 modules)
+ ✓ Compiled /api/content in 292ms (463 modules)
+ PATCH /api/content 200 in 454ms
+ GET / 200 in 277ms
+ GET / 200 in 138ms
+ ✓ Compiled in 263ms (251 modules)
+   Reload env: .env.local
+ ✓ Compiled in 390ms (707 modules)
+ GET / 200 in 194ms
+ ✓ Compiled in 363ms (265 modules)
+ GET / 200 in 61ms
+ ✓ Compiled in 715ms (707 modules)
+ GET / 200 in 625ms
+ GET / 200 in 47ms
+ ✓ Compiled in 927ms (709 modules)
+ GET / 200 in 153ms
+ GET /ueber-uns 200 in 466ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1439ms (714 modules)
+ GET /assets/examples/about-2.jpg 404 in 2119ms
+ GET /assets/examples/about-1.jpg 404 in 2116ms
+ GET /umrah 200 in 182ms
+ GET /umrah-fruehjahr-luxus 404 in 382ms
+ GET /umrah-budget-authentisch 404 in 383ms
+ GET / 200 in 133ms
+ GET / 200 in 844ms
+ GET /favicon.ico 404 in 517ms

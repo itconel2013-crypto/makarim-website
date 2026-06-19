@@ -2,32 +2,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Trip, deriveStatus } from '@/lib/content-schema';
 
-function StatusPill({ status }: { status: string }) {
-  let dotColor = '';
-  let pillClass = '';
-
-  if (status === 'verfügbar') {
-    dotColor = 'bg-success';
-    pillClass = 'bg-success-bg text-success';
-  } else if (status === 'begrenzte Plätze') {
-    dotColor = 'bg-status-dot';
-    pillClass = 'bg-status-bg text-status';
-  } else if (status === 'ausgebucht (Warteliste)') {
-    dotColor = 'bg-status-dot';
-    pillClass = 'bg-status-bg text-status';
-  } else {
-    dotColor = 'bg-body';
-    pillClass = 'bg-border-light text-body-dark';
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-pill ${pillClass}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`} />
-      {status}
+function StatusPill({ trip }: { trip: Trip }) {
+  const status = deriveStatus(trip);
+  if (status === 'ausgebucht') return (
+    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEE2E2', color: '#991B1B' }}>
+      ausgebucht
     </span>
   );
+  if (status === 'ausgebucht (Warteliste)') return (
+    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+      Warteliste
+    </span>
+  );
+  if (status === 'begrenzte Plätze') return (
+    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+      noch {trip.seats} Plätze
+    </span>
+  );
+  return null;
 }
 
 interface TripCardProps {
@@ -35,16 +27,12 @@ interface TripCardProps {
 }
 
 export function TripCard({ trip }: TripCardProps) {
-  const status = deriveStatus(trip);
   const href = `/${trip.category}/${trip.slug}`;
 
   return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-card bg-white shadow-card hover:shadow-card-lg transition-shadow duration-300"
-    >
-      {/* Image — fixed 188px height */}
-      <div className="relative flex-shrink-0 overflow-hidden" style={{ height: '188px' }}>
+    <Link href={href} className="group flex flex-col overflow-hidden rounded-card bg-white shadow-card hover:shadow-card-lg transition-shadow duration-300">
+      {/* Image */}
+      <div className="relative flex-shrink-0 overflow-hidden" style={{ height: '200px' }}>
         {trip.url ? (
           <Image
             src={trip.url}
@@ -53,71 +41,64 @@ export function TripCard({ trip }: TripCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/25 to-ink/35 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-            <span className="text-6xl opacity-50">{trip.heroIcon ?? '🕋'}</span>
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2D4A3E 0%, #16242B 100%)' }}>
+            <span className="text-6xl opacity-30">{trip.heroIcon ?? '🕋'}</span>
           </div>
         )}
 
-        {/* Subtle dark gradient over image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/25 to-transparent pointer-events-none" />
+        {/* Dark gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent pointer-events-none" />
 
-        {/* Banner overlay — bottom-left, shown only when enabled */}
+        {/* Banner overlay bottom-left */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
           <div
-            className="absolute bottom-3 left-3 px-3 py-2 rounded-button font-display font-bold text-white text-sm leading-tight"
-            style={{ backgroundColor: trip.banner.color }}
+            className="absolute bottom-3 left-3 px-3 py-2 rounded-button font-bold text-white leading-tight"
+            style={{ backgroundColor: trip.banner.color, fontSize: '13px' }}
           >
-            {trip.banner.line1 && <div>{trip.banner.line1}</div>}
-            {trip.banner.line2 && <div className="text-xs opacity-90">{trip.banner.line2}</div>}
+            {trip.banner.line1 && <div className="uppercase tracking-wide">{trip.banner.line1}</div>}
+            {trip.banner.line2 && <div className="font-normal opacity-90 text-xs">{trip.banner.line2}</div>}
           </div>
         )}
+
+        {/* Price badge top-right */}
+        <div
+          className="absolute top-3 right-3 px-3 py-1 rounded-pill text-xs font-semibold text-ink bg-white"
+          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+        >
+          ab {trip.price?.toLocaleString('de-DE')} €
+        </div>
       </div>
 
       {/* Card body */}
-      <div className="flex flex-col flex-1 p-6">
-        {/* Status pill */}
+      <div className="flex flex-col flex-1 p-5">
+        {/* Status */}
         <div className="mb-3">
-          <StatusPill status={status} />
+          <StatusPill trip={trip} />
         </div>
 
-        {/* Title — Newsreader 21px */}
-        <h3
-          className="font-serif font-normal text-ink mb-2 group-hover:text-primary transition-colors leading-snug"
-          style={{ fontSize: '21px' }}
-        >
+        {/* Title */}
+        <h3 className="font-serif font-normal text-ink mb-2 group-hover:text-primary transition-colors leading-snug" style={{ fontSize: '20px' }}>
           {trip.title}
         </h3>
 
-        {/* Date row — tabular-nums, 13.5px, weight 600 */}
-        <p
-          className="font-mono font-semibold text-body-dark mb-3 tabular-nums"
-          style={{ fontSize: '13.5px' }}
-        >
+        {/* Date */}
+        <p className="font-mono text-body-dark mb-3" style={{ fontSize: '13px', fontWeight: 600 }}>
           {trip.date}
-          {trip.nights > 0 && (
-            <span className="text-body-light font-normal ml-2">· {trip.nights} Nächte</span>
-          )}
+          {trip.nights > 0 && <span className="text-body-light font-normal ml-2">· {trip.nights} Nächte</span>}
         </p>
 
-        {/* Marketing text — 14px, 2 lines */}
-        <p className="text-body-sm text-body line-clamp-2 flex-1 mb-4">
-          {trip.text}
+        {/* Description */}
+        <p className="text-sm text-body line-clamp-2 flex-1 mb-5" style={{ lineHeight: '1.6' }}>
+          {trip.description || trip.text}
         </p>
 
-        {/* Price row */}
-        <div className="pt-4 border-t border-border-light flex items-end justify-between">
-          <div>
-            <p className="text-kicker-sm font-mono text-body-light uppercase mb-0.5 tracking-widest">
-              ab
-            </p>
-            <p className="font-serif text-primary" style={{ fontSize: '22px' }}>
-              €{trip.price?.toLocaleString('de-DE')}
-            </p>
-          </div>
-          <span className="text-sm text-primary font-medium group-hover:translate-x-1 transition-transform inline-block">
-            Mehr →
-          </span>
-        </div>
+        {/* CTA Button */}
+        <button
+          className="w-full py-3 rounded-button text-white text-sm font-medium transition-opacity group-hover:opacity-90"
+          style={{ backgroundColor: '#C2724A' }}
+        >
+          Jetzt entdecken
+        </button>
       </div>
     </Link>
   );

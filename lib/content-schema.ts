@@ -74,6 +74,7 @@ export interface Category {
   text: string;               // Longer text
   icon?: string;              // Optional emoji/icon
   url: string;
+  imageUrl?: string;          // base64 or URL for category card image
 }
 
 export interface FAQ {

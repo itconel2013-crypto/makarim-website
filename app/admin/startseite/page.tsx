@@ -5,6 +5,7 @@ import { PublishBar } from '@/components/cms/PublishBar';
 import { Field, TextInput, FormSection } from '@/components/cms/FormEditor';
 import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { StartseitePreview } from '@/components/cms/previews/StartseitePreview';
+import { ImageUpload } from '@/components/cms/ImageUpload';
 import { HomeContent } from '@/lib/content-schema';
 
 export default function StartseiteEditor() {
@@ -35,6 +36,12 @@ export default function StartseiteEditor() {
           </Field>
           <Field label="Sekundär-Button">
             <TextInput value={home.btnS} onChange={(v) => upd({ btnS: v })} placeholder="Mehr erfahren" />
+          </Field>
+          <Field label="Hero-Bild">
+            <ImageUpload
+              value={home.heroUrl}
+              onChange={(v) => upd({ heroUrl: v })}
+            />
           </Field>
         </FormSection>
 
