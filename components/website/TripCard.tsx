@@ -52,11 +52,11 @@ export function TripCard({ trip }: TripCardProps) {
         {/* Banner overlay bottom-left */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
           <div
-            className="absolute bottom-3 left-3 px-3 py-2 rounded-button text-white leading-tight"
-            style={{ backgroundColor: trip.banner.color }}
+            className="absolute bottom-3 left-3 text-white leading-tight"
+            style={{ backgroundColor: trip.banner.color, borderRadius: '8px', padding: '10px 14px' }}
           >
-            {trip.banner.line1 && <div className="font-bold uppercase tracking-widest" style={{ fontSize: '14px' }}>{trip.banner.line1}</div>}
-            {trip.banner.line2 && <div className="font-normal uppercase tracking-wider opacity-90" style={{ fontSize: '11px' }}>{trip.banner.line2}</div>}
+            {trip.banner.line1 && <div className="font-bold uppercase" style={{ fontSize: '16px', letterSpacing: '0.08em' }}>{trip.banner.line1}</div>}
+            {trip.banner.line2 && <div className="font-semibold uppercase" style={{ fontSize: '11px', letterSpacing: '0.1em', opacity: 0.92, marginTop: '2px' }}>{trip.banner.line2}</div>}
           </div>
         )}
 
