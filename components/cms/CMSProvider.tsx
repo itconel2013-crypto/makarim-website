@@ -44,7 +44,7 @@ export function CMSProvider({ initialStore, children }: { initialStore: CMSStore
     saveTimer.current = setTimeout(async () => {
       setSaving(true);
       try {
-        await apiFetch({ c: updated.c, media: updated.media });
+        await apiFetch({ c: updated.c });
         setLastSaved(new Date());
       } catch (e) {
         console.error('Auto-save failed:', e);
