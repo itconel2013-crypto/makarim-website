@@ -93,3 +93,18 @@
  GET / 200 in 133ms
  GET / 200 in 844ms
  GET /favicon.ico 404 in 517ms
+ ✓ Compiled in 1478ms (444 modules)
+ GET / 200 in 359ms
+ ✓ Compiled in 1511ms (709 modules)
+ GET / 200 in 244ms
+ ✓ Compiled in 429ms (444 modules)
+ GET / 200 in 313ms
+ ✓ Compiled in 346ms (251 modules)
+ ✓ Compiled in 1321ms (444 modules)
+ ✓ Compiled in 740ms (265 modules)
+ ✓ Compiled in 504ms (265 modules)
+ ✓ Compiled in 421ms (265 modules)
+ ✓ Compiled in 713ms (265 modules)
+ ✓ Compiled in 749ms (265 modules)
+ ✓ Compiled in 496ms (265 modules)
+ ✓ Compiled in 909ms (709 modules)

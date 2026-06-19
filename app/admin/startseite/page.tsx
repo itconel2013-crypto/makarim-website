@@ -45,33 +45,32 @@ export default function StartseiteEditor() {
           </Field>
         </FormSection>
 
-        <FormSection title="Vertrauen-Karten (4 Stück)">
+        <FormSection title="Vier Gründe (Trust-Karten)">
           {home.trust.map((card, i) => (
-            <div key={i} className="flex gap-3 p-4 rounded-card bg-white" style={{ border: '1px solid #EAE3D8' }}>
-              <div className="w-16">
-                <Field label="Wert">
-                  <TextInput
-                    value={card.value}
-                    onChange={(v) => {
-                      const trust = home.trust.map((c, j) => j === i ? { ...c, value: v } : c);
-                      upd({ trust });
-                    }}
-                    placeholder="15+"
-                  />
-                </Field>
-              </div>
-              <div className="flex-1">
-                <Field label="Beschriftung">
-                  <TextInput
-                    value={card.label}
-                    onChange={(v) => {
-                      const trust = home.trust.map((c, j) => j === i ? { ...c, label: v } : c);
-                      upd({ trust });
-                    }}
-                    placeholder="Jahre Erfahrung"
-                  />
-                </Field>
-              </div>
+            <div key={i} className="p-4 rounded-card bg-white space-y-3" style={{ border: '1px solid #EAE3D8' }}>
+              <p className="font-mono text-xs text-body-light">{String(i + 1).padStart(2, '0')}</p>
+              <Field label="Titel">
+                <TextInput
+                  value={card.value}
+                  onChange={(v) => {
+                    const trust = home.trust.map((c, j) => j === i ? { ...c, value: v } : c);
+                    upd({ trust });
+                  }}
+                  placeholder="Rundum-Sorglos-Paket"
+                />
+              </Field>
+              <Field label="Beschreibung">
+                <TextInput
+                  value={card.label}
+                  onChange={(v) => {
+                    const trust = home.trust.map((c, j) => j === i ? { ...c, label: v } : c);
+                    upd({ trust });
+                  }}
+                  multiline
+                  rows={2}
+                  placeholder="Kurze Beschreibung des Grundes…"
+                />
+              </Field>
             </div>
           ))}
         </FormSection>
