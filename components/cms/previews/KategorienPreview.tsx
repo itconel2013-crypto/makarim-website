@@ -2,12 +2,6 @@
 
 import { useCMS } from '../CMSProvider';
 
-const CAT_COLORS: Record<string, string> = {
-  umrah:        'linear-gradient(135deg, #C2724A33, #F0CDA833)',
-  hajj:         'linear-gradient(135deg, #3E6B5233, #9DB0AD33)',
-  kulturreisen: 'linear-gradient(135deg, #16242B33, #3A4C5533)',
-};
-
 export function KategorienPreview() {
   const { store } = useCMS();
   if (!store) return null;
@@ -15,37 +9,31 @@ export function KategorienPreview() {
   const { categories } = store.c;
 
   return (
-    <div style={{ fontFamily: "'Schibsted Grotesk', sans-serif", backgroundColor: 'white', padding: '80px 64px' }}>
-      <p style={{ fontFamily: 'monospace', fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F', textAlign: 'center', marginBottom: '16px', textTransform: 'uppercase' }}>
-        Unsere Kategorien
-      </p>
-      <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '42px', lineHeight: '1.2', fontWeight: 400, color: '#16242B', textAlign: 'center', marginBottom: '16px' }}>
+    <div style={{ fontFamily: "'Schibsted Grotesk', sans-serif", backgroundColor: 'white', padding: '22px 20px' }}>
+      <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', textAlign: 'center', marginBottom: '18px' }}>
         Finde deine perfekte Reise
-      </h2>
-      <p style={{ fontSize: '18px', color: '#5A5448', textAlign: 'center', marginBottom: '56px', maxWidth: '600px', margin: '0 auto 56px' }}>
-        Von der kleinen Pilgerfahrt bis zur großen Kulturreise — wir begleiten dich.
-      </p>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {categories.map((cat) => (
-          <div key={cat.key} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}>
-            <div style={{ aspectRatio: '4/3', background: CAT_COLORS[cat.key] ?? '#EAE3D8', overflow: 'hidden', position: 'relative' }}>
+          <div key={cat.key} style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '14px', overflow: 'hidden' }}>
+            <div style={{ height: '120px', background: '#F4F1EA', overflow: 'hidden' }}>
               {cat.imageUrl ? (
                 <img src={cat.imageUrl} alt={cat.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               ) : (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '64px' }}>{cat.icon ?? '🕌'}</span>
+                  <span style={{ fontSize: '40px', opacity: 0.3 }}>{cat.icon ?? '🕌'}</span>
                 </div>
               )}
             </div>
-            <div style={{ backgroundColor: 'white', padding: '24px' }}>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: 400, color: '#16242B', marginBottom: '12px' }}>
+            <div style={{ padding: '14px 16px' }}>
+              <div style={{ fontFamily: "'Newsreader', serif", fontSize: '18px', color: '#16242B', marginBottom: '6px' }}>
                 {cat.title}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#6B6457', marginBottom: '24px', lineHeight: '1.6' }}>
+              </div>
+              <p style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#6B6457', margin: '0 0 12px' }}>
                 {cat.text}
               </p>
-              <span style={{ display: 'block', backgroundColor: '#C2724A', color: 'white', height: '48px', lineHeight: '48px', borderRadius: '9px', textAlign: 'center', fontSize: '15px', fontWeight: 500 }}>
+              <span style={{ display: 'inline-block', background: '#C2724A', color: '#fff', fontSize: '12px', fontWeight: 600, borderRadius: '9px', padding: '8px 14px' }}>
                 Jetzt entdecken
               </span>
             </div>

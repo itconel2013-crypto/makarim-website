@@ -23,7 +23,7 @@ export default function KategorienEditor() {
     <>
       <PublishBar title="Kategorien" subtitle="Umrah · Hajj · Kulturreisen" />
       <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 p-8 overflow-auto" style={{ maxWidth: '720px' }}>
+        <main className="flex-1 p-8 overflow-auto">
           <div className="space-y-5">
             {categories.map((cat, i) => (
               <div
@@ -91,7 +91,7 @@ export default function KategorienEditor() {
             ))}
           </div>
         </main>
-        <LivePreviewPane url="makarim-reisen.de/#kategorien">
+        <LivePreviewPane url="makarim-reisen.de/#kategorien" fill noScale>
           <KategorienPreview />
         </LivePreviewPane>
       </div>
