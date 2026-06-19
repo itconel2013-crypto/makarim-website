@@ -152,9 +152,11 @@ export interface CMSContent {
 
 export interface MediaItem {
   id: string;
-  url: string;            // base64 or URL
+  url: string;
   name: string;
-  uploadedAt: string;     // ISO date
+  uploadedAt: string;
+  alt?: string;           // SEO: Bildbeschreibung für Suchmaschinen & Screenreader
+  title?: string;         // SEO: optionaler Bildtitel (Tooltip)
 }
 
 export interface CMSStore {

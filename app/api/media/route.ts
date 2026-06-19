@@ -50,6 +50,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  const { id, alt, title } = await request.json();
+  const store = await loadContent();
+  const media = (store.media ?? []).map((m: MediaItem) =>
+    m.id === id ? { ...m, alt, title } : m
+  );
+  await saveContent({ ...store, media });
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(request: NextRequest) {
   const { id } = await request.json();
   const store = await loadContent();
