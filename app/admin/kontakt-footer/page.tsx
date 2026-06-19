@@ -23,7 +23,7 @@ export default function KontaktFooterEditor() {
     <>
       <PublishBar title="Kontakt & Footer" subtitle="Telefon, Adresse, Bankverbindung, CTA" />
       <div className="flex flex-1 overflow-hidden">
-      <main className="flex-1 p-8 overflow-auto" style={{ maxWidth: '640px' }}>
+      <main className="flex-1 p-8 overflow-auto">
 
         <FormSection title="Kontaktdaten">
           <Field label="Telefon">
@@ -80,7 +80,7 @@ export default function KontaktFooterEditor() {
         </FormSection>
 
       </main>
-      <LivePreviewPane url="makarim-reisen.de/#footer">
+      <LivePreviewPane url="makarim-reisen.de/#footer" fill noScale>
         <KontaktPreview />
       </LivePreviewPane>
       </div>
