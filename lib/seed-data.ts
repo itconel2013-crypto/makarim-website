@@ -329,7 +329,7 @@ export const defaultContent: CMSStore = {
     
     brand: {
       phone: '+49 30 12345678',
-      whatsapp: '+491701234567',
+      whatsapp: '4915114575859',
       email: 'hello@makarim.de',
       instagram: '@makarim_reisen',
       address1: 'Makarim GmbH',
