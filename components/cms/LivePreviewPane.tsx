@@ -3,13 +3,14 @@
 interface LivePreviewPaneProps {
   url?: string;
   children: React.ReactNode;
+  outerWidth?: number;
 }
 
 const SCALE = 0.27;
-const OUTER_W = 360;
-const INNER_W = Math.round(OUTER_W / SCALE); // ~1333px
 
-export function LivePreviewPane({ url = 'makarim-reisen.de', children }: LivePreviewPaneProps) {
+export function LivePreviewPane({ url = 'makarim-reisen.de', children, outerWidth = 360 }: LivePreviewPaneProps) {
+  const OUTER_W = outerWidth;
+  const INNER_W = Math.round(OUTER_W / SCALE);
   return (
     <div
       className="flex-shrink-0 flex flex-col overflow-auto"

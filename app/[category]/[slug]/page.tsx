@@ -343,10 +343,10 @@ export default async function TripDetailPage({
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
                 <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
                 <span style={{ fontFamily: "'Newsreader', serif", fontSize: '40px', color: '#16242B', lineHeight: 1 }}>
-                  {trip.price?.toLocaleString('de-DE')} €
+                  {Math.round(trip.price * 0.85).toLocaleString('de-DE')} €
                 </span>
               </div>
-              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im Doppelzimmer</div>
+              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im Vierbettzimmer</div>
 
               {/* Status badge */}
               <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '20px' }}>
@@ -392,7 +392,7 @@ export default async function TripDetailPage({
                 className="block w-full text-center text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
               >
-                Jetzt anfragen
+                Zur Buchung
               </Link>
             </div>
           </aside>

@@ -17,8 +17,8 @@ export function ReisenPreview() {
         Unsere Reisen
       </h2>
 
-      {/* Trip cards grid — 2 columns to fit preview width */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+      {/* Trip cards — single column */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {trips.map((trip) => {
           const seats = trip.seats ?? 0;
           const status = seats === 0 && !trip.waitlist ? 'ausgebucht'
@@ -27,9 +27,9 @@ export function ReisenPreview() {
             : null;
 
           return (
-            <div key={trip.vg} style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div key={trip.vg} style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '12px', overflow: 'hidden', display: 'flex' }}>
               {/* Image */}
-              <div style={{ position: 'relative', height: '80px', background: '#F4F1EA', overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: '120px', flexShrink: 0, background: '#F4F1EA', overflow: 'hidden' }}>
                 {trip.url ? (
                   <img src={trip.url} alt={trip.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 ) : (
@@ -53,22 +53,23 @@ export function ReisenPreview() {
               </div>
 
               {/* Card body */}
-              <div style={{ padding: '8px 10px 10px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                {status && (
-                  <div style={{ marginBottom: '5px' }}>
-                    <span style={{ fontSize: '8px', fontWeight: 600, borderRadius: '4px', padding: '2px 6px', background: '#FEF3C7', color: '#92400E' }}>
+              <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                  {status && (
+                    <span style={{ fontSize: '10px', fontWeight: 600, borderRadius: '4px', padding: '2px 8px', background: '#FEF3C7', color: '#92400E' }}>
                       {status}
                     </span>
-                  </div>
-                )}
-                <div style={{ fontFamily: "'Newsreader', serif", fontSize: '11px', color: '#16242B', lineHeight: 1.2, marginBottom: '4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                  )}
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#A8542F', marginLeft: 'auto' }}>ab {trip.price?.toLocaleString('de-DE')} €</span>
+                </div>
+                <div style={{ fontFamily: "'Newsreader', serif", fontSize: '16px', color: '#16242B', lineHeight: 1.2, marginBottom: '5px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {trip.title}
                 </div>
-                <div style={{ fontSize: '8px', color: '#41494A', fontWeight: 600, marginBottom: '4px' }}>{trip.date}</div>
-                <p style={{ fontSize: '8px', color: '#6B6457', lineHeight: 1.4, margin: '0 0 8px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1 }}>
+                <div style={{ fontSize: '11px', color: '#41494A', fontWeight: 600, marginBottom: '5px' }}>{trip.date}</div>
+                <p style={{ fontSize: '11px', color: '#6B6457', lineHeight: 1.4, margin: '0 0 10px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1 }}>
                   {trip.description || trip.text}
                 </p>
-                <div style={{ background: '#C2724A', color: '#fff', fontSize: '8px', fontWeight: 600, borderRadius: '6px', padding: '4px 0', textAlign: 'center' }}>
+                <div style={{ background: '#C2724A', color: '#fff', fontSize: '11px', fontWeight: 600, borderRadius: '7px', padding: '5px 0', textAlign: 'center' }}>
                   Jetzt entdecken
                 </div>
               </div>
