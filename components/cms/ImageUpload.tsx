@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 
 interface Props {
   value?: string;
-  onChange: (base64: string) => void;
+  onChange: (url: string) => void;
   label?: string;
 }
 
@@ -12,16 +12,18 @@ export function ImageUpload({ value, onChange, label = 'Bild wählen / hochladen
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
-  function handleFile(file: File) {
+  async function handleFile(file: File) {
     if (!file.type.startsWith('image/')) return;
     setLoading(true);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target?.result as string;
-      onChange(base64);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/media', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.item?.url) onChange(data.item.url);
+    } finally {
       setLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -37,7 +39,6 @@ export function ImageUpload({ value, onChange, label = 'Bild wählen / hochladen
 
   return (
     <div className="flex items-center gap-4">
-      {/* Thumbnail */}
       <div
         className="flex-shrink-0 rounded-button overflow-hidden bg-border-light"
         style={{ width: '80px', height: '56px', border: '1px solid #E2DBCF' }}
@@ -51,11 +52,7 @@ export function ImageUpload({ value, onChange, label = 'Bild wählen / hochladen
         )}
       </div>
 
-      {/* Upload button */}
-      <div
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-      >
+      <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
         <input
           ref={inputRef}
           type="file"
@@ -70,7 +67,7 @@ export function ImageUpload({ value, onChange, label = 'Bild wählen / hochladen
           className="px-4 py-2 rounded-button text-sm font-medium text-white transition-opacity disabled:opacity-60"
           style={{ backgroundColor: '#16242B' }}
         >
-          {loading ? 'Wird geladen…' : label}
+          {loading ? 'Wird hochgeladen…' : label}
         </button>
         <p className="text-xs text-body-light mt-1">JPG, PNG, WebP · max. 5 MB</p>
       </div>
