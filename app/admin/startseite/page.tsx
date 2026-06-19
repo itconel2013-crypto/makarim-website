@@ -27,7 +27,8 @@ export default function StartseiteEditor() {
     <>
       <PublishBar title="Startseite" subtitle="Hero, Trust-Karten, CTA" />
       <div className="flex flex-1 overflow-hidden">
-      <main className="flex-1 p-8 overflow-auto" style={{ maxWidth: '640px' }}>
+      <main className="flex-1 overflow-auto p-8">
+        <div style={{ maxWidth: '560px' }}>
 
         <FormSection title="Hero-Bereich">
           <Field label="Kicker" hint="Kleine Schrift über der Überschrift">
@@ -98,8 +99,9 @@ export default function StartseiteEditor() {
           ))}
         </FormSection>
 
+        </div>
       </main>
-      <LivePreviewPane url="makarim-reisen.de">
+      <LivePreviewPane url="makarim-reisen.de" fill noScale>
         <StartseitePreview />
       </LivePreviewPane>
       </div>
