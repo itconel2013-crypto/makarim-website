@@ -36,15 +36,13 @@ export function CMSSidebar() {
     >
       {/* Logo */}
       <div className="px-5 py-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-        <Image
-          src="/assets/makarim_soultreat.png"
-          alt="Makarim"
-          width={140}
-          height={40}
-          className="h-9 w-auto object-contain brightness-0 invert opacity-90"
-        />
-        <p className="font-mono text-white/40 mt-1" style={{ fontSize: '10px', letterSpacing: '0.15em' }}>
-          CONTENT MANAGER
+        <div style={{ lineHeight: 1 }}>
+          <span style={{ fontFamily: "'Newsreader', serif", fontSize: '20px', fontWeight: 400, color: 'white', letterSpacing: '0.01em' }}>
+            Labbayk<span style={{ color: '#C2724A', fontWeight: 600 }}>ONE</span>
+          </span>
+        </div>
+        <p className="font-mono mt-1" style={{ fontSize: '10px', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.35)' }}>
+          CMS SUITE
         </p>
       </div>
 
