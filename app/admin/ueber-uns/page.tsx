@@ -3,6 +3,7 @@
 import { useCMS } from '@/components/cms/CMSProvider';
 import { PublishBar } from '@/components/cms/PublishBar';
 import { Field, TextInput, FormSection } from '@/components/cms/FormEditor';
+import { ImageUpload } from '@/components/cms/ImageUpload';
 import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { UeberUnsPreview } from '@/components/cms/previews/UeberUnsPreview';
 import { AboutContent, AboutTile } from '@/lib/content-schema';
@@ -20,6 +21,15 @@ export default function UeberUnsEditor() {
       <div className="flex flex-1 overflow-hidden">
       <main className="flex-1 overflow-auto p-8">
         <div style={{ maxWidth: '560px' }}>
+
+        <FormSection title="Bilder">
+          <Field label="Bild 1 (Haupt-Foto)">
+            <ImageUpload value={about.url} onChange={(v) => upd({ url: v })} />
+          </Field>
+          <Field label="Bild 2 (zweites Foto)">
+            <ImageUpload value={about.url2} onChange={(v) => upd({ url2: v })} />
+          </Field>
+        </FormSection>
 
         <FormSection title="Einleitung">
           <Field label="Hauptüberschrift">

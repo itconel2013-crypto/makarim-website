@@ -11,12 +11,19 @@ export function UeberUnsPreview() {
   return (
     <div style={{ fontFamily: "'Schibsted Grotesk', sans-serif", backgroundColor: '#F4F1EA', padding: '22px 20px' }}>
 
-      {/* Image placeholder */}
-      <div style={{ height: '160px', borderRadius: '12px', overflow: 'hidden', background: '#D5CEBC', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {about.url ? (
-          <img src={about.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-        ) : (
-          <span style={{ fontSize: '40px', opacity: 0.3 }}>🕌</span>
+      {/* Images */}
+      <div style={{ display: 'grid', gridTemplateColumns: about.url2 ? '1fr 1fr' : '1fr', gap: '10px', marginBottom: '16px' }}>
+        <div style={{ height: '160px', borderRadius: '12px', overflow: 'hidden', background: '#D5CEBC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {about.url ? (
+            <img src={about.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          ) : (
+            <span style={{ fontSize: '32px', opacity: 0.3 }}>🖼</span>
+          )}
+        </div>
+        {about.url2 && (
+          <div style={{ height: '160px', borderRadius: '12px', overflow: 'hidden', background: '#D5CEBC' }}>
+            <img src={about.url2} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          </div>
         )}
       </div>
 
