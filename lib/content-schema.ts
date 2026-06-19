@@ -55,6 +55,13 @@ export interface TrustCard {
   label: string;
 }
 
+export interface FeaturedSection {
+  kicker: string;    // e.g. "Aktuelle Termine"
+  title: string;     // e.g. "Unsere Umrah Reisen"
+  linkText: string;  // e.g. "Alle Reisen ansehen →"
+  linkUrl: string;   // e.g. "/umrah"
+}
+
 export interface HomeContent {
   kicker: string;
   headline: string;
@@ -64,6 +71,7 @@ export interface HomeContent {
   heroUrl?: string;           // base64 or URL
   stats?: TrustCard[];        // compact stats bar (40+, 10.000+ etc.)
   trust: TrustCard[];         // descriptive "Vier Gründe" cards
+  featuredSection?: FeaturedSection;
 }
 
 export interface Category {

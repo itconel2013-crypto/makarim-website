@@ -6,7 +6,7 @@ import { Field, TextInput, FormSection } from '@/components/cms/FormEditor';
 import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { StartseitePreview } from '@/components/cms/previews/StartseitePreview';
 import { ImageUpload } from '@/components/cms/ImageUpload';
-import { HomeContent } from '@/lib/content-schema';
+import { HomeContent, FeaturedSection } from '@/lib/content-schema';
 
 export default function StartseiteEditor() {
   const { store, updateSection } = useCMS();
@@ -14,6 +14,14 @@ export default function StartseiteEditor() {
 
   const home = store.c.home;
   const upd = (patch: Partial<HomeContent>) => updateSection('home', { ...home, ...patch });
+
+  const fs: FeaturedSection = home.featuredSection ?? {
+    kicker: 'Aktuelle Termine',
+    title: 'Unsere Umrah Reisen',
+    linkText: 'Alle Reisen ansehen →',
+    linkUrl: '/umrah',
+  };
+  const updFs = (patch: Partial<FeaturedSection>) => upd({ featuredSection: { ...fs, ...patch } });
 
   return (
     <>
@@ -42,6 +50,21 @@ export default function StartseiteEditor() {
               value={home.heroUrl}
               onChange={(v) => upd({ heroUrl: v })}
             />
+          </Field>
+        </FormSection>
+
+        <FormSection title="Reisen-Sektion (Startseite)">
+          <Field label="Kicker" hint="Kleiner Text über der Überschrift">
+            <TextInput value={fs.kicker} onChange={(v) => updFs({ kicker: v })} placeholder="Aktuelle Termine" />
+          </Field>
+          <Field label="Überschrift">
+            <TextInput value={fs.title} onChange={(v) => updFs({ title: v })} placeholder="Unsere Umrah Reisen" />
+          </Field>
+          <Field label="Link-Text (rechts)">
+            <TextInput value={fs.linkText} onChange={(v) => updFs({ linkText: v })} placeholder="Alle Reisen ansehen →" />
+          </Field>
+          <Field label="Link-Ziel">
+            <TextInput value={fs.linkUrl} onChange={(v) => updFs({ linkUrl: v })} placeholder="/umrah" />
           </Field>
         </FormSection>
 

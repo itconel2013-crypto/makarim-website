@@ -73,8 +73,7 @@ export default async function Home() {
       {/* Featured Trips */}
       <TripCardGrid
         trips={featuredTrips}
-        title="Empfohlene Reisen"
-        description="Unsere beliebtesten und exklusivsten Angebote"
+        featured={content.c.home.featuredSection}
       />
 
       {/* CTA Band */}

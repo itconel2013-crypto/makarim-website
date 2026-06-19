@@ -9,6 +9,12 @@ export const defaultContent: CMSStore = {
       btnP: 'Reisen entdecken',
       btnS: 'Mehr erfahren',
       heroUrl: '/assets/examples/hero-a.jpg',
+      featuredSection: {
+        kicker: 'Aktuelle Termine',
+        title: 'Unsere Umrah Reisen',
+        linkText: 'Alle Reisen ansehen →',
+        linkUrl: '/umrah',
+      },
       stats: [
         { value: '40+', label: 'Jahre Erfahrung' },
         { value: '10.000+', label: 'Pilger betreut' },
