@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Trip, Hotel, deriveStatus } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
+import { MediaPickerModal } from './MediaPickerModal';
 
 interface Props { trip: Trip; }
 type TabKey = 'inhalt' | 'hotels' | 'seo';
@@ -153,14 +154,7 @@ export function TripCardCMS({ trip }: Props) {
 
 function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip>) => void; updBanner: (p: any) => void }) {
   const banner = trip.banner;
-
-  function handleImageFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => upd({ url: ev.target?.result as string });
-    reader.readAsDataURL(file);
-  }
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   return (
     <div className="space-y-5">
@@ -175,11 +169,11 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
               <div className="w-full h-full flex items-center justify-center text-2xl opacity-30">{trip.heroIcon ?? '🕋'}</div>
             )}
           </div>
-          <label className="cursor-pointer">
-            <input type="file" accept="image/*" className="hidden" onChange={handleImageFile} />
-            <span className="px-4 py-2 rounded-button text-sm font-medium text-white" style={{ backgroundColor: '#16242B' }}>Bild ändern</span>
-          </label>
+          <button type="button" onClick={() => setPickerOpen(true)} className="px-4 py-2 rounded-button text-sm font-medium text-white" style={{ backgroundColor: '#16242B', border: 'none', cursor: 'pointer' }}>
+            Bild wählen
+          </button>
         </div>
+        {pickerOpen && <MediaPickerModal onSelect={(url) => { upd({ url }); setPickerOpen(false); }} onClose={() => setPickerOpen(false)} />}
       </div>
 
       {/* Marketing text */}
@@ -266,6 +260,7 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
 }
 
 function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const [pickerFor, setPickerFor] = useState<number | null>(null);
   const updHotel = (i: number, patch: Partial<Hotel>) => {
     const hotels = trip.hotels.map((h, j) => j === i ? { ...h, ...patch } : h);
     upd({ hotels });
@@ -283,23 +278,14 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
                 <span style={{ fontSize: '32px', opacity: 0.3 }}>🏨</span>
               </div>
             )}
-            <label className="absolute bottom-2 right-2 cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = (ev) => updHotel(i, { photo: ev.target?.result as string });
-                  reader.readAsDataURL(file);
-                }}
-              />
-              <span className="px-2 py-1 text-xs font-medium text-white rounded" style={{ backgroundColor: '#16242B' }}>
-                Bild wählen
-              </span>
-            </label>
+            <button
+              type="button"
+              onClick={() => setPickerFor(i)}
+              className="absolute bottom-2 right-2 px-2 py-1 text-xs font-medium text-white rounded"
+              style={{ backgroundColor: '#16242B', border: 'none', cursor: 'pointer' }}
+            >
+              Bild wählen
+            </button>
           </div>
           {/* Fields */}
           <div className="p-4" style={{ backgroundColor: '#F8F5F0' }}>
@@ -314,6 +300,12 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
           </div>
         </div>
       ))}
+      {pickerFor !== null && (
+        <MediaPickerModal
+          onSelect={(url) => { updHotel(pickerFor, { photo: url }); setPickerFor(null); }}
+          onClose={() => setPickerFor(null)}
+        />
+      )}
     </div>
   );
 }
