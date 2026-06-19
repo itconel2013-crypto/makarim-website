@@ -9,7 +9,7 @@ interface TripCardGridProps {
 
 const DEFAULTS: FeaturedSection = {
   kicker: 'Aktuelle Termine',
-  title: 'Unsere Umrah Reisen',
+  title: 'Eine Auswahl unserer Reisen',
   linkText: 'Alle Reisen ansehen →',
   linkUrl: '/umrah',
 };
@@ -20,19 +20,17 @@ export function TripCardGrid({ trips, featured }: TripCardGridProps) {
   return (
     <section id="featured" className="bg-page" style={{ padding: '60px 0 20px' }}>
       <div className="container-max">
-        {/* Header row: kicker+title left, link right */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '34px' }}>
-          <div>
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', letterSpacing: '0.2em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>
-              {s.kicker}
-            </p>
-            <h2 style={{ fontFamily: "'Newsreader', serif", fontWeight: 500, fontSize: 'clamp(28px, 3vw, 42px)', color: '#16242B', margin: 0 }}>
-              {s.title}
-            </h2>
-          </div>
+        {/* Header: centered kicker + title + link below */}
+        <div style={{ textAlign: 'center', marginBottom: '34px' }}>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', letterSpacing: '0.2em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>
+            {s.kicker}
+          </p>
+          <h2 style={{ fontFamily: "'Newsreader', serif", fontWeight: 500, fontSize: 'clamp(28px, 3vw, 42px)', color: '#16242B', margin: '0 0 16px' }}>
+            {s.title}
+          </h2>
           <Link
             href={s.linkUrl}
-            style={{ fontSize: '14px', color: '#8A513A', fontWeight: 600, borderBottom: '1.5px solid #C2724A', paddingBottom: '2px', textDecoration: 'none', flexShrink: 0, marginLeft: '24px' }}
+            style={{ fontSize: '14px', color: '#8A513A', fontWeight: 600, borderBottom: '1.5px solid #C2724A', paddingBottom: '2px', textDecoration: 'none' }}
           >
             {s.linkText}
           </Link>

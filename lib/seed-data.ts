@@ -11,7 +11,7 @@ export const defaultContent: CMSStore = {
       heroUrl: '/assets/examples/hero-a.jpg',
       featuredSection: {
         kicker: 'Aktuelle Termine',
-        title: 'Unsere Umrah Reisen',
+        title: 'Eine Auswahl unserer Reisen',
         linkText: 'Alle Reisen ansehen →',
         linkUrl: '/umrah',
       },
