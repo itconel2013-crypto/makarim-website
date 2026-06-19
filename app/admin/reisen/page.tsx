@@ -84,7 +84,7 @@ export default function ReisenManager() {
           </main>
         </div>
 
-        <LivePreviewPane url="makarim-reisen.de/umrah" outerWidth={500} fill>
+        <LivePreviewPane url="makarim-reisen.de/umrah" fill noScale>
           <ReisenPreview />
         </LivePreviewPane>
       </div>
