@@ -389,10 +389,8 @@ export default async function TripDetailPage({
               {/* CTA */}
               <Link
                 href={`/${category}/${slug}/booking`}
-                className="block w-full text-center text-white transition-colors"
+                className="block w-full text-center text-white hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A8542F')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#C2724A')}
               >
                 Jetzt anfragen
               </Link>
