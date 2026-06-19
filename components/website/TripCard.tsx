@@ -5,17 +5,17 @@ import { Trip, deriveStatus } from '@/lib/content-schema';
 function StatusPill({ trip }: { trip: Trip }) {
   const status = deriveStatus(trip);
   if (status === 'ausgebucht') return (
-    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEE2E2', color: '#991B1B' }}>
+    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEE2E2', color: '#991B1B' }}>
       ausgebucht
     </span>
   );
   if (status === 'ausgebucht (Warteliste)') return (
-    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
       Warteliste
     </span>
   );
   if (status === 'begrenzte Plätze') return (
-    <span className="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-pill" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
+    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
       noch {trip.seats} Plätze
     </span>
   );
@@ -30,9 +30,24 @@ export function TripCard({ trip }: TripCardProps) {
   const href = `/${trip.category}/${trip.slug}`;
 
   return (
-    <Link href={href} className="group flex flex-col overflow-hidden rounded-card bg-white shadow-card hover:shadow-card-lg transition-shadow duration-300">
-      {/* Image */}
-      <div className="relative flex-shrink-0 overflow-hidden" style={{ height: '200px' }}>
+    <Link
+      href={href}
+      style={{
+        background: '#fff',
+        border: '1px solid #EAE3D8',
+        borderRadius: '18px',
+        overflow: 'hidden',
+        boxShadow: '0 6px 22px rgba(40,30,20,0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: 'pointer',
+        textDecoration: 'none',
+        color: 'inherit',
+      }}
+      className="group hover:shadow-card-lg transition-shadow duration-300"
+    >
+      {/* Image area */}
+      <div style={{ position: 'relative', height: '188px', background: '#F4F1EA', overflow: 'hidden' }}>
         {trip.url ? (
           <Image
             src={trip.url}
@@ -41,61 +56,78 @@ export function TripCard({ trip }: TripCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #2D4A3E 0%, #16242B 100%)' }}>
-            <span className="text-6xl opacity-30">{trip.heroIcon ?? '🕋'}</span>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2D4A3E 0%, #16242B 100%)' }}>
+            <span style={{ fontSize: '64px', opacity: 0.3 }}>{trip.heroIcon ?? '🕋'}</span>
           </div>
         )}
 
-        {/* Dark gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent pointer-events-none" />
-
-        {/* Banner overlay bottom-left */}
+        {/* Banner — left:0, top:42px, no border-radius, Quicksand font */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
-          <div
-            className="absolute bottom-3 left-3 text-white leading-tight"
-            style={{ backgroundColor: trip.banner.color, borderRadius: '8px', padding: '10px 14px' }}
-          >
-            {trip.banner.line1 && <div className="font-bold uppercase" style={{ fontSize: '16px', letterSpacing: '0.08em' }}>{trip.banner.line1}</div>}
-            {trip.banner.line2 && <div className="font-semibold uppercase" style={{ fontSize: '11px', letterSpacing: '0.1em', opacity: 0.92, marginTop: '2px' }}>{trip.banner.line2}</div>}
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            top: '42px',
+            background: trip.banner.color ?? '#C2724A',
+            color: '#fff',
+            padding: '9px 18px 9px 16px',
+          }}>
+            {trip.banner.line1 && (
+              <div style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: '22px', lineHeight: 1, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {trip.banner.line1}
+              </div>
+            )}
+            {trip.banner.line2 && (
+              <div style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 600, fontSize: '12px', lineHeight: 1, opacity: 0.92, marginTop: '4px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                {trip.banner.line2}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Price badge top-right */}
-        <div
-          className="absolute top-3 right-3 px-3 py-1 rounded-pill text-xs font-semibold text-ink bg-white"
-          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-        >
+        {/* Price badge — top-right, beige background */}
+        <div style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          background: '#F4F1EA',
+          color: '#A8542F',
+          fontWeight: 700,
+          fontSize: '13px',
+          borderRadius: '20px',
+          padding: '6px 14px',
+          boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
+        }}>
           ab {trip.price?.toLocaleString('de-DE')} €
         </div>
       </div>
 
       {/* Card body */}
-      <div className="flex flex-col flex-1 p-5">
-        {/* Status */}
-        <div className="mb-3">
+      <div style={{ padding: '20px 20px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {/* Status pill */}
+        <div style={{ marginBottom: '12px' }}>
           <StatusPill trip={trip} />
         </div>
 
         {/* Title */}
-        <h3 className="font-serif font-normal mb-2 leading-snug transition-colors group-hover:opacity-80" style={{ fontSize: '20px', color: '#16242B' }}>
+        <h3 style={{ fontFamily: "'Newsreader', serif", fontWeight: 500, fontSize: '21px', color: '#16242B', lineHeight: 1.22, margin: '0 0 9px' }}>
           {trip.title}
         </h3>
 
         {/* Date */}
-        <p className="font-mono mb-3" style={{ fontSize: '13px', fontWeight: 600, color: '#5A5448' }}>
+        <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#41494A', fontVariantNumeric: 'tabular-nums', marginBottom: '11px' }}>
           {trip.date}
-          {trip.nights > 0 && <span className="font-normal ml-2" style={{ color: '#9A9082' }}>· {trip.nights} Nächte</span>}
-        </p>
+          {trip.nights > 0 && <span style={{ color: '#9A9082', fontWeight: 400, marginLeft: '8px' }}>· {trip.nights} Nächte</span>}
+        </div>
 
         {/* Description */}
-        <p className="text-sm line-clamp-2 flex-1 mb-5" style={{ lineHeight: '1.6', color: '#6B6457' }}>
+        <p style={{ fontSize: '14px', lineHeight: 1.55, color: '#6B6457', margin: '0 0 20px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
           {trip.description || trip.text}
         </p>
 
-        {/* CTA Button */}
+        {/* CTA Button — NOT full-width, left-aligned */}
         <button
-          className="w-full py-3 rounded-button text-white text-sm font-medium transition-opacity group-hover:opacity-90"
-          style={{ backgroundColor: '#C2724A' }}
+          style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#C2724A', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+          className="group-hover:opacity-90 transition-opacity"
         >
           Jetzt entdecken
         </button>
