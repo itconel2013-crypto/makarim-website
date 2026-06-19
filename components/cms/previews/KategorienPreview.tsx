@@ -29,8 +29,14 @@ export function KategorienPreview() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
         {categories.map((cat) => (
           <div key={cat.key} style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}>
-            <div style={{ aspectRatio: '4/3', background: CAT_COLORS[cat.key] ?? '#EAE3D8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '64px' }}>{cat.icon ?? '🕌'}</span>
+            <div style={{ aspectRatio: '4/3', background: CAT_COLORS[cat.key] ?? '#EAE3D8', overflow: 'hidden', position: 'relative' }}>
+              {cat.imageUrl ? (
+                <img src={cat.imageUrl} alt={cat.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '64px' }}>{cat.icon ?? '🕌'}</span>
+                </div>
+              )}
             </div>
             <div style={{ backgroundColor: 'white', padding: '24px' }}>
               <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: 400, color: '#16242B', marginBottom: '12px' }}>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Category } from '@/lib/content-schema';
 
-const categoryImages: Record<string, string> = {
+const fallbackImages: Record<string, string> = {
   umrah: '/assets/examples/cat-umrah.jpg',
   hajj: '/assets/examples/cat-hajj.jpg',
   kulturreisen: '/assets/examples/cat-kultur.jpg',
@@ -39,18 +39,18 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((cat) => {
             const key = cat.key ?? cat.url ?? '';
-            const imgSrc = categoryImages[key];
+            const imgSrc = cat.imageUrl || fallbackImages[key];
 
             return (
               <div key={key} className="group flex flex-col overflow-hidden rounded-card" style={{ boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}>
                 {/* Image — aspect 4/3 */}
                 <div className="relative overflow-hidden" style={{ aspectRatio: '4/3' }}>
                   {imgSrc ? (
-                    <Image
+                    <img
                       src={imgSrc}
                       alt={`${cat.title} – Kategoriebild`}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      style={{ display: 'block' }}
                     />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-ink/20 flex items-center justify-center">
