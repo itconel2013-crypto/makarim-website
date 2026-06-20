@@ -18,11 +18,14 @@ export default async function KontaktPage() {
       <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <p className="font-mono uppercase mb-4" style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F' }}>
-            Wir sind für dich da
+            Kontakt
           </p>
-          <h1 className="font-serif font-normal text-ink mb-14" style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.15' }}>
-            Kontakt aufnehmen
+          <h1 className="font-serif font-normal text-ink mb-5" style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.15' }}>
+            Wir sind für dich da
           </h1>
+          <p className="mb-14" style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7', maxWidth: '520px' }}>
+            Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.
+          </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
@@ -105,9 +108,6 @@ export default async function KontaktPage() {
 
             {/* Right — Kontaktformular */}
             <div className="p-8 bg-white rounded-card" style={{ border: '1px solid #EAE3D8' }}>
-              <h2 className="font-serif font-normal text-ink mb-6" style={{ fontSize: '22px' }}>
-                Schreib uns direkt
-              </h2>
               <KontaktForm />
             </div>
 

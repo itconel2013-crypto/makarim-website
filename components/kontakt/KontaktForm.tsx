@@ -15,9 +15,17 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
 };
 
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: '13px',
+  fontWeight: 500,
+  marginBottom: '6px',
+  color: '#5A5448',
+};
+
 export function KontaktForm() {
   const [status, setStatus] = useState<Status>('idle');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', interesse: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', interesse: 'Allgemeine Anfrage', message: '' });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -49,63 +57,64 @@ export function KontaktForm() {
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      <h2 className="font-serif font-normal text-ink mb-6" style={{ fontSize: '22px' }}>
+        Schreib uns eine Nachricht
+      </h2>
+
+      {/* Name */}
       <div>
-        <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: '#9A9082' }}>
-          Name *
-        </label>
+        <label style={labelStyle}>Name</label>
         <input
           required
           value={form.name}
           onChange={set('name')}
-          placeholder="Dein vollständiger Name"
+          placeholder="Vor- und Nachname"
           style={inputStyle}
         />
       </div>
 
-      <div>
-        <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: '#9A9082' }}>
-          E-Mail *
-        </label>
-        <input
-          required
-          type="email"
-          value={form.email}
-          onChange={set('email')}
-          placeholder="deine@email.de"
-          style={inputStyle}
-        />
+      {/* E-Mail + Telefon nebeneinander */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label style={labelStyle}>E-Mail</label>
+          <input
+            required
+            type="email"
+            value={form.email}
+            onChange={set('email')}
+            placeholder="dein@email.de"
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>
+            Telefon <span style={{ color: '#9A9082', fontWeight: 400 }}>(optional)</span>
+          </label>
+          <input
+            type="tel"
+            value={form.phone}
+            onChange={set('phone')}
+            placeholder="+49 ..."
+            style={inputStyle}
+          />
+        </div>
       </div>
 
+      {/* Betreff */}
       <div>
-        <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: '#9A9082' }}>
-          Telefon
-        </label>
-        <input
-          type="tel"
-          value={form.phone}
-          onChange={set('phone')}
-          placeholder="+49 ..."
-          style={inputStyle}
-        />
-      </div>
-
-      <div>
-        <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: '#9A9082' }}>
-          Interesse
-        </label>
+        <label style={labelStyle}>Betreff</label>
         <select value={form.interesse} onChange={set('interesse')} style={inputStyle}>
-          <option value="">Bitte wählen …</option>
-          <option value="umrah">Umrah</option>
-          <option value="hajj">Hajj</option>
-          <option value="kulturreisen">Kulturreisen</option>
-          <option value="allgemein">Allgemeine Anfrage</option>
+          <option value="Allgemeine Anfrage">Allgemeine Anfrage</option>
+          <option value="Umrah">Umrah</option>
+          <option value="Hajj">Hajj</option>
+          <option value="Kulturreisen">Kulturreisen</option>
+          <option value="Buchungsanfrage">Buchungsanfrage</option>
         </select>
       </div>
 
+      {/* Nachricht */}
       <div>
-        <label className="block text-xs font-mono uppercase tracking-widest mb-2" style={{ color: '#9A9082' }}>
-          Nachricht *
-        </label>
+        <label style={labelStyle}>Nachricht</label>
         <textarea
           required
           rows={5}
