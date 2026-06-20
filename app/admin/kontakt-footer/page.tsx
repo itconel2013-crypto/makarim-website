@@ -51,6 +51,9 @@ export default function KontaktFooterEditor() {
         </FormSection>
 
         <FormSection title="Kontaktseite">
+          <Field label="Überschrift">
+            <TextInput value={brand.kontaktHeading ?? ''} onChange={(v) => updBrand({ kontaktHeading: v })} placeholder="Wir sind für dich da" />
+          </Field>
           <Field label="Einleitungstext">
             <TextInput value={brand.kontaktIntro ?? ''} onChange={(v) => updBrand({ kontaktIntro: v })} multiline rows={3} placeholder="Hast du eine Frage zu einer Reise …" />
           </Field>

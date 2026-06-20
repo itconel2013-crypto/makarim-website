@@ -21,7 +21,7 @@ export default async function KontaktPage() {
             Kontakt
           </p>
           <h1 className="font-serif font-normal text-ink mb-5" style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.15' }}>
-            Wir sind für dich da
+            {brand.kontaktHeading ?? 'Wir sind für dich da'}
           </h1>
           <p className="mb-14" style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7', maxWidth: '520px' }}>
             {brand.kontaktIntro ?? 'Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.'}

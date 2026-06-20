@@ -129,6 +129,7 @@ export interface Brand {
   bank: BankDetails;
   footerCopyright?: string;
   footerTagline?: string;
+  kontaktHeading?: string;
   kontaktIntro?: string;
 }
 

@@ -346,6 +346,7 @@ export const defaultContent: CMSStore = {
       address2: 'Kurfürstendamm 123, 10711 Berlin, Deutschland',
       footerCopyright: `© ${new Date().getFullYear()} Makarim GmbH · Alle Rechte vorbehalten`,
       footerTagline: 'Pilgerreisen mit Seele',
+      kontaktHeading: 'Wir sind für dich da',
       kontaktIntro: 'Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.',
       bank: {
         inhaber: 'Makarim GmbH',
