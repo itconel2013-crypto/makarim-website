@@ -50,6 +50,12 @@ export default function KontaktFooterEditor() {
           </Field>
         </FormSection>
 
+        <FormSection title="Footer">
+          <Field label="Copyright-Zeile">
+            <TextInput value={brand.footerCopyright ?? ''} onChange={(v) => updBrand({ footerCopyright: v })} placeholder="© 2026 Makarim GmbH · Alle Rechte vorbehalten" />
+          </Field>
+        </FormSection>
+
         <FormSection title="Bankverbindung">
           <Field label="Kontoinhaber">
             <TextInput value={brand.bank.inhaber} onChange={(v) => updBank({ inhaber: v })} />

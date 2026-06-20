@@ -127,6 +127,7 @@ export interface Brand {
   address1: string;
   address2: string;
   bank: BankDetails;
+  footerCopyright?: string;
 }
 
 export interface SEOConfig {

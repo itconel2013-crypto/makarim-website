@@ -344,6 +344,7 @@ export const defaultContent: CMSStore = {
       instagram: '@makarim_reisen',
       address1: 'Makarim GmbH',
       address2: 'Kurfürstendamm 123, 10711 Berlin, Deutschland',
+      footerCopyright: `© ${new Date().getFullYear()} Makarim GmbH · Alle Rechte vorbehalten`,
       bank: {
         inhaber: 'Makarim GmbH',
         iban: 'DE12 1234 5678 9012 3456 78',
