@@ -45,8 +45,8 @@ export interface Trip {
 }
 
 export interface ProgramDay {
-  day: number;                // 1, 2, 3, ...
-  title: string;              // e.g., "Ankunft in Jeddah"
+  day: number | string;       // z.B. 1 oder "Tag 2–4"
+  title: string;
   description: string;
 }
 

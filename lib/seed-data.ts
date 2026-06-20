@@ -283,6 +283,16 @@ export const defaultContent: CMSStore = {
         waitlist: false,
         heroIcon: '🕌',
         hotels: [],
+        program: [
+          { day: 'Tag 1', title: 'Ankunft in Sevilla', description: 'Flug und Transfer nach Sevilla. Einleben im Hotel und erster Abendspaziergang durch die Altstadt.' },
+          { day: 'Tag 2', title: 'Sevilla – Alcázar & Kathedrale', description: 'Besuch des Real Alcázar, eines der schönsten Mudéjar-Bauwerke Spaniens, und der gotischen Kathedrale.' },
+          { day: 'Tag 3', title: 'Transfer nach Córdoba', description: 'Fahrt nach Córdoba. Besuch der Großen Moschee (Mezquita-Catedral) – dem Herzstück der islamischen Architektur in Spanien.' },
+          { day: 'Tag 4', title: 'Córdoba – Medina Azahara', description: 'Ausflug zur Palaststadt Medina Azahara. Nachmittags: Spaziergang durch das jüdische Viertel und den Souk.' },
+          { day: 'Tag 5', title: 'Transfer nach Granada', description: 'Fahrt nach Granada. Ankunft und Abendspaziergang auf dem Mirador de San Nicolás mit Blick auf die Alhambra.' },
+          { day: 'Tag 6', title: 'Granada – Alhambra & Generalife', description: 'Ganztägige Führung durch die Alhambra: Nasridenpaläste, Alcazaba und die Gärten des Generalife.' },
+          { day: 'Tag 7', title: 'Granada – Albaicín & Moschee', description: 'Besuch des Albaicín-Viertels und der neuen Moschee von Granada. Freie Zeit für Einkäufe und Reflexion.' },
+          { day: 'Tag 8', title: 'Rückreise', description: 'Transfer zum Flughafen Málaga. Heimflug mit unvergesslichen Eindrücken von Al-Andalus.' },
+        ],
       },
     ],
     

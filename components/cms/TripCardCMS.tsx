@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, deriveStatus } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, deriveStatus } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
 
 interface Props { trip: Trip; }
-type TabKey = 'inhalt' | 'hotels' | 'seo';
+type TabKey = 'inhalt' | 'hotels' | 'programm' | 'seo';
 
 const BANNER_COLORS = [
   '#C2724A', '#16242B', '#3E6B7A', '#A8542F', '#5A6B52',
@@ -55,9 +55,10 @@ export function TripCardCMS({ trip }: Props) {
     upd({ banner: { enabled: true, line1: '', line2: '', color: '#C2724A', ...trip.banner, ...patch } });
 
   const tabs: Array<{ key: TabKey; label: string }> = [
-    { key: 'inhalt', label: 'Inhalt' },
-    { key: 'hotels', label: 'Hotels' },
-    { key: 'seo',    label: 'SEO' },
+    { key: 'inhalt',    label: 'Inhalt' },
+    { key: 'hotels',    label: 'Hotels' },
+    { key: 'programm',  label: 'Programm' },
+    { key: 'seo',       label: 'SEO' },
   ];
 
   return (
@@ -142,9 +143,10 @@ export function TripCardCMS({ trip }: Props) {
           </div>
 
           <div className="p-5 space-y-5">
-            {tab === 'inhalt' && <InhaltTab trip={trip} upd={upd} updBanner={updBanner} />}
-            {tab === 'hotels' && <HotelsTab trip={trip} upd={upd} />}
-            {tab === 'seo' && <SEOTab trip={trip} upd={upd} />}
+            {tab === 'inhalt'   && <InhaltTab   trip={trip} upd={upd} updBanner={updBanner} />}
+            {tab === 'hotels'   && <HotelsTab   trip={trip} upd={upd} />}
+            {tab === 'programm' && <ProgrammTab trip={trip} upd={upd} />}
+            {tab === 'seo'      && <SEOTab      trip={trip} upd={upd} />}
           </div>
         </div>
       )}
@@ -306,6 +308,65 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
           onClose={() => setPickerFor(null)}
         />
       )}
+    </div>
+  );
+}
+
+function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const program = trip.program ?? [];
+
+  const addDay = () => upd({
+    program: [...program, { day: `Tag ${program.length + 1}`, title: '', description: '' }],
+  });
+
+  const updDay = (i: number, patch: Partial<ProgramDay>) =>
+    upd({ program: program.map((d, j) => j === i ? { ...d, ...patch } : d) });
+
+  const removeDay = (i: number) =>
+    upd({ program: program.filter((_, j) => j !== i) });
+
+  const move = (i: number, dir: -1 | 1) => {
+    const p = [...program];
+    [p[i], p[i + dir]] = [p[i + dir], p[i]];
+    upd({ program: p });
+  };
+
+  return (
+    <div className="space-y-3">
+      {program.map((day, i) => (
+        <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
+            <div className="flex gap-1">
+              <button onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>↑</button>
+              <button onClick={() => move(i, 1)} disabled={i === program.length - 1}
+                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === program.length - 1 ? 'default' : 'pointer', opacity: i === program.length - 1 ? 0.35 : 1 }}>↓</button>
+              <button onClick={() => removeDay(i)}
+                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #FCA5A5', borderRadius: '6px', backgroundColor: '#FEF2F2', color: '#B91C1C', cursor: 'pointer' }}>×</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Field label="Tag">
+              <TextInput value={String(day.day)} onChange={(v) => updDay(i, { day: v })} placeholder="Tag 1" />
+            </Field>
+            <Field label="Titel">
+              <TextInput value={day.title} onChange={(v) => updDay(i, { title: v })} placeholder="Ankunft in Medina" />
+            </Field>
+          </div>
+          <Field label="Text">
+            <TextInput value={day.description} onChange={(v) => updDay(i, { description: v })} multiline rows={2} placeholder="Kurze Beschreibung des Tagesprogramms…" />
+          </Field>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        onClick={addDay}
+        style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
+      >
+        + Programmpunkt hinzufügen
+      </button>
     </div>
   );
 }
