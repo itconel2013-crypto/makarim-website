@@ -60,12 +60,12 @@ export function CMSSidebar() {
                   href={href}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-button text-sm font-medium transition-colors"
                   style={{
-                    color: active ? '#fff' : 'rgba(255,255,255,0.55)',
-                    backgroundColor: active ? 'rgba(194,114,74,0.22)' : 'transparent',
-                    borderLeft: active ? '2px solid #C2724A' : '2px solid transparent',
+                    color: active ? '#FFFFFF' : '#A9B4B2',
+                    backgroundColor: active ? '#C2724A' : 'transparent',
+                    fontWeight: active ? 600 : 500,
                   }}
                 >
-                  <span style={{ fontSize: '14px', opacity: active ? 1 : 0.7 }}>{icon}</span>
+                  <span style={{ fontSize: '14px', opacity: active ? 1 : 0.75 }}>{icon}</span>
                   {label}
                 </Link>
               </li>
