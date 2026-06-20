@@ -84,7 +84,7 @@ export default async function Footer() {
         {/* Bottom bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ color: '#9DB0AD' }}>
           <p>{brand?.footerCopyright ?? `© ${new Date().getFullYear()} Makarim GmbH · Alle Rechte vorbehalten`}</p>
-          <p>Pilgerreisen mit Seele</p>
+          <p>{brand?.footerTagline ?? 'Pilgerreisen mit Seele'}</p>
         </div>
       </div>
     </footer>

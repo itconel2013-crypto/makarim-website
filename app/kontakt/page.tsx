@@ -24,7 +24,7 @@ export default async function KontaktPage() {
             Wir sind für dich da
           </h1>
           <p className="mb-14" style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7', maxWidth: '520px' }}>
-            Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.
+            {brand.kontaktIntro ?? 'Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.'}
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">

@@ -50,7 +50,16 @@ export default function KontaktFooterEditor() {
           </Field>
         </FormSection>
 
+        <FormSection title="Kontaktseite">
+          <Field label="Einleitungstext">
+            <TextInput value={brand.kontaktIntro ?? ''} onChange={(v) => updBrand({ kontaktIntro: v })} multiline rows={3} placeholder="Hast du eine Frage zu einer Reise …" />
+          </Field>
+        </FormSection>
+
         <FormSection title="Footer">
+          <Field label="Tagline (rechts unten)">
+            <TextInput value={brand.footerTagline ?? ''} onChange={(v) => updBrand({ footerTagline: v })} placeholder="Pilgerreisen mit Seele" />
+          </Field>
           <Field label="Copyright-Zeile">
             <TextInput value={brand.footerCopyright ?? ''} onChange={(v) => updBrand({ footerCopyright: v })} placeholder="© 2026 Makarim GmbH · Alle Rechte vorbehalten" />
           </Field>

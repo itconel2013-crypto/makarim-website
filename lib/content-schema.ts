@@ -128,6 +128,8 @@ export interface Brand {
   address2: string;
   bank: BankDetails;
   footerCopyright?: string;
+  footerTagline?: string;
+  kontaktIntro?: string;
 }
 
 export interface SEOConfig {
