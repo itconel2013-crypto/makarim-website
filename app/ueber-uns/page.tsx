@@ -108,7 +108,7 @@ export default async function AboutPage() {
       {/* ── Warum Makarim? ──────────────────────────────────────────────── */}
       <section style={{ paddingTop: '46px', paddingBottom: '80px', backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
-          <div className="max-w-2xl mx-auto text-center mb-14">
+          <div className="max-w-2xl mb-14">
             <h2
               className="font-serif font-normal text-ink mb-5"
               style={{ fontSize: '30px' }}
@@ -121,7 +121,7 @@ export default async function AboutPage() {
           </div>
 
           {/* 2-col tiles grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl">
             {about.tiles.map((tile, i) => (
               <div
                 key={i}
