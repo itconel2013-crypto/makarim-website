@@ -10,10 +10,10 @@ export default async function FAQPage() {
     <main>
       <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
         <div className="container-max" style={{ maxWidth: '820px' }}>
-          <p className="font-mono uppercase text-center mb-4" style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F' }}>
+          <p className="font-mono uppercase mb-4" style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F' }}>
             Häufige Fragen
           </p>
-          <h1 className="font-serif font-normal text-ink text-center mb-14" style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.15' }}>
+          <h1 className="font-serif font-normal text-ink mb-14" style={{ fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: '1.15' }}>
             Wir haben Antworten
           </h1>
 
