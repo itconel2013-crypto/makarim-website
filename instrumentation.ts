@@ -9,7 +9,7 @@ export async function register() {
       const Database = (await import('better-sqlite3')).default;
       const { defaultContent } = await import('@/lib/seed-data');
       
-      const dbPath = `${process.cwd()}/makarim.db`;
+      const dbPath = process.env.DATABASE_PATH ?? `${process.cwd()}/makarim.db`;
       const db = new Database(dbPath);
       db.pragma('journal_mode = WAL');
       
