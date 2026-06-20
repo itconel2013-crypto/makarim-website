@@ -9,6 +9,7 @@ const navItems = [
   { href: '/admin/startseite',    label: 'Startseite',      icon: '⌂' },
   { href: '/admin/kategorien',    label: 'Kategorien',      icon: '◫' },
   { href: '/admin/reisen',        label: 'Reisen',          icon: '✦' },
+  { href: '/admin/kulturreisen',  label: 'Kulturreisen',    icon: '◎' },
   { href: '/admin/faq',           label: 'FAQ',             icon: '?' },
   { href: '/admin/ueber-uns',     label: 'Über uns',        icon: '◉' },
   { href: '/admin/seo',           label: 'SEO',             icon: '⌕' },
