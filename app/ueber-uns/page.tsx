@@ -33,7 +33,7 @@ export default async function AboutPage() {
       </div>
 
       {/* ── Two-column intro ────────────────────────────────────────────── */}
-      <section style={{ paddingTop: '64px', paddingBottom: '48px', backgroundColor: '#F4F1EA' }}>
+      <section style={{ paddingTop: '64px', paddingBottom: '24px', backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
@@ -106,7 +106,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Warum Makarim? ──────────────────────────────────────────────── */}
-      <section style={{ paddingTop: '46px', paddingBottom: '80px', backgroundColor: '#F4F1EA' }}>
+      <section style={{ paddingTop: '24px', paddingBottom: '80px', backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div className="max-w-2xl mb-14">
             <h2
