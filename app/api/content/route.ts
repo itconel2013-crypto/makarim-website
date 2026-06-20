@@ -76,11 +76,12 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
 
     if (body.c !== undefined && Object.keys(body).length === 1) {
-      // Fast path – update only $.c without reading the full store first
+      // Fast path – read only raw JSON, replace c, write back (preserves media)
       const db = getDb();
-      db.prepare(
-        "UPDATE cms_content SET data = json_set(data, '$.c', json(?)), updated_at = CURRENT_TIMESTAMP WHERE id = 1"
-      ).run(JSON.stringify(body.c));
+      const row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
+      const existing = row ? JSON.parse(row.data) : {};
+      const updated = { ...existing, c: body.c };
+      db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(updated));
       db.close();
       return NextResponse.json({ success: true });
     }
