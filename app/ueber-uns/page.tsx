@@ -35,7 +35,7 @@ export default async function AboutPage() {
       {/* ── Two-column intro ────────────────────────────────────────────── */}
       <section className="py-section bg-white">
         <div className="container-max">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
             {/* Text — left */}
             <div>
@@ -60,12 +60,12 @@ export default async function AboutPage() {
             </div>
 
             {/* Image collage — right */}
-            <div className="relative hidden lg:block" style={{ height: '420px' }}>
-              {/* Main image */}
+            <div className="relative hidden lg:block" style={{ height: '540px' }}>
+              {/* Bild 1 — hinten, oben links */}
               {about.url ? (
                 <div
                   className="absolute rounded-card overflow-hidden shadow-card-lg"
-                  style={{ top: 0, left: 0, right: '15%', bottom: '15%' }}
+                  style={{ top: 0, left: 0, width: '86%', height: '380px' }}
                 >
                   <Image
                     src={about.url}
@@ -77,15 +77,15 @@ export default async function AboutPage() {
               ) : (
                 <div
                   className="absolute rounded-card"
-                  style={{ top: 0, left: 0, right: '15%', bottom: '15%', backgroundColor: '#F0E4DC' }}
+                  style={{ top: 0, left: 0, width: '86%', height: '380px', backgroundColor: '#F0E4DC' }}
                 />
               )}
 
-              {/* Overlapping second image */}
+              {/* Bild 2 — vorne, unten rechts */}
               {about.url2 ? (
                 <div
                   className="absolute rounded-card overflow-hidden shadow-card-lg"
-                  style={{ bottom: 0, right: 0, width: '52%', height: '52%', border: '4px solid white' }}
+                  style={{ bottom: 0, right: 0, width: '78%', height: '380px', border: '8px solid white' }}
                 >
                   <Image
                     src={about.url2}
@@ -97,7 +97,7 @@ export default async function AboutPage() {
               ) : (
                 <div
                   className="absolute rounded-card"
-                  style={{ bottom: 0, right: 0, width: '52%', height: '52%', border: '4px solid white', backgroundColor: '#EAE3D8' }}
+                  style={{ bottom: 0, right: 0, width: '78%', height: '380px', border: '8px solid white', backgroundColor: '#EAE3D8' }}
                 />
               )}
             </div>
