@@ -33,7 +33,7 @@ export default async function AboutPage() {
       </div>
 
       {/* ── Two-column intro ────────────────────────────────────────────── */}
-      <section className="py-section bg-white">
+      <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
@@ -106,7 +106,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Warum Makarim? ──────────────────────────────────────────────── */}
-      <section className="py-section bg-page">
+      <section style={{ paddingTop: '46px', paddingBottom: '80px', backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div className="max-w-2xl mx-auto text-center mb-14">
             <h2
@@ -144,7 +144,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── CTA band ────────────────────────────────────────────────────── */}
-      <section className="py-section bg-white">
+      <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div
             className="text-center text-white px-10 py-16 rounded-band"
