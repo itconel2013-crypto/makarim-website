@@ -85,7 +85,7 @@ export default async function AboutPage() {
               {about.url2 ? (
                 <div
                   className="absolute rounded-card overflow-hidden shadow-card-lg"
-                  style={{ bottom: 0, right: 0, width: '78%', aspectRatio: '3/2', border: '8px solid white' }}
+                  style={{ bottom: '10%', right: 0, width: '78%', aspectRatio: '3/2', border: '8px solid white' }}
                 >
                   <Image
                     src={about.url2}
@@ -97,7 +97,7 @@ export default async function AboutPage() {
               ) : (
                 <div
                   className="absolute rounded-card"
-                  style={{ bottom: 0, right: 0, width: '78%', aspectRatio: '3/2', border: '8px solid white', backgroundColor: '#EAE3D8' }}
+                  style={{ bottom: '10%', right: 0, width: '78%', aspectRatio: '3/2', border: '8px solid white', backgroundColor: '#EAE3D8' }}
                 />
               )}
             </div>

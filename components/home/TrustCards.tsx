@@ -43,8 +43,8 @@ export function TrustCards({ cards }: TrustCardsProps) {
             >
               {/* Badge "01", "02" … */}
               <div
-                className="font-mono font-semibold mb-5 flex-shrink-0"
-                style={{ fontSize: '13px', color: '#C2724A', letterSpacing: '0.05em' }}
+                className="font-mono font-semibold mb-5 flex-shrink-0 flex items-center justify-center"
+                style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#F5EAE1', fontSize: '13px', color: '#C2724A', letterSpacing: '0.05em' }}
               >
                 {String(idx + 1).padStart(2, '0')}
               </div>
