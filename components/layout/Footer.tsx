@@ -69,21 +69,15 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {/* Bankverbindung */}
+          {/* Info */}
           <div>
             <h4 className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: '#9DB0AD' }}>
-              Bankverbindung
+              Info
             </h4>
-            <dl className="text-sm space-y-1" style={{ color: '#9DB0AD' }}>
-              <dt className="sr-only">Kontoinhaber</dt>
-              <dd>{brand?.bank?.inhaber}</dd>
-              <dt className="sr-only">Bank</dt>
-              <dd>{brand?.bank?.name}</dd>
-              <dt className="font-mono text-xs mt-2">IBAN</dt>
-              <dd className="font-mono text-xs">{brand?.bank?.iban}</dd>
-              <dt className="font-mono text-xs">BIC</dt>
-              <dd className="font-mono text-xs">{brand?.bank?.bic}</dd>
-            </dl>
+            <ul className="space-y-2 text-sm" style={{ color: '#9DB0AD' }}>
+              <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link href="/kontakt" className="hover:text-white transition-colors">Kontakt</Link></li>
+            </ul>
           </div>
         </div>
 
