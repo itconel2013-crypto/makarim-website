@@ -42,36 +42,37 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6" style={{ fontSize: '16.5px', color: '#3F4A44' }}>
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="hover:text-primary-dark transition-colors"
-                style={{ color: pathname.startsWith(href) ? '#A8542F' : '#3F4A44' }}
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
+          {/* Desktop Nav + CTA */}
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex items-center gap-6" style={{ fontSize: '16.5px' }}>
+              {navLinks.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="hover:text-primary-dark transition-colors"
+                  style={{ color: pathname.startsWith(href) ? '#A8542F' : '#3F4A44' }}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
 
-          {/* Kontakt CTA */}
-          <Link
-            href="/kontakt"
-            className="hidden md:inline-flex items-center justify-center font-medium text-white transition-colors"
-            style={{
-              backgroundColor: '#C2724A',
-              height: '40px',
-              borderRadius: '10px',
-              padding: '0 20px',
-              fontSize: '15px',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A8542F')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#C2724A')}
-          >
-            Kontakt
-          </Link>
+            <Link
+              href="/kontakt"
+              className="inline-flex items-center justify-center font-medium text-white transition-colors"
+              style={{
+                backgroundColor: '#C2724A',
+                height: '40px',
+                borderRadius: '10px',
+                padding: '0 20px',
+                fontSize: '15px',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A8542F')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#C2724A')}
+            >
+              Kontakt
+            </Link>
+          </div>
 
           {/* Mobile hamburger */}
           <button
