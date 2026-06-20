@@ -33,7 +33,7 @@ export default async function AboutPage() {
       </div>
 
       {/* ── Two-column intro ────────────────────────────────────────────── */}
-      <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
+      <section style={{ paddingTop: '64px', paddingBottom: '48px', backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
@@ -121,7 +121,7 @@ export default async function AboutPage() {
           </div>
 
           {/* 2-col tiles grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {about.tiles.map((tile, i) => (
               <div
                 key={i}
