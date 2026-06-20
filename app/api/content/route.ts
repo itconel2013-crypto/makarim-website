@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadContent, saveContent } from '@/lib/db';
+import { loadContent, saveContent, getDb } from '@/lib/db';
 
 function deepMerge(target: any, source: any): any {
   if (typeof source !== 'object' || source === null) return source;
@@ -68,11 +68,24 @@ export async function POST(request: NextRequest) {
 
 /**
  * PATCH /api/content
- * Partial update: deep-merges { c: Partial<CMSContent> } or { media: [...] }
+ * Fast path: if body = { c: ... }, updates only the `c` field via json_set (1 write, no read).
+ * Fallback: full deep-merge for other fields.
  */
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
+
+    if (body.c !== undefined && Object.keys(body).length === 1) {
+      // Fast path – update only $.c without reading the full store first
+      const db = getDb();
+      db.prepare(
+        "UPDATE cms_content SET data = json_set(data, '$.c', json(?)), updated_at = CURRENT_TIMESTAMP WHERE id = 1"
+      ).run(JSON.stringify(body.c));
+      db.close();
+      return NextResponse.json({ success: true });
+    }
+
+    // Fallback: full merge (used when media or other top-level fields are included)
     const current = await loadContent();
     const updated = deepMerge(current, body);
     await saveContent(updated);
