@@ -175,7 +175,7 @@ export default async function TripDetailPage({
 
       {/* ── Body: 2-col layout (content + sticky sidebar) ────────────── */}
       <div className="container-max py-14">
-        <div className="flex gap-12 items-start">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
 
           {/* ── Main content ──────────────────────────────────────────── */}
           <div className="flex-1 min-w-0">
@@ -190,7 +190,7 @@ export default async function TripDetailPage({
               <section className="mb-14">
                 <h2
                   className="font-serif font-normal text-ink mb-8"
-                  style={{ fontSize: '28px' }}
+                  style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
                 >
                   Enthaltene Leistungen
                 </h2>
@@ -219,7 +219,7 @@ export default async function TripDetailPage({
               <section className="mb-14">
                 <h2
                   className="font-serif font-normal text-ink mb-8"
-                  style={{ fontSize: '28px' }}
+                  style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
                 >
                   Deine Hotels
                 </h2>
@@ -295,7 +295,7 @@ export default async function TripDetailPage({
               <section className="mb-14">
                 <h2
                   className="font-serif font-normal text-ink mb-8"
-                  style={{ fontSize: '28px' }}
+                  style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
                 >
                   Dein Programm
                 </h2>

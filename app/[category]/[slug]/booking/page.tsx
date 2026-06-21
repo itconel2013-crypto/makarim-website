@@ -45,7 +45,7 @@ export default async function BookingPage({
         <p style={{ fontFamily: 'monospace', fontSize: '12px', letterSpacing: '0.18em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>Buchungsanfrage</p>
         <h1
           className="font-serif font-normal text-ink mb-2"
-          style={{ fontSize: '38px', lineHeight: '1.2' }}
+          style={{ fontSize: 'clamp(24px, 4vw, 38px)', lineHeight: '1.2' }}
         >
           {trip.title}
         </h1>

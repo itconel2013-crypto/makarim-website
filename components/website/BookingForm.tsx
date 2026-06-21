@@ -99,10 +99,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
 
         {/* ── LEFT: form ─────────────────────────────────────── */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex-1 min-w-0 w-full">
 
           {/* Error banner */}
           {formError && (
@@ -115,8 +115,8 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
           {/* Preise pro Person */}
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preise pro Person</h2>
-            <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', overflow: 'hidden', overflowX: 'auto' }}>
+              <table style={{ width: '100%', minWidth: '420px', borderCollapse: 'collapse', fontSize: '14px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#16242B', color: 'white' }}>
                     <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 500 }}>Zimmer</th>
@@ -166,7 +166,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                     </div>
 
                     {/* Row 1: Anrede + Vorname + Nachname */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                    <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
                       <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
                         <option>Herr</option>
                         <option>Frau</option>
@@ -176,7 +176,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                     </div>
 
                     {/* Row 2: Geburtsdatum + Nationalität + Zimmer */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                    <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
                       <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
                       <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="Nationalität" style={inputStyle} />
                       <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
@@ -210,7 +210,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Kontaktperson</h2>
             <div style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '20px', backgroundColor: 'white' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { key: 'vorname',  label: 'Vorname',  type: 'text',  ph: 'Vorname' },
                   { key: 'nachname', label: 'Nachname', type: 'text',  ph: 'Nachname' },
@@ -242,7 +242,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
         </div>
 
         {/* ── RIGHT: sticky summary ──────────────────────────────── */}
-        <aside style={{ width: '320px', flexShrink: 0, position: 'sticky', top: '96px' }}>
+        <aside className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-24">
           <div style={{ backgroundColor: 'white', border: '1px solid #EAE3D8', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 30px rgba(40,30,20,0.08)' }}>
             <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '20px' }}>Zusammenfassung</h2>
 

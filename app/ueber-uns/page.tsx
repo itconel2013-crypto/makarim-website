@@ -59,7 +59,14 @@ export default async function AboutPage() {
               </p>
             </div>
 
-            {/* Image collage — right */}
+            {/* Mobile: single image */}
+            {about.url && (
+              <div className="lg:hidden rounded-card overflow-hidden" style={{ aspectRatio: '3/2' }}>
+                <img src={about.url} alt="Makarim – Pilgerreisen mit Seele" className="w-full h-full object-cover" />
+              </div>
+            )}
+
+            {/* Image collage — right (desktop only) */}
             <div className="relative hidden lg:block" style={{ height: '540px' }}>
               {/* Bild 1 — hinten, oben links */}
               {about.url ? (
