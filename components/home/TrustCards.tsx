@@ -25,7 +25,7 @@ export function TrustCards({ cards }: TrustCardsProps) {
         {/* Section heading */}
         <h2
           className="font-serif font-normal text-ink text-center mb-14"
-          style={{ fontSize: '42px', lineHeight: '1.2' }}
+          style={{ fontSize: 'clamp(26px, 4vw, 42px)', lineHeight: '1.2' }}
         >
           Vier gute Gründe, mit uns zu reisen
         </h2>

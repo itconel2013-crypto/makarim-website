@@ -27,7 +27,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </p>
         <h2
           className="font-serif font-normal text-ink text-center mb-4"
-          style={{ fontSize: '42px', lineHeight: '1.2' }}
+          style={{ fontSize: 'clamp(26px, 4vw, 42px)', lineHeight: '1.2' }}
         >
           Finde deine perfekte Reise
         </h2>

@@ -74,7 +74,7 @@ export function KontaktForm() {
       </div>
 
       {/* E-Mail + Telefon nebeneinander */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label style={labelStyle}>E-Mail</label>
           <input

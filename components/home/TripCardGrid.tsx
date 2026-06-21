@@ -20,19 +20,19 @@ export function TripCardGrid({ trips, featured }: TripCardGridProps) {
   return (
     <section id="featured" className="bg-page" style={{ padding: '60px 0 20px' }}>
       <div className="container-max">
-        {/* Header row: kicker+title left, link vertically centered right */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '34px' }}>
+        {/* Header row */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
           <div>
             <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', letterSpacing: '0.2em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>
               {s.kicker}
             </p>
-            <h2 style={{ fontFamily: "'Newsreader', serif", fontWeight: 500, fontSize: 'clamp(28px, 3vw, 42px)', color: '#16242B', margin: 0 }}>
+            <h2 style={{ fontFamily: "'Newsreader', serif", fontWeight: 500, fontSize: 'clamp(24px, 3vw, 42px)', color: '#16242B', margin: 0 }}>
               {s.title}
             </h2>
           </div>
           <Link
             href={s.linkUrl}
-            style={{ fontSize: '14px', color: '#8A513A', fontWeight: 600, borderBottom: '1.5px solid #C2724A', paddingBottom: '2px', textDecoration: 'none', flexShrink: 0, marginLeft: '24px' }}
+            style={{ fontSize: '14px', color: '#8A513A', fontWeight: 600, borderBottom: '1.5px solid #C2724A', paddingBottom: '2px', textDecoration: 'none', flexShrink: 0 }}
           >
             {s.linkText}
           </Link>

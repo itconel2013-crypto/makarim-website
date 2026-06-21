@@ -18,7 +18,7 @@ export function CTABand({
       <div className="container-max">
         {/* Dark rounded band — #16242B, radius 24px */}
         <div
-          className="text-center text-white px-10 py-16"
+          className="text-center text-white px-6 py-12 sm:px-10 sm:py-16"
           style={{
             backgroundColor: '#16242B',
             borderRadius: '24px',
@@ -27,7 +27,7 @@ export function CTABand({
           {/* H2 — 40px, #F4F1EA */}
           <h2
             className="font-serif font-normal mb-5"
-            style={{ fontSize: '40px', lineHeight: '1.2', color: '#F4F1EA' }}
+            style={{ fontSize: 'clamp(24px, 4vw, 40px)', lineHeight: '1.2', color: '#F4F1EA' }}
           >
             {headline}
           </h2>

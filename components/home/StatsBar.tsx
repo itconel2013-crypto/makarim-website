@@ -15,12 +15,15 @@ export function StatsBar({ stats }: StatsBarProps) {
           {stats.map((stat, i) => (
             <div
               key={i}
-              className="flex flex-col items-center justify-center py-8 px-4 text-center"
-              style={{ borderRight: i < stats.length - 1 ? '1px solid #EAE3D8' : undefined }}
+              className="flex flex-col items-center justify-center py-6 px-3 md:py-8 md:px-4 text-center"
+              style={{
+                borderRight: i % 2 === 0 ? '1px solid #EAE3D8' : undefined,
+                borderBottom: i < 2 ? '1px solid #EAE3D8' : undefined,
+              }}
             >
               <span
                 className="font-serif font-normal text-ink"
-                style={{ fontSize: '38px', lineHeight: '1.1' }}
+                style={{ fontSize: 'clamp(26px, 4vw, 38px)', lineHeight: '1.1' }}
               >
                 {stat.value}
               </span>

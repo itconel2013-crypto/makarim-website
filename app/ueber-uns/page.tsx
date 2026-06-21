@@ -147,7 +147,7 @@ export default async function AboutPage() {
       <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
         <div className="container-max">
           <div
-            className="text-center text-white px-10 py-16 rounded-band"
+            className="text-center text-white px-6 py-12 sm:px-10 sm:py-16 rounded-band"
             style={{ backgroundColor: '#16242B' }}
           >
             <h2

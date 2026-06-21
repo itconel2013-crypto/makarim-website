@@ -61,7 +61,7 @@
 
   /* Container */
   .container-max {
-    @apply max-w-content mx-auto px-gutter;
+    @apply max-w-content mx-auto px-5 sm:px-gutter;
   }
 
   /* Section */

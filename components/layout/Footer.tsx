@@ -9,10 +9,10 @@ export default async function Footer() {
   return (
     <footer style={{ backgroundColor: '#16242B' }} className="text-white pt-14 pb-8 mt-12">
       <div className="container-max">
-        <div className="flex flex-wrap justify-center gap-x-16 gap-y-10 pb-10 border-b border-white/10">
+        <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 pb-10 border-b border-white/10">
 
           {/* Brand column */}
-          <div style={{ minWidth: '180px' }}>
+          <div style={{ minWidth: '160px', maxWidth: '220px' }}>
             <Image
               src="/assets/makarim_soultreat.png"
               alt="Makarim Reisen"
@@ -27,7 +27,7 @@ export default async function Footer() {
           </div>
 
           {/* Navigation */}
-          <div style={{ minWidth: '130px' }}>
+          <div>
             <h4 className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: '#9DB0AD' }}>
               Reisen
             </h4>
@@ -40,7 +40,7 @@ export default async function Footer() {
           </div>
 
           {/* Kontakt */}
-          <div style={{ minWidth: '160px' }}>
+          <div>
             <h4 className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: '#9DB0AD' }}>
               Kontakt
             </h4>
