@@ -177,7 +177,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
                     {/* Row 2: Geburtsdatum + Nationalität + Zimmer */}
                     <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
-                      <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9A9082', marginBottom: '5px' }}>Geburtsdatum</label>
+                        <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
+                      </div>
                       <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="Nationalität" style={inputStyle} />
                       <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
                         {ROOM_TYPES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}

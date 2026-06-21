@@ -49,7 +49,7 @@ export default async function BookingPage({
         >
           {trip.title}
         </h1>
-        <p className="font-mono font-semibold text-body-dark mb-10 tabular-nums" style={{ fontSize: '13.5px' }}>
+        <p className="font-sans font-medium mb-5 tabular-nums" style={{ fontSize: '15px', color: '#5A5448' }}>
           {trip.date} · {trip.nights + 1} Tage · {trip.nights} Nächte
         </p>
 
