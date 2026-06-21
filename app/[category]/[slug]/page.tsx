@@ -399,23 +399,61 @@ export default async function TripDetailPage({
         </div>
 
         {/* Mobile CTA — shown below content on small screens */}
-        <div className="lg:hidden mt-8 p-6 rounded-card bg-white" style={{ border: '1px solid #EAE3D8' }}>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="font-mono uppercase text-body-light mb-0.5" style={{ fontSize: '11px' }}>ab</p>
-              <p className="font-serif text-primary" style={{ fontSize: '30px' }}>€{trip.price?.toLocaleString('de-DE')}</p>
+        <div className="lg:hidden mt-8" style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 30px rgba(40,30,20,0.08)' }}>
+          {/* Price */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
+            <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
+            <span style={{ fontFamily: "'Newsreader', serif", fontSize: '38px', color: '#16242B', lineHeight: 1 }}>
+              {Math.round(trip.price * 0.85).toLocaleString('de-DE')} €
+            </span>
+          </div>
+          <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im Vierbettzimmer</div>
+
+          {/* Status badge */}
+          <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '18px' }}>
+            {status === 'begrenzte Plätze' ? `Nur noch ${trip.seats} Plätze frei` : status === 'verfügbar' ? `${trip.seats} Plätze verfügbar` : status}
+          </div>
+
+          {/* Termin + Dauer */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '14px 0', borderTop: '1px solid #F0EADF', borderBottom: '1px solid #F0EADF', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+              <span style={{ color: '#9A9082' }}>Termin</span>
+              <span style={{ color: '#16242B', fontWeight: 600 }}>{trip.date}</span>
             </div>
-            <div className="text-right text-body-sm text-body">
-              <p>{trip.date}</p>
-              <p>{trip.nights} Nächte</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+              <span style={{ color: '#9A9082' }}>Dauer</span>
+              <span style={{ color: '#16242B', fontWeight: 600 }}>{trip.nights + 1} Tage · {trip.nights} Nächte</span>
             </div>
           </div>
+
+          {/* Zimmerkategorien */}
+          <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: '#9A9082', textTransform: 'uppercase', marginBottom: '10px' }}>Zimmerkategorien</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+            {[
+              { type: 'Doppelzimmer',   sub: '2 Personen pro Zimmer', price: trip.price },
+              { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
+              { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', price: Math.round(trip.price * 0.85) },
+            ].map((r) => (
+              <div key={r.type} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: '1px solid #EFE8DC', borderRadius: '11px' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>{r.type}</div>
+                  <div style={{ fontSize: '11.5px', color: '#9A9082', marginTop: '2px' }}>{r.sub}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '11px', color: '#9A9082' }}>ab </span>
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: '#16242B' }}>{r.price?.toLocaleString('de-DE')} €</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
           <Link
             href={`/${category}/${slug}/booking`}
-            className="block w-full text-center text-white font-medium"
-            style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px' }}
+            className="block w-full text-center text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
           >
-            Jetzt anfragen
+            Zur Buchung
           </Link>
         </div>
       </div>
