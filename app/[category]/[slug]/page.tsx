@@ -430,9 +430,9 @@ export default async function TripDetailPage({
           <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: '#9A9082', textTransform: 'uppercase', marginBottom: '10px' }}>Zimmerkategorien</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
             {[
-              { type: 'Doppelzimmer',   sub: '2 Personen pro Zimmer', price: trip.price },
-              { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
               { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', price: Math.round(trip.price * 0.85) },
+              { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
+              { type: 'Doppelzimmer',   sub: '2 Personen pro Zimmer', price: trip.price },
             ].map((r) => (
               <div key={r.type} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: '1px solid #EFE8DC', borderRadius: '11px' }}>
                 <div>

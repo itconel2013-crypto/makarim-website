@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 
 const ROOM_TYPES = [
-  { value: 'DZ',  label: 'Doppelzimmer',   mul: 1.00 },
-  { value: 'DZ3', label: 'Dreibettzimmer',  mul: 0.91 },
   { value: 'VZ',  label: 'Vierbettzimmer',  mul: 0.85 },
+  { value: 'DZ3', label: 'Dreibettzimmer',  mul: 0.91 },
+  { value: 'DZ',  label: 'Doppelzimmer',   mul: 1.00 },
 ];
 
 function roomPrice(basePrice: number, roomValue: string): number {
