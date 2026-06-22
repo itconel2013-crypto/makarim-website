@@ -43,8 +43,8 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
 
             return (
               <div key={key} className="group flex flex-col overflow-hidden rounded-card" style={{ boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}>
-                {/* Image — aspect 4/3 */}
-                <div className="relative overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                {/* Image — aspect 4/3, clickable */}
+                <Link href={`/${key}`} className="relative overflow-hidden block" style={{ aspectRatio: '4/3' }}>
                   {imgSrc ? (
                     <img
                       src={imgSrc}
@@ -57,7 +57,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                       <span className="text-6xl">{cat.icon ?? '✈️'}</span>
                     </div>
                   )}
-                </div>
+                </Link>
 
                 {/* Card body */}
                 <div className="flex flex-col flex-1 bg-white p-6">
