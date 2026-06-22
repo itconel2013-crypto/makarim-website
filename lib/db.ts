@@ -235,19 +235,35 @@ export function loadBookings(): any[] {
   return rows;
 }
 
-/** Archive a single booking (hides from CMS list, keeps in DB). */
+/** Archive a single booking (hides from CMS list, keeps in DB). Only for unsynced entries. */
 export function archiveBooking(id: number): void {
   const db = getDb();
   try { db.exec('ALTER TABLE bookings ADD COLUMN archived INTEGER NOT NULL DEFAULT 0'); } catch {}
-  db.prepare('UPDATE bookings SET archived = 1 WHERE id = ?').run(id);
+  db.prepare('UPDATE bookings SET archived = 1 WHERE id = ? AND crm_synced = 0').run(id);
   db.close();
 }
 
-/** Archive all bookings that have been synced to CRM. */
+/** Permanently delete a single booking from DB. Only allowed if crm_synced = 1. */
+export function deleteBooking(id: number): boolean {
+  const db = getDb();
+  const result = db.prepare('DELETE FROM bookings WHERE id = ? AND crm_synced = 1').run(id);
+  db.close();
+  return result.changes > 0;
+}
+
+/** Permanently delete all CRM-synced bookings from DB. */
+export function deleteAllSynced(): number {
+  const db = getDb();
+  const result = db.prepare('DELETE FROM bookings WHERE crm_synced = 1').run();
+  db.close();
+  return result.changes;
+}
+
+/** Archive all unsynced bookings (hides from CMS list, keeps in DB). */
 export function archiveAllSynced(): void {
   const db = getDb();
   try { db.exec('ALTER TABLE bookings ADD COLUMN archived INTEGER NOT NULL DEFAULT 0'); } catch {}
-  db.prepare('UPDATE bookings SET archived = 1 WHERE crm_synced = 1').run();
+  db.prepare('UPDATE bookings SET archived = 1 WHERE crm_synced = 0').run();
   db.close();
 }
 

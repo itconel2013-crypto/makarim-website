@@ -42,9 +42,9 @@ export default function BuchungenPage() {
           {syncedCount > 0 && (
             <button
               onClick={archiveAllSynced}
-              style={{ fontSize: '13px', color: '#9A9082', border: '1px solid #EAE3D8', borderRadius: '9px', padding: '7px 14px', backgroundColor: 'white', cursor: 'pointer' }}
+              style={{ fontSize: '13px', color: '#991B1B', border: '1px solid #FECACA', borderRadius: '9px', padding: '7px 14px', backgroundColor: '#FEF2F2', cursor: 'pointer' }}
             >
-              🟢 {syncedCount} übermittelte archivieren
+              🗑 {syncedCount} übermittelte löschen
             </button>
           )}
         </div>
@@ -75,12 +75,10 @@ export default function BuchungenPage() {
                     </span>
                     <button
                       onClick={() => archive(row.id)}
-                      title="Aus Liste entfernen (bleibt in DB)"
-                      style={{ marginLeft: 'auto', fontSize: '12px', color: '#C9B8A8', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#A8542F')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#C9B8A8')}
+                      title={row.crm_synced ? 'Endgültig aus DB löschen (ans CRM übermittelt)' : 'Aus Liste ausblenden (noch nicht ans CRM übermittelt, bleibt in DB)'}
+                      style={{ marginLeft: 'auto', fontSize: '12px', color: row.crm_synced ? '#991B1B' : '#C9B8A8', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
                     >
-                      ✕ archivieren
+                      {row.crm_synced ? '🗑 löschen' : '✕ ausblenden'}
                     </button>
                   </div>
 
