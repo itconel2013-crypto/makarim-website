@@ -47,11 +47,13 @@ export default function BuchungenPage() {
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '13px', color: '#6B6457' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '13px', color: '#6B6457', alignItems: 'center' }}>
                     <span><strong style={{ color: '#16242B' }}>Reise:</strong> {row.trip_vg}</span>
                     <span><strong style={{ color: '#16242B' }}>Reisende:</strong> {travelers.length}</span>
-                    <span><strong style={{ color: '#16242B' }}>E-Mail:</strong> {row.email_sent ? '✓ gesendet' : '✗ ausstehend'}</span>
                     <span><strong style={{ color: '#16242B' }}>Datum:</strong> {new Date(row.created_at).toLocaleString('de-DE')}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, borderRadius: '20px', padding: '3px 10px', backgroundColor: row.crm_synced ? '#EAF0E8' : '#FFFBEA', color: row.crm_synced ? '#3E6B52' : '#92610A' }}>
+                      {row.crm_synced ? '🟢 übermittelt' : '🟡 wird nachgeliefert'}
+                    </span>
                   </div>
 
                   {travelers.length > 0 && (

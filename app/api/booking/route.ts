@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadContent, saveBooking, markBookingEmailed, decrementSeats } from '@/lib/db';
-import { sendCustomerConfirmation, sendInternalNotification, BookingEmailData } from '@/lib/email';
+import { loadContent, saveBooking, markBookingSynced, decrementSeats } from '@/lib/db';
+import { sendInternalNotification, BookingEmailData } from '@/lib/email';
+
+const WEBHOOK_TIMEOUT_MS = 8_000;
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,32 +21,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Reise nicht gefunden' }, { status: 404 });
     }
 
-    // 3) Persist booking in DB first (so it's never lost)
-    const bookingId = saveBooking(tripVg, { tripVg, travelers, contact, notes });
+    const createdAt = new Date().toISOString();
 
-    // 4) Decrement seats (non-blocking to the customer if it fails)
+    // 3) Persist booking in DB first (never lost even if webhook fails)
+    const bookingId = saveBooking(tripVg, { tripVg, travelers, contact, notes, createdAt });
+
+    // 4) Decrement seats
     try {
       await decrementSeats(tripVg, travelers.length);
     } catch (e) {
       console.error('decrementSeats failed:', e);
     }
 
-    // 5) Send emails fire-and-forget — response returns immediately, email runs in background
+    // 5) Internal team notification (optional, fire-and-forget)
     if (process.env.SMTP_HOST) {
       const be = store.c.brand.bookingEmail ?? {};
       const emailData: BookingEmailData = {
-        tripTitle:      trip.title,
-        tripDate:       trip.date,
-        tripVg:         trip.vg,
-        tripPrice:      trip.price,
+        tripTitle:   trip.title,
+        tripDate:    trip.date,
+        tripVg:      trip.vg,
+        tripPrice:   trip.price,
         travelers,
         contact,
-        notes:          notes ?? '',
-        iban:           store.c.brand.bank.iban,
-        bic:            store.c.brand.bank.bic,
-        bankName:       store.c.brand.bank.name,
-        bankInhaber:    store.c.brand.bank.inhaber,
-        emailIntro:     be.intro,
+        notes:       notes ?? '',
+        iban:        store.c.brand.bank.iban,
+        bic:         store.c.brand.bank.bic,
+        bankName:    store.c.brand.bank.name,
+        bankInhaber: store.c.brand.bank.inhaber,
+        emailIntro:      be.intro,
         emailStep1Title: be.step1Title,
         emailStep1Text:  be.step1Text,
         emailStep2Title: be.step2Title,
@@ -52,26 +56,30 @@ export async function POST(request: NextRequest) {
         emailStep3Title: be.step3Title,
         emailStep3Text:  be.step3Text,
       };
-      Promise.all([
-        sendCustomerConfirmation(emailData),
-        sendInternalNotification(emailData),
-      ])
-        .then(() => markBookingEmailed(bookingId))
-        .catch((e) => console.error('E-Mail-Versand fehlgeschlagen (Buchung id=' + bookingId + '):', e));
-    } else {
-      console.warn('SMTP_HOST nicht konfiguriert — E-Mail übersprungen (Buchung id=' + bookingId + ')');
+      sendInternalNotification(emailData).catch((e) =>
+        console.error('Interne Benachrichtigung fehlgeschlagen (id=' + bookingId + '):', e)
+      );
     }
 
-    // 6) Optional CRM webhook
+    // 6) CRM webhook — customer confirmation is sent by the CRM, not the CMS
     if (process.env.CRM_WEBHOOK_URL) {
       try {
-        await fetch(process.env.CRM_WEBHOOK_URL, {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
+        const res = await fetch(process.env.CRM_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-API-Key': process.env.CRM_API_KEY ?? '' },
-          body: JSON.stringify({ tripVg, travelers, contact, notes, bookingId }),
+          body: JSON.stringify({ bookingId, tripVg, travelers, contact, notes, createdAt }),
+          signal: controller.signal,
         });
+        clearTimeout(timer);
+        if (res.ok) {
+          markBookingSynced(bookingId);
+        } else {
+          console.error('CRM-Webhook: HTTP ' + res.status + ' (Buchung id=' + bookingId + ', Retry läuft)');
+        }
       } catch (e) {
-        console.error('CRM-Sync fehlgeschlagen (Buchung gespeichert):', e);
+        console.error('CRM-Webhook fehlgeschlagen (Buchung id=' + bookingId + ', Retry läuft):', e);
       }
     }
 

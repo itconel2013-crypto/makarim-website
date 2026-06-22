@@ -176,6 +176,29 @@ export function markBookingEmailed(id: number): void {
   db.close();
 }
 
+/** Mark a booking as synced to CRM. */
+export function markBookingSynced(id: number): void {
+  const db = getDb();
+  db.prepare('UPDATE bookings SET crm_synced = 1 WHERE id = ?').run(id);
+  db.close();
+}
+
+/** Load all bookings not yet synced to CRM. */
+export function loadUnsyncedBookings(): any[] {
+  const db = getDb();
+  db.exec(`CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trip_vg TEXT NOT NULL, payload TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'neu',
+    email_sent INTEGER NOT NULL DEFAULT 0,
+    crm_synced INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );`);
+  const rows = db.prepare('SELECT * FROM bookings WHERE crm_synced = 0 ORDER BY created_at ASC').all();
+  db.close();
+  return rows;
+}
+
 /** Reduce seats for a trip by `count` (minimum 0). */
 export async function decrementSeats(tripVg: string, count: number): Promise<void> {
   const db = getDb();
