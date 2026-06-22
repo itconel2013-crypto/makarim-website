@@ -216,7 +216,7 @@ export async function decrementSeats(tripVg: string, count: number): Promise<voi
   db.close();
 }
 
-/** Load all bookings (admin view). */
+/** Load all non-archived bookings (admin view). */
 export function loadBookings(): any[] {
   const db = getDb();
   db.exec(`CREATE TABLE IF NOT EXISTS bookings (
@@ -228,9 +228,27 @@ export function loadBookings(): any[] {
     crm_synced INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );`);
-  const rows = db.prepare('SELECT * FROM bookings ORDER BY created_at DESC').all();
+  // Add archived column if it doesn't exist yet (safe migration)
+  try { db.exec('ALTER TABLE bookings ADD COLUMN archived INTEGER NOT NULL DEFAULT 0'); } catch {}
+  const rows = db.prepare('SELECT * FROM bookings WHERE archived = 0 ORDER BY created_at DESC').all();
   db.close();
   return rows;
+}
+
+/** Archive a single booking (hides from CMS list, keeps in DB). */
+export function archiveBooking(id: number): void {
+  const db = getDb();
+  try { db.exec('ALTER TABLE bookings ADD COLUMN archived INTEGER NOT NULL DEFAULT 0'); } catch {}
+  db.prepare('UPDATE bookings SET archived = 1 WHERE id = ?').run(id);
+  db.close();
+}
+
+/** Archive all bookings that have been synced to CRM. */
+export function archiveAllSynced(): void {
+  const db = getDb();
+  try { db.exec('ALTER TABLE bookings ADD COLUMN archived INTEGER NOT NULL DEFAULT 0'); } catch {}
+  db.prepare('UPDATE bookings SET archived = 1 WHERE crm_synced = 1').run();
+  db.close();
 }
 
 /**
