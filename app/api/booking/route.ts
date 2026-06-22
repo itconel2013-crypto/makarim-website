@@ -31,18 +31,26 @@ export async function POST(request: NextRequest) {
 
     // 5) Send emails fire-and-forget — response returns immediately, email runs in background
     if (process.env.SMTP_HOST) {
+      const be = store.c.brand.bookingEmail ?? {};
       const emailData: BookingEmailData = {
-        tripTitle:   trip.title,
-        tripDate:    trip.date,
-        tripVg:      trip.vg,
-        tripPrice:   trip.price,
+        tripTitle:      trip.title,
+        tripDate:       trip.date,
+        tripVg:         trip.vg,
+        tripPrice:      trip.price,
         travelers,
         contact,
-        notes:       notes ?? '',
-        iban:        store.c.brand.bank.iban,
-        bic:         store.c.brand.bank.bic,
-        bankName:    store.c.brand.bank.name,
-        bankInhaber: store.c.brand.bank.inhaber,
+        notes:          notes ?? '',
+        iban:           store.c.brand.bank.iban,
+        bic:            store.c.brand.bank.bic,
+        bankName:       store.c.brand.bank.name,
+        bankInhaber:    store.c.brand.bank.inhaber,
+        emailIntro:     be.intro,
+        emailStep1Title: be.step1Title,
+        emailStep1Text:  be.step1Text,
+        emailStep2Title: be.step2Title,
+        emailStep2Text:  be.step2Text,
+        emailStep3Title: be.step3Title,
+        emailStep3Text:  be.step3Text,
       };
       Promise.all([
         sendCustomerConfirmation(emailData),

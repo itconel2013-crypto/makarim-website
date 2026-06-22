@@ -39,6 +39,14 @@ export interface BookingEmailData {
   bic: string;
   bankName: string;
   bankInhaber: string;
+  // CMS-editable email content
+  emailIntro?: string;
+  emailStep1Title?: string;
+  emailStep1Text?: string;
+  emailStep2Title?: string;
+  emailStep2Text?: string;
+  emailStep3Title?: string;
+  emailStep3Text?: string;
 }
 
 const COLORS = {
@@ -108,8 +116,7 @@ export async function sendCustomerConfirmation(data: BookingEmailData) {
 
     <p style="font-size:15px;color:#5A5448;line-height:1.7;margin:0 0 28px;">
       Sehr geehrte/r ${data.contact.vorname} ${data.contact.nachname},<br><br>
-      vielen Dank für Ihre Buchungsanfrage. Wir haben Ihre Anfrage erhalten und werden uns
-      innerhalb von <strong>24 Stunden</strong> bei Ihnen melden, um alle weiteren Details zu besprechen.
+      ${data.emailIntro ?? 'vielen Dank für Ihre Buchungsanfrage. Wir haben Ihre Anfrage erhalten und werden uns innerhalb von <strong>24 Stunden</strong> bei Ihnen melden, um alle weiteren Details zu besprechen.'}
     </p>
 
     <!-- Trip box -->
@@ -128,9 +135,9 @@ export async function sendCustomerConfirmation(data: BookingEmailData) {
     <!-- Next steps -->
     <p style="font-size:13px;font-weight:600;color:${COLORS.ink};margin:0 0 16px;text-transform:uppercase;letter-spacing:0.08em;">Nächste Schritte</p>
     ${[
-      ['1', 'Wir bestätigen Ihre Anfrage', 'Sie erhalten innerhalb von 24 Stunden eine Buchungsbestätigung per E-Mail.'],
-      ['2', 'Anzahlung überweisen', `Nach Bestätigung überweisen Sie bitte die Anzahlung auf unser Konto.`],
-      ['3', 'Reiseunterlagen', 'Ca. 4 Wochen vor Reisebeginn erhalten Sie alle Unterlagen.'],
+      ['1', data.emailStep1Title ?? 'Wir bestätigen Ihre Anfrage', data.emailStep1Text ?? 'Sie erhalten innerhalb von 24 Stunden eine Buchungsbestätigung per E-Mail.'],
+      ['2', data.emailStep2Title ?? 'Anzahlung überweisen',        data.emailStep2Text ?? 'Nach Bestätigung überweisen Sie bitte die Anzahlung auf unser Konto.'],
+      ['3', data.emailStep3Title ?? 'Reiseunterlagen',             data.emailStep3Text ?? 'Ca. 4 Wochen vor Reisebeginn erhalten Sie alle Unterlagen.'],
     ].map(([n, t, d]) => `
       <div style="display:flex;gap:16px;margin-bottom:16px;">
         <div style="width:28px;height:28px;border-radius:50%;background:${COLORS.primary};color:white;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:28px;text-align:center;">${n}</div>

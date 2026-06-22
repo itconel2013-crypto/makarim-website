@@ -348,6 +348,15 @@ export const defaultContent: CMSStore = {
       footerTagline: 'Pilgerreisen mit Seele',
       kontaktHeading: 'Wir sind für dich da',
       kontaktIntro: 'Hast du eine Frage zu einer Reise, möchtest dich beraten lassen oder brauchst Hilfe bei deiner Buchung? Schreib uns – wir melden uns persönlich bei dir.',
+      bookingEmail: {
+        intro: 'vielen Dank für Ihre Buchungsanfrage. Wir haben Ihre Anfrage erhalten und werden uns innerhalb von 24 Stunden bei Ihnen melden, um alle weiteren Details zu besprechen.',
+        step1Title: 'Wir bestätigen Ihre Anfrage',
+        step1Text: 'Sie erhalten innerhalb von 24 Stunden eine Buchungsbestätigung per E-Mail.',
+        step2Title: 'Anzahlung überweisen',
+        step2Text: 'Nach Bestätigung überweisen Sie bitte die Anzahlung auf unser Konto.',
+        step3Title: 'Reiseunterlagen',
+        step3Text: 'Ca. 4 Wochen vor Reisebeginn erhalten Sie alle Unterlagen.',
+      },
       bank: {
         inhaber: 'Makarim GmbH',
         iban: 'DE12 1234 5678 9012 3456 78',

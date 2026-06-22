@@ -119,6 +119,16 @@ export interface BankDetails {
   name: string;
 }
 
+export interface BookingEmailConfig {
+  intro?: string;
+  step1Title?: string;
+  step1Text?: string;
+  step2Title?: string;
+  step2Text?: string;
+  step3Title?: string;
+  step3Text?: string;
+}
+
 export interface Brand {
   phone: string;
   whatsapp: string;
@@ -131,6 +141,7 @@ export interface Brand {
   footerTagline?: string;
   kontaktHeading?: string;
   kontaktIntro?: string;
+  bookingEmail?: BookingEmailConfig;
 }
 
 export interface SEOConfig {
