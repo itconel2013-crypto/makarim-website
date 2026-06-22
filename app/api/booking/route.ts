@@ -29,28 +29,29 @@ export async function POST(request: NextRequest) {
       console.error('decrementSeats failed:', e);
     }
 
-    // 5) Send emails — failure does NOT cancel the booking
-    const emailData: BookingEmailData = {
-      tripTitle:   trip.title,
-      tripDate:    trip.date,
-      tripVg:      trip.vg,
-      tripPrice:   trip.price,
-      travelers,
-      contact,
-      notes:       notes ?? '',
-      iban:        store.c.brand.bank.iban,
-      bic:         store.c.brand.bank.bic,
-      bankName:    store.c.brand.bank.name,
-      bankInhaber: store.c.brand.bank.inhaber,
-    };
-    try {
-      await Promise.all([
+    // 5) Send emails fire-and-forget — response returns immediately, email runs in background
+    if (process.env.SMTP_HOST) {
+      const emailData: BookingEmailData = {
+        tripTitle:   trip.title,
+        tripDate:    trip.date,
+        tripVg:      trip.vg,
+        tripPrice:   trip.price,
+        travelers,
+        contact,
+        notes:       notes ?? '',
+        iban:        store.c.brand.bank.iban,
+        bic:         store.c.brand.bank.bic,
+        bankName:    store.c.brand.bank.name,
+        bankInhaber: store.c.brand.bank.inhaber,
+      };
+      Promise.all([
         sendCustomerConfirmation(emailData),
         sendInternalNotification(emailData),
-      ]);
-      markBookingEmailed(bookingId);
-    } catch (e) {
-      console.error('E-Mail-Versand fehlgeschlagen (Buchung gespeichert, id=' + bookingId + '):', e);
+      ])
+        .then(() => markBookingEmailed(bookingId))
+        .catch((e) => console.error('E-Mail-Versand fehlgeschlagen (Buchung id=' + bookingId + '):', e));
+    } else {
+      console.warn('SMTP_HOST nicht konfiguriert — E-Mail übersprungen (Buchung id=' + bookingId + ')');
     }
 
     // 6) Optional CRM webhook
