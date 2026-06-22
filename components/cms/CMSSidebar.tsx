@@ -15,6 +15,7 @@ const navItems = [
   { href: '/admin/seo',           label: 'SEO',             icon: '⌕' },
   { href: '/admin/mediathek',     label: 'Mediathek',       icon: '⊞' },
   { href: '/admin/kontakt-footer',label: 'Kontakt & Footer',icon: '✉' },
+  { href: '/admin/buchungen',     label: 'Buchungen',       icon: '▤' },
 ];
 
 export function CMSSidebar() {

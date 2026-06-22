@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadContent, saveContent } from '@/lib/db';
+import { isAuthorized } from '@/lib/auth';
 import { MediaItem } from '@/lib/content-schema';
 import fs from 'fs';
 import path from 'path';
@@ -19,6 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!(await isAuthorized(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -51,6 +53,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!(await isAuthorized(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const { id, alt, title } = await request.json();
   const store = await loadContent();
   const media = (store.media ?? []).map((m: MediaItem) =>
@@ -61,6 +64,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!(await isAuthorized(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const { id } = await request.json();
   const store = await loadContent();
   const item = (store.media ?? []).find((m: MediaItem) => m.id === id);

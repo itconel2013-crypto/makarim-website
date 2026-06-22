@@ -67,13 +67,22 @@ export function getDb(): Database.Database {
  */
 export async function initializeDb(): Promise<void> {
   const db = getDb();
-  
+
   // Create content table if not exists
   db.exec(`
     CREATE TABLE IF NOT EXISTS cms_content (
       id INTEGER PRIMARY KEY CHECK (id = 1),
       data TEXT NOT NULL,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS bookings (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_vg     TEXT NOT NULL,
+      payload     TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'neu',
+      email_sent  INTEGER NOT NULL DEFAULT 0,
+      crm_synced  INTEGER NOT NULL DEFAULT 0,
+      created_at  TEXT DEFAULT CURRENT_TIMESTAMP
     );
   `);
   
@@ -128,14 +137,77 @@ export async function loadContent(): Promise<CMSStore> {
 }
 
 /**
- * Save content to database (sync)
+ * Save content to database (sync, wrapped in transaction)
  */
 export async function saveContent(content: any): Promise<void> {
   const db = getDb();
-  db.prepare(
-    'UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1'
-  ).run(JSON.stringify(content));
+  const run = db.transaction(() => {
+    db.prepare(
+      'UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1'
+    ).run(JSON.stringify(content));
+  });
+  run();
   db.close();
+}
+
+/** Save a new booking and return its id. */
+export function saveBooking(tripVg: string, payload: object): number {
+  const db = getDb();
+  db.exec(`CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trip_vg TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'neu',
+    email_sent INTEGER NOT NULL DEFAULT 0,
+    crm_synced INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );`);
+  const result = db.prepare(
+    'INSERT INTO bookings (trip_vg, payload) VALUES (?, ?)'
+  ).run(tripVg, JSON.stringify(payload));
+  db.close();
+  return result.lastInsertRowid as number;
+}
+
+/** Mark a booking as emailed. */
+export function markBookingEmailed(id: number): void {
+  const db = getDb();
+  db.prepare('UPDATE bookings SET email_sent = 1 WHERE id = ?').run(id);
+  db.close();
+}
+
+/** Reduce seats for a trip by `count` (minimum 0). */
+export async function decrementSeats(tripVg: string, count: number): Promise<void> {
+  const db = getDb();
+  const row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
+  if (!row) { db.close(); return; }
+  const data = JSON.parse(row.data);
+  const trips: any[] = data.c?.trips ?? [];
+  const updated = trips.map((t: any) => {
+    if (t.vg !== tripVg) return t;
+    const newSeats = Math.max(0, (t.seats ?? 0) - count);
+    return { ...t, seats: newSeats, waitlist: newSeats === 0 && t.waitlist };
+  });
+  data.c = { ...data.c, trips: updated };
+  db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(data));
+  db.close();
+}
+
+/** Load all bookings (admin view). */
+export function loadBookings(): any[] {
+  const db = getDb();
+  db.exec(`CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trip_vg TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'neu',
+    email_sent INTEGER NOT NULL DEFAULT 0,
+    crm_synced INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );`);
+  const rows = db.prepare('SELECT * FROM bookings ORDER BY created_at DESC').all();
+  db.close();
+  return rows;
 }
 
 /**
