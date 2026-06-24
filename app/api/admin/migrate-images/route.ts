@@ -27,20 +27,18 @@ interface MigrateState {
 }
 
 /**
- * If `value` is a base64 data URL, persist it to disk and return the new
+ * If `value` is a base64 image data URL, persist it to disk and return the new
  * "/api/uploads/<file>" URL. Otherwise return the value unchanged.
  * `register` adds a new media-library entry; skip it when the value already
  * IS a media-library entry (avoids duplicates) — only its url is rewritten.
  */
-function migrateValue(value: unknown, label: string, st: MigrateState, register = true): unknown {
-  if (typeof value !== 'string') return value;
+function migrateString(value: string, label: string, st: MigrateState, register: boolean): string {
   const m = value.match(DATA_URL_RE);
   if (!m) {
-    if (value) st.skipped++;
+    if (value.startsWith('data:')) st.skipped++; // a data: URL we don't handle
     return value;
   }
-  const mime = m[1];
-  const ext = extFromMime(mime);
+  const ext = extFromMime(m[1]);
   const buffer = Buffer.from(m[2], 'base64');
   const id = crypto.randomUUID();
   const filename = `${id}${ext}`;
@@ -51,6 +49,28 @@ function migrateValue(value: unknown, label: string, st: MigrateState, register 
   }
   st.migrated++;
   return url;
+}
+
+/**
+ * Recursively walk any object/array and replace every base64 image string in
+ * place. Generic on purpose: production content may carry base64 in fields not
+ * named in the schema, so we catch them all rather than enumerating known keys.
+ */
+function walk(node: any, label: string, st: MigrateState, register: boolean): void {
+  if (node === null || typeof node !== 'object') return;
+  if (Array.isArray(node)) {
+    for (let i = 0; i < node.length; i++) {
+      const v = node[i];
+      if (typeof v === 'string') node[i] = migrateString(v, `${label}-${i}`, st, register);
+      else walk(v, `${label}-${i}`, st, register);
+    }
+  } else {
+    for (const k of Object.keys(node)) {
+      const v = node[k];
+      if (typeof v === 'string') node[k] = migrateString(v, `${label}-${k}`, st, register);
+      else walk(v, `${label}-${k}`, st, register);
+    }
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -69,35 +89,16 @@ export async function POST(request: NextRequest) {
     skipped: 0,
   };
 
-  const c = store.c;
+  // Walk the whole content tree — catches every base64 field, named or not,
+  // and registers each as a media-library entry.
+  walk(store.c, 'content', st, true);
 
-  // home.heroUrl
-  if (c.home) {
-    c.home.heroUrl = migrateValue(c.home.heroUrl, 'hero', st) as string | undefined;
-  }
-
-  // categories[].imageUrl
-  for (const cat of c.categories ?? []) {
-    cat.imageUrl = migrateValue(cat.imageUrl, `kategorie-${cat.key ?? cat.url}`, st) as string | undefined;
-  }
-
-  // about.url / about.url2
-  if (c.about) {
-    c.about.url = migrateValue(c.about.url, 'about-1', st) as string | undefined;
-    c.about.url2 = migrateValue(c.about.url2, 'about-2', st) as string | undefined;
-  }
-
-  // trips[].hotels[].photo
-  for (const trip of c.trips ?? []) {
-    for (const hotel of trip.hotels ?? []) {
-      hotel.photo = migrateValue(hotel.photo, `hotel-${trip.vg}`, st) as string | undefined;
-    }
-  }
-
-  // media[] library entries that still hold base64 in their url (rewrite in place)
+  // Existing media-library entries: rewrite base64 urls in place, no duplicates.
   for (const item of st.media) {
-    const migrated = migrateValue(item.url, `media-${item.name ?? item.id}`, st, false);
-    if (migrated !== item.url) item.url = migrated as string;
+    if (typeof item.url === 'string') {
+      const migrated = migrateString(item.url, `media-${item.name ?? item.id}`, st, false);
+      if (migrated !== item.url) item.url = migrated;
+    }
   }
 
   await saveContent({ ...store, media: st.media });
