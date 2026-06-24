@@ -17,6 +17,7 @@ const navItems = [
   { href: '/admin/kontakt-footer',label: 'Kontakt & Footer',icon: '✉' },
   { href: '/admin/buchungen',     label: 'Buchungen',       icon: '▤' },
   { href: '/admin/buchungsmail', label: 'Buchungs-E-Mail', icon: '✉' },
+  { href: '/admin/buchung-bestaetigung', label: 'Buchungsseite', icon: '✓' },
 ];
 
 export function CMSSidebar() {

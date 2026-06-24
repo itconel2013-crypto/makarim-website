@@ -129,6 +129,36 @@ export interface BookingEmailConfig {
   step3Text?: string;
 }
 
+/**
+ * Texts on the on-page booking confirmation (the browser success page).
+ * `intro` supports the placeholder {reise} (trip title); `step2Text` supports
+ * {vg} (Vorgangsnummer). All fields are CMS-editable via /admin/buchung-bestaetigung.
+ */
+export interface BookingPageConfig {
+  heading?: string;
+  intro?: string;       // supports {reise}
+  stepsTitle?: string;
+  step1Title?: string;
+  step1Text?: string;
+  step2Title?: string;
+  step2Text?: string;   // supports {vg}
+  step3Title?: string;
+  step3Text?: string;
+}
+
+/** Default copy for the booking confirmation page (booking — not inquiry — wording). */
+export const defaultBookingPage: Required<BookingPageConfig> = {
+  heading: 'Vielen Dank für deine Buchung',
+  intro: 'Wir haben deine Buchung für {reise} erhalten. Die nächsten Schritte findest du unten.',
+  stepsTitle: 'So schließt du deine Buchung ab',
+  step1Title: 'Warte auf unsere Bestätigung',
+  step1Text: 'Wir senden dir innerhalb von 24 Stunden eine Bestätigungs-E-Mail mit dem verbindlichen Reisepreis.',
+  step2Title: 'Anzahlung überweisen',
+  step2Text: 'Überweise die Anzahlung per Banküberweisung. Gib als Verwendungszweck die Vorgangsnummer {vg} an.',
+  step3Title: 'Reiseunterlagen erhalten',
+  step3Text: 'Nach Zahlungseingang erhältst du alle Reisedokumente per E-Mail.',
+};
+
 export interface Brand {
   phone: string;
   whatsapp: string;
@@ -142,6 +172,7 @@ export interface Brand {
   kontaktHeading?: string;
   kontaktIntro?: string;
   bookingEmail?: BookingEmailConfig;
+  bookingPage?: BookingPageConfig;
 }
 
 export interface SEOConfig {

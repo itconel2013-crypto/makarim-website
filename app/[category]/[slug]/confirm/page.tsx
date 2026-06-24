@@ -2,9 +2,19 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { loadContent } from '@/lib/db';
+import { defaultBookingPage, Trip } from '@/lib/content-schema';
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: 'Anfrage eingegangen – Makarim Reisen' };
+  return { title: 'Buchung eingegangen – Makarim Reisen' };
+}
+
+/** Render an editable text, replacing {reise} (trip title) and {vg} (Vorgangsnummer). */
+function fillTemplate(text: string, trip: Trip): React.ReactNode {
+  return text.split(/(\{reise\}|\{vg\})/g).map((part, i) => {
+    if (part === '{reise}') return <strong key={i}>{trip.title}</strong>;
+    if (part === '{vg}') return <strong key={i} className="font-mono" style={{ color: '#A8542F' }}>VG {trip.vg}</strong>;
+    return <span key={i}>{part}</span>;
+  });
 }
 
 export default async function ConfirmPage({
@@ -21,6 +31,7 @@ export default async function ConfirmPage({
   if (!trip) notFound();
 
   const bank = content.c.brand.bank;
+  const cfg = { ...defaultBookingPage, ...(content.c.brand.bookingPage ?? {}) };
 
   return (
     <main className="min-h-screen bg-page">
@@ -48,11 +59,10 @@ export default async function ConfirmPage({
             className="font-serif font-normal text-ink mb-4"
             style={{ fontSize: '38px', lineHeight: '1.2' }}
           >
-            Deine Buchungsanfrage ist eingegangen
+            {cfg.heading}
           </h1>
-          <p style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7' }}>
-            Vielen Dank für deine Anfrage für <strong>{trip.title}</strong>.<br />
-            Wir prüfen die Verfügbarkeit und melden uns innerhalb von 24 Stunden bei dir.
+          <p style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+            {fillTemplate(cfg.intro, trip)}
           </p>
         </div>
 
@@ -65,51 +75,28 @@ export default async function ConfirmPage({
             className="font-serif font-normal text-ink mb-6"
             style={{ fontSize: '22px' }}
           >
-            So schließt du deine Buchung ab
+            {cfg.stepsTitle}
           </h2>
 
           <ol className="space-y-5">
-            <li className="flex gap-4">
-              <span
-                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
-                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
-              >
-                1
-              </span>
-              <div>
-                <p className="font-medium text-ink text-sm mb-1">Warte auf unsere Bestätigung</p>
-                <p className="text-body-sm text-body">Wir senden dir innerhalb von 24 Stunden eine Bestätigungs-E-Mail mit dem verbindlichen Reisepreis.</p>
-              </div>
-            </li>
-
-            <li className="flex gap-4">
-              <span
-                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
-                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
-              >
-                2
-              </span>
-              <div>
-                <p className="font-medium text-ink text-sm mb-1">Anzahlung überweisen</p>
-                <p className="text-body-sm text-body">
-                  Überweise die Anzahlung per Banküberweisung. Gib als Verwendungszweck die Vorgangsnummer{' '}
-                  <strong className="font-mono" style={{ color: '#A8542F' }}>VG {trip.vg}</strong> an.
-                </p>
-              </div>
-            </li>
-
-            <li className="flex gap-4">
-              <span
-                className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
-                style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
-              >
-                3
-              </span>
-              <div>
-                <p className="font-medium text-ink text-sm mb-1">Reiseunterlagen erhalten</p>
-                <p className="text-body-sm text-body">Nach Zahlungseingang erhältst du alle Reisedokumente per E-Mail.</p>
-              </div>
-            </li>
+            {[
+              { title: cfg.step1Title, text: cfg.step1Text },
+              { title: cfg.step2Title, text: cfg.step2Text },
+              { title: cfg.step3Title, text: cfg.step3Text },
+            ].map((step, i) => (
+              <li key={i} className="flex gap-4">
+                <span
+                  className="flex-shrink-0 flex items-center justify-center rounded-full font-mono font-semibold text-white text-xs"
+                  style={{ width: '28px', height: '28px', backgroundColor: '#C2724A', marginTop: '1px' }}
+                >
+                  {i + 1}
+                </span>
+                <div>
+                  <p className="font-medium text-ink text-sm mb-1">{step.title}</p>
+                  <p className="text-body-sm text-body" style={{ whiteSpace: 'pre-line' }}>{fillTemplate(step.text, trip)}</p>
+                </div>
+              </li>
+            ))}
           </ol>
 
           {/* Bank details */}
