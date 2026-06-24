@@ -24,12 +24,13 @@ export async function POST(request: NextRequest) {
 
     const id = crypto.randomUUID();
     const ext = path.extname(file.name) || '.jpg';
-    const filename = `${id}${ext}`;
 
     // Downscale + recompress for web before storing (full-res phone photos can
-    // be several MB; the public site only needs a web-sized image).
+    // be several MB; the public site only needs a web-sized image). Photo PNGs
+    // become WebP, so use the produced extension for the stored filename.
     const optimized = await optimizeImageBuffer(buffer, ext);
-    fs.writeFileSync(path.join(getUploadDir(), filename), optimized);
+    const filename = `${id}${optimized.ext}`;
+    fs.writeFileSync(path.join(getUploadDir(), filename), optimized.buffer);
 
     const item: MediaItem = {
       id,

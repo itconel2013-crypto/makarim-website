@@ -10,10 +10,9 @@ import crypto from 'crypto';
 /**
  * One-time, idempotent migration + image optimization:
  *  1. Extract legacy base64 ("data:image/...") images out of the content blob,
- *     write them as files into the uploads dir and replace each field with a
- *     "/api/uploads/<file>" URL (removes the multi-MB base64 payload).
- *  2. Optimize every served image (downscale + recompress) so the public site
- *     no longer ships full-resolution multi-MB photos.
+ *     write them as optimized files, replace each field with "/api/uploads/<f>".
+ *  2. Optimize every served image (downscale, recompress, photo-PNG → WebP) so
+ *     the public site no longer ships full-resolution multi-MB photos.
  *
  * Protected like app/api/admin/fix-trust: requires a valid admin session.
  * Safe to run multiple times — already-migrated/optimized files are left as-is.
@@ -21,40 +20,33 @@ import crypto from 'crypto';
 
 const DATA_URL_RE = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/s;
 
-interface PendingWrite {
-  filename: string;
-  buffer: Buffer;
-  ext: string;
-}
-
 interface MigrateState {
   dir: string;
   media: MediaItem[];
   migrated: number;
   skipped: number;
-  writes: PendingWrite[];
 }
 
 /**
- * If `value` is a base64 image data URL, queue it to be written to disk and
- * return the new "/api/uploads/<file>" URL. Otherwise return it unchanged.
- * `register` adds a new media-library entry; skip it when the value already
- * IS a media-library entry (avoids duplicates) — only its url is rewritten.
+ * If `value` is a base64 image data URL, optimize + write it to disk and return
+ * the new "/api/uploads/<file>" URL. Otherwise return it unchanged.
+ * `register` adds a new media-library entry; skip it for values that already
+ * ARE media-library entries (avoids duplicates).
  */
-function migrateString(value: string, label: string, st: MigrateState, register: boolean): string {
+async function migrateString(value: string, label: string, st: MigrateState, register: boolean): Promise<string> {
   const m = value.match(DATA_URL_RE);
   if (!m) {
     if (value.startsWith('data:')) st.skipped++; // a data: URL we don't handle
     return value;
   }
-  const ext = extFromMime(m[1]);
-  const buffer = Buffer.from(m[2], 'base64');
+  const raw = Buffer.from(m[2], 'base64');
+  const optimized = await optimizeImageBuffer(raw, extFromMime(m[1]));
   const id = crypto.randomUUID();
-  const filename = `${id}${ext}`;
-  st.writes.push({ filename, buffer, ext });
+  const filename = `${id}${optimized.ext}`;
+  fs.writeFileSync(path.join(st.dir, filename), optimized.buffer);
   const url = `/api/uploads/${filename}`;
   if (register) {
-    st.media.push({ id, url, name: `${label}${ext}`, uploadedAt: new Date().toISOString() });
+    st.media.push({ id, url, name: `${label}${optimized.ext}`, uploadedAt: new Date().toISOString() });
   }
   st.migrated++;
   return url;
@@ -65,19 +57,19 @@ function migrateString(value: string, label: string, st: MigrateState, register:
  * place. Generic on purpose: production content may carry base64 in fields not
  * named in the schema, so we catch them all rather than enumerating known keys.
  */
-function walk(node: any, label: string, st: MigrateState, register: boolean): void {
+async function walk(node: any, label: string, st: MigrateState, register: boolean): Promise<void> {
   if (node === null || typeof node !== 'object') return;
   if (Array.isArray(node)) {
     for (let i = 0; i < node.length; i++) {
       const v = node[i];
-      if (typeof v === 'string') node[i] = migrateString(v, `${label}-${i}`, st, register);
-      else walk(v, `${label}-${i}`, st, register);
+      if (typeof v === 'string') node[i] = await migrateString(v, `${label}-${i}`, st, register);
+      else await walk(v, `${label}-${i}`, st, register);
     }
   } else {
     for (const k of Object.keys(node)) {
       const v = node[k];
-      if (typeof v === 'string') node[k] = migrateString(v, `${label}-${k}`, st, register);
-      else walk(v, `${label}-${k}`, st, register);
+      if (typeof v === 'string') node[k] = await migrateString(v, `${label}-${k}`, st, register);
+      else await walk(v, `${label}-${k}`, st, register);
     }
   }
 }
@@ -90,6 +82,24 @@ function collectUploadUrls(node: any, out: Set<string>): void {
       if (v.startsWith('/api/uploads/')) out.add(v);
     } else {
       collectUploadUrls(v, out);
+    }
+  }
+}
+
+/** Rewrite any string in `node` that appears in `map` to its mapped value. */
+function remapUrls(node: any, map: Map<string, string>): void {
+  if (node === null || typeof node !== 'object') return;
+  if (Array.isArray(node)) {
+    for (let i = 0; i < node.length; i++) {
+      const v = node[i];
+      if (typeof v === 'string') { const nu = map.get(v); if (nu) node[i] = nu; }
+      else remapUrls(v, map);
+    }
+  } else {
+    for (const k of Object.keys(node)) {
+      const v = node[k];
+      if (typeof v === 'string') { const nu = map.get(v); if (nu) node[k] = nu; }
+      else remapUrls(v, map);
     }
   }
 }
@@ -108,62 +118,61 @@ export async function POST(request: NextRequest) {
     media: [...(store.media ?? [])],
     migrated: 0,
     skipped: 0,
-    writes: [],
   };
 
-  // Walk the whole content tree — catches every base64 field, named or not,
-  // and registers each as a media-library entry.
-  walk(store.c, 'content', st, true);
+  // 1) Extract every base64 image (named or not), optimized, registering each.
+  await walk(store.c, 'content', st, true);
 
   // Existing media-library entries: rewrite base64 urls in place, no duplicates.
   for (const item of st.media) {
     if (typeof item.url === 'string') {
-      const migrated = migrateString(item.url, `media-${item.name ?? item.id}`, st, false);
+      const migrated = await migrateString(item.url, `media-${item.name ?? item.id}`, st, false);
       if (migrated !== item.url) item.url = migrated;
     }
   }
 
-  // Write newly-extracted images, optimized.
-  for (const w of st.writes) {
-    const optimized = await optimizeImageBuffer(w.buffer, w.ext);
-    fs.writeFileSync(path.join(st.dir, w.filename), optimized);
-  }
-
-  // Re-optimize images that were already extracted to files in a previous run
-  // (the full-resolution originals). Overwrite in place only if it gets smaller.
+  // 2) Re-optimize files already on disk from earlier runs (full-size originals,
+  //    photo-PNGs). Format changes (png → webp) rewrite the file + content URL.
   const referenced = new Set<string>();
   collectUploadUrls(store.c, referenced);
   for (const item of st.media) if (typeof item.url === 'string') referenced.add(item.url);
 
+  const urlMap = new Map<string, string>();
   let imagesOptimized = 0;
   let imageBytesBefore = 0;
   let imageBytesAfter = 0;
-  const justWritten = new Set(st.writes.map((w) => w.filename));
 
   for (const url of referenced) {
     const filename = path.basename(url);
-    if (justWritten.has(filename)) {
-      // already optimized above; still count its on-disk size
-      try { imageBytesAfter += fs.statSync(path.join(st.dir, filename)).size; } catch {}
-      continue;
-    }
     const fp = path.join(st.dir, filename);
     let orig: Buffer;
     try { orig = fs.readFileSync(fp); } catch { continue; } // file missing — skip
     imageBytesBefore += orig.length;
-    // Downscale oversized files and recompress heavy (but web-sized) ones;
-    // already-small images are left untouched, so repeated runs converge.
-    const optimized = await optimizeForWebIfNeeded(orig, path.extname(filename));
-    if (optimized) {
-      fs.writeFileSync(fp, optimized);
-      imagesOptimized++;
-      imageBytesAfter += optimized.length;
+
+    const result = await optimizeForWebIfNeeded(orig, path.extname(filename));
+    if (!result) { imageBytesAfter += orig.length; continue; }
+
+    if (result.ext.toLowerCase() === path.extname(filename).toLowerCase()) {
+      fs.writeFileSync(fp, result.buffer); // same format — overwrite in place
     } else {
-      imageBytesAfter += orig.length;
+      const stem = filename.replace(/\.[^.]+$/, '');
+      const newName = `${stem}${result.ext}`;
+      fs.writeFileSync(path.join(st.dir, newName), result.buffer);
+      try { fs.unlinkSync(fp); } catch {}
+      urlMap.set(url, `/api/uploads/${newName}`);
+    }
+    imagesOptimized++;
+    imageBytesAfter += result.buffer.length;
+  }
+
+  // Apply format-change URL remapping across content and media library.
+  if (urlMap.size) {
+    remapUrls(store.c, urlMap);
+    for (const item of st.media) {
+      const nu = urlMap.get(item.url);
+      if (nu) { item.url = nu; item.name = item.name?.replace(/\.[^.]+$/, path.extname(nu)); }
     }
   }
-  // account for the just-written optimized files in the "before" total too
-  for (const w of st.writes) imageBytesBefore += w.buffer.length;
 
   await saveContent({ ...store, media: st.media });
   invalidateContentCache();
@@ -177,6 +186,7 @@ export async function POST(request: NextRequest) {
     migrated: st.migrated,
     skipped: st.skipped,
     imagesOptimized,
+    convertedToWebp: urlMap.size,
     imageMBBefore: +(imageBytesBefore / 1024 / 1024).toFixed(2),
     imageMBAfter: +(imageBytesAfter / 1024 / 1024).toFixed(2),
     bytesBefore,

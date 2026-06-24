@@ -8,6 +8,14 @@ const JPEG_QUALITY = 80;
 const WEBP_QUALITY = 80;
 /** Files at/below this size are considered already web-optimized and left alone. */
 const WEB_SIZE_TARGET = 500 * 1024;
+/** PNGs larger than this are treated as photos and converted to WebP. */
+const PNG_CONVERT_MIN = 100 * 1024;
+
+export interface OptimizedImage {
+  buffer: Buffer;
+  /** Extension of the produced format (may differ from input, e.g. .png → .webp). */
+  ext: string;
+}
 
 /**
  * Resolve the directory where uploaded media files are stored.
@@ -25,49 +33,54 @@ export function getUploadDir(): string {
 }
 
 /**
- * Resize (to MAX_DIMENSION) and recompress an image buffer for web delivery,
- * keeping the same format so the file extension / URL stays stable. SVG and
- * animated GIF are returned untouched. On any failure the original is returned,
- * so optimization can never break an upload.
+ * Resize (to MAX_DIMENSION) and recompress an image buffer for web delivery.
+ * Photos stored as PNG are converted to WebP (much smaller, keeps transparency),
+ * so the returned `ext` may differ from the input. SVG and animated GIF are
+ * returned untouched. On any failure the original is returned, so optimization
+ * can never break an upload.
  */
-export async function optimizeImageBuffer(buffer: Buffer, ext: string): Promise<Buffer> {
+export async function optimizeImageBuffer(buffer: Buffer, ext: string): Promise<OptimizedImage> {
   const e = ext.toLowerCase();
-  if (e === '.svg' || e === '.gif') return buffer;
+  if (e === '.svg' || e === '.gif') return { buffer, ext: e };
   try {
     let img = sharp(buffer, { failOn: 'none' }).rotate(); // auto-orient via EXIF
     const meta = await img.metadata();
     if ((meta.width ?? 0) > MAX_DIMENSION || (meta.height ?? 0) > MAX_DIMENSION) {
       img = img.resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: 'inside', withoutEnlargement: true });
     }
-    if (e === '.png') return await img.png({ compressionLevel: 9, palette: true }).toBuffer();
-    if (e === '.webp') return await img.webp({ quality: WEBP_QUALITY }).toBuffer();
-    if (e === '.avif') return await img.avif({ quality: 60 }).toBuffer();
-    return await img.jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer();
+    // PNG photos → WebP; .webp stays .webp; everything else → JPEG (keep ext).
+    if (e === '.png' || e === '.webp') {
+      return { buffer: await img.webp({ quality: WEBP_QUALITY }).toBuffer(), ext: '.webp' };
+    }
+    if (e === '.avif') return { buffer: await img.avif({ quality: 60 }).toBuffer(), ext: '.avif' };
+    return { buffer: await img.jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer(), ext: e };
   } catch {
-    return buffer;
+    return { buffer, ext: e };
   }
 }
 
 /**
- * Re-optimize an already-stored file if it is either oversized (> MAX_DIMENSION)
- * OR still a heavy file (> WEB_SIZE_TARGET) — the latter catches web-sized but
- * poorly-compressed photos. Returns the optimized buffer, or null when the file
- * is already small enough. Because optimized real photos land below the target,
- * repeated migration runs converge and become no-ops (idempotent in practice).
+ * Re-optimize an already-stored file when it is worth it: oversized
+ * (> MAX_DIMENSION), still heavy (> WEB_SIZE_TARGET), or a photo-sized PNG
+ * (convertible to WebP). Returns the optimized image (possibly a new format),
+ * or null when the file is already fine. Only a result that is a different
+ * format OR a meaningful (>10%) size reduction is accepted, so repeated runs
+ * converge and never degrade images through recompression.
  */
-export async function optimizeForWebIfNeeded(buffer: Buffer, ext: string): Promise<Buffer | null> {
+export async function optimizeForWebIfNeeded(buffer: Buffer, ext: string): Promise<OptimizedImage | null> {
   const e = ext.toLowerCase();
   if (e === '.svg' || e === '.gif') return null;
   try {
     const meta = await sharp(buffer).metadata();
     const oversized = (meta.width ?? 0) > MAX_DIMENSION || (meta.height ?? 0) > MAX_DIMENSION;
     const heavy = buffer.length > WEB_SIZE_TARGET;
-    if (!oversized && !heavy) return null;
+    const pngPhoto = e === '.png' && buffer.length > PNG_CONVERT_MIN;
+    if (!oversized && !heavy && !pngPhoto) return null;
     const out = await optimizeImageBuffer(buffer, ext);
-    // Only accept a meaningful reduction (>10%). Recompressing an already-
-    // optimized image saves almost nothing, so it's skipped → runs converge
-    // and never degrade images through repeated recompression.
-    return out.length > 0 && out.length < buffer.length * 0.9 ? out : null;
+    if (out.buffer.length === 0) return null;
+    const changedFormat = out.ext.toLowerCase() !== e;
+    const smaller = out.buffer.length < buffer.length * 0.9;
+    return (changedFormat && out.buffer.length < buffer.length) || smaller ? out : null;
   } catch {
     return null;
   }
