@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { loadContent, saveContent } from '@/lib/db';
 
 // One-time migration: fix home.trust data on Railway
@@ -25,5 +26,6 @@ export async function POST(request: NextRequest) {
   ];
 
   await saveContent(store);
+  revalidatePath('/', 'layout');
   return NextResponse.json({ success: true });
 }

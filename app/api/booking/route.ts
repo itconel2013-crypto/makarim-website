@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { loadContent, saveBooking, markBookingSynced, decrementSeats } from '@/lib/db';
 import { sendInternalNotification, BookingEmailData } from '@/lib/email';
 
@@ -26,9 +27,10 @@ export async function POST(request: NextRequest) {
     // 3) Persist booking in DB first (never lost even if webhook fails)
     const bookingId = saveBooking(tripVg, { tripVg, travelers, contact, notes, createdAt });
 
-    // 4) Decrement seats
+    // 4) Decrement seats + refresh cached public pages (seat counts changed)
     try {
       await decrementSeats(tripVg, travelers.length);
+      revalidatePath('/', 'layout');
     } catch (e) {
       console.error('decrementSeats failed:', e);
     }

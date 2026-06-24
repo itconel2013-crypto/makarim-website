@@ -4,6 +4,10 @@ import { CMSSidebar } from '@/components/cms/CMSSidebar';
 
 export const metadata = { title: 'Makarim CMS' };
 
+// Admin is auth-gated and shows live drafts — never statically cache it.
+// (Also avoids prerendering pages that use useSearchParams, e.g. /admin/login.)
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const initialStore = await loadContent();
 

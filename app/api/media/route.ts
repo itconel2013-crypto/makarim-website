@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { loadContent, saveContent } from '@/lib/db';
 import { isAuthorized } from '@/lib/auth';
 import { MediaItem } from '@/lib/content-schema';
+import { getUploadDir } from '@/lib/uploads';
 import fs from 'fs';
 import path from 'path';
-
-function getUploadDir() {
-  const dataDir = process.env.DATABASE_PATH
-    ? path.dirname(process.env.DATABASE_PATH)
-    : path.join(process.cwd(), 'uploads');
-  const dir = path.join(dataDir, 'uploads');
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  return dir;
-}
 
 export async function GET() {
   const store = await loadContent();
@@ -44,6 +37,7 @@ export async function POST(request: NextRequest) {
 
     const store = await loadContent();
     await saveContent({ ...store, media: [...(store.media ?? []), item] });
+    revalidatePath('/', 'layout');
 
     return NextResponse.json({ success: true, item });
   } catch (error) {
@@ -60,6 +54,7 @@ export async function PATCH(request: NextRequest) {
     m.id === id ? { ...m, alt, title } : m
   );
   await saveContent({ ...store, media });
+  revalidatePath('/', 'layout');
   return NextResponse.json({ success: true });
 }
 
@@ -75,5 +70,6 @@ export async function DELETE(request: NextRequest) {
   }
 
   await saveContent({ ...store, media: (store.media ?? []).filter((m: MediaItem) => m.id !== id) });
+  revalidatePath('/', 'layout');
   return NextResponse.json({ success: true });
 }

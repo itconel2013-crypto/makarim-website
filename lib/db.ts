@@ -52,6 +52,21 @@ function normalizeContent(content: any): CMSStore {
   return normalized as CMSStore;
 }
 
+// ---------------------------------------------------------------------------
+// In-process content cache
+// The content row can be several MB (legacy base64 images). loadContent() is
+// called multiple times per request (page + layout + footer + whatsapp button),
+// so without this cache every request re-reads and re-JSON.parses the whole blob
+// several times. The cache holds the normalized store and is invalidated on
+// every write path via invalidateContentCache().
+// ---------------------------------------------------------------------------
+let contentCache: CMSStore | null = null;
+
+/** Drop the in-process content cache. Call after any write to cms_content. */
+export function invalidateContentCache(): void {
+  contentCache = null;
+}
+
 /**
  * Get or create database connection
  */
@@ -104,6 +119,8 @@ export async function initializeDb(): Promise<void> {
  * Load content from database (sync)
  */
 export async function loadContent(): Promise<CMSStore> {
+  if (contentCache) return contentCache;
+
   const db = getDb();
 
   // Auto-initialize table + seed if this is a fresh deployment (no DB file)
@@ -129,7 +146,8 @@ export async function loadContent(): Promise<CMSStore> {
 
   try {
     const parsed = JSON.parse(row.data);
-    return normalizeContent(parsed);
+    contentCache = normalizeContent(parsed);
+    return contentCache;
   } catch (e) {
     console.error('Failed to parse content:', e);
     return defaultContent;
@@ -148,6 +166,7 @@ export async function saveContent(content: any): Promise<void> {
   });
   run();
   db.close();
+  invalidateContentCache();
 }
 
 /** Save a new booking and return its id. */
@@ -214,6 +233,7 @@ export async function decrementSeats(tripVg: string, count: number): Promise<voi
   data.c = { ...data.c, trips: updated };
   db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(data));
   db.close();
+  invalidateContentCache();
 }
 
 /** Load all non-archived bookings (admin view). */

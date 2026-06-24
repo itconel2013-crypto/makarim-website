@@ -4,6 +4,10 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
 
+// Render public pages per-request (always reflect live CMS content, and avoid
+// baking stale build-time data — the SQLite volume isn't mounted at build).
+// Speed now comes from the in-process content cache in lib/db.ts, not from a
+// 13 MB re-read per request, plus images served as cached files (not base64).
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {

@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { loadContent, saveContent, getDb } from '@/lib/db';
+import { revalidatePath } from 'next/cache';
+import { loadContent, saveContent, getDb, invalidateContentCache } from '@/lib/db';
 import { isAuthorized } from '@/lib/auth';
+
+/**
+ * After any content write: drop the in-process cache and trigger on-demand
+ * revalidation of all public pages so CMS changes are live immediately.
+ */
+function bustPublicCache(): void {
+  invalidateContentCache();
+  revalidatePath('/', 'layout');
+}
 
 function deepMerge(target: any, source: any): any {
   if (typeof source !== 'object' || source === null) return source;
@@ -25,9 +35,12 @@ export async function GET(request: NextRequest) {
     // Strip bank details from public responses — they are only needed server-side
     if (!(await isAuthorized(request))) {
       const safe = { ...content, c: { ...content.c, brand: { ...content.c.brand, bank: undefined } } };
-      return NextResponse.json(safe);
+      return NextResponse.json(safe, {
+        headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
+      });
     }
-    return NextResponse.json(content);
+    // Admin response: never cache (may contain bank details / drafts)
+    return NextResponse.json(content, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('GET /api/content failed:', error);
     return NextResponse.json(
@@ -82,7 +95,8 @@ export async function POST(request: NextRequest) {
     
     // Save to database
     await saveContent(updated);
-    
+    bustPublicCache();
+
     return NextResponse.json({
       success: true,
       data: updated,
@@ -123,6 +137,7 @@ export async function PATCH(request: NextRequest) {
       const newData = { ...existing, c: { ...existing.c, trips: updated } };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(newData));
       db.close();
+      bustPublicCache();
       return NextResponse.json({ success: true });
     }
 
@@ -134,6 +149,7 @@ export async function PATCH(request: NextRequest) {
       const updated = { ...existing, c: body.c };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(updated));
       db.close();
+      bustPublicCache();
       return NextResponse.json({ success: true });
     }
 
@@ -141,6 +157,7 @@ export async function PATCH(request: NextRequest) {
     const current = await loadContent();
     const updated = deepMerge(current, body);
     await saveContent(updated);
+    bustPublicCache();
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     console.error('PATCH /api/content failed:', error);
