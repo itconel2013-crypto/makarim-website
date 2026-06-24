@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  serverExternalPackages: ['better-sqlite3', 'sharp'],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push('better-sqlite3');

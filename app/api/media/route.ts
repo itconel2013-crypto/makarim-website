@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { loadContent, saveContent } from '@/lib/db';
 import { isAuthorized } from '@/lib/auth';
 import { MediaItem } from '@/lib/content-schema';
-import { getUploadDir } from '@/lib/uploads';
+import { getUploadDir, optimizeImageBuffer } from '@/lib/uploads';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
     const ext = path.extname(file.name) || '.jpg';
     const filename = `${id}${ext}`;
 
-    fs.writeFileSync(path.join(getUploadDir(), filename), buffer);
+    // Downscale + recompress for web before storing (full-res phone photos can
+    // be several MB; the public site only needs a web-sized image).
+    const optimized = await optimizeImageBuffer(buffer, ext);
+    fs.writeFileSync(path.join(getUploadDir(), filename), optimized);
 
     const item: MediaItem = {
       id,
