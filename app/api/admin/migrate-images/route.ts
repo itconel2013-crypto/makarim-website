@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { loadContent, saveContent, invalidateContentCache } from '@/lib/db';
 import { MediaItem } from '@/lib/content-schema';
-import { getUploadDir, extFromMime, optimizeImageBuffer, optimizeOversized } from '@/lib/uploads';
+import { getUploadDir, extFromMime, optimizeImageBuffer, optimizeForWebIfNeeded } from '@/lib/uploads';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -151,9 +151,9 @@ export async function POST(request: NextRequest) {
     let orig: Buffer;
     try { orig = fs.readFileSync(fp); } catch { continue; } // file missing — skip
     imageBytesBefore += orig.length;
-    // Only downscale oversized files; already web-sized images are left
-    // untouched so repeated runs are idempotent (no generational recompression).
-    const optimized = await optimizeOversized(orig, path.extname(filename));
+    // Downscale oversized files and recompress heavy (but web-sized) ones;
+    // already-small images are left untouched, so repeated runs converge.
+    const optimized = await optimizeForWebIfNeeded(orig, path.extname(filename));
     if (optimized) {
       fs.writeFileSync(fp, optimized);
       imagesOptimized++;

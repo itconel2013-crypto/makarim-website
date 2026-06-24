@@ -6,6 +6,8 @@ import sharp from 'sharp';
 const MAX_DIMENSION = 1920;
 const JPEG_QUALITY = 80;
 const WEBP_QUALITY = 80;
+/** Files at/below this size are considered already web-optimized and left alone. */
+const WEB_SIZE_TARGET = 500 * 1024;
 
 /**
  * Resolve the directory where uploaded media files are stored.
@@ -47,19 +49,25 @@ export async function optimizeImageBuffer(buffer: Buffer, ext: string): Promise<
 }
 
 /**
- * Re-optimize an already-stored file ONLY if it is oversized (larger than
- * MAX_DIMENSION in either axis). Returns the optimized buffer, or null when the
- * image is already web-sized — so repeated migration runs are idempotent and
- * don't recompress (and degrade) images that are already fine.
+ * Re-optimize an already-stored file if it is either oversized (> MAX_DIMENSION)
+ * OR still a heavy file (> WEB_SIZE_TARGET) — the latter catches web-sized but
+ * poorly-compressed photos. Returns the optimized buffer, or null when the file
+ * is already small enough. Because optimized real photos land below the target,
+ * repeated migration runs converge and become no-ops (idempotent in practice).
  */
-export async function optimizeOversized(buffer: Buffer, ext: string): Promise<Buffer | null> {
+export async function optimizeForWebIfNeeded(buffer: Buffer, ext: string): Promise<Buffer | null> {
   const e = ext.toLowerCase();
   if (e === '.svg' || e === '.gif') return null;
   try {
     const meta = await sharp(buffer).metadata();
-    if ((meta.width ?? 0) <= MAX_DIMENSION && (meta.height ?? 0) <= MAX_DIMENSION) return null;
+    const oversized = (meta.width ?? 0) > MAX_DIMENSION || (meta.height ?? 0) > MAX_DIMENSION;
+    const heavy = buffer.length > WEB_SIZE_TARGET;
+    if (!oversized && !heavy) return null;
     const out = await optimizeImageBuffer(buffer, ext);
-    return out.length > 0 && out.length < buffer.length ? out : null;
+    // Only accept a meaningful reduction (>10%). Recompressing an already-
+    // optimized image saves almost nothing, so it's skipped → runs converge
+    // and never degrade images through repeated recompression.
+    return out.length > 0 && out.length < buffer.length * 0.9 ? out : null;
   } catch {
     return null;
   }
