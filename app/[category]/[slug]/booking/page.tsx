@@ -13,7 +13,7 @@ export async function generateMetadata({
   const content = await loadContent();
   const trip = content.c.trips.find((t) => t.slug === slug && t.published !== false);
   if (!trip) return {};
-  return { title: `Anfrage: ${trip.title} | ${content.c.seo.siteName}` };
+  return { title: `Buchung: ${trip.title} | ${content.c.seo.siteName}` };
 }
 
 export default async function BookingPage({
@@ -42,7 +42,7 @@ export default async function BookingPage({
         </Link>
 
         {/* Heading */}
-        <p style={{ fontFamily: 'monospace', fontSize: '12px', letterSpacing: '0.18em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>Buchungsanfrage</p>
+        <p style={{ fontFamily: 'monospace', fontSize: '12px', letterSpacing: '0.18em', color: '#A8542F', textTransform: 'uppercase', marginBottom: '10px' }}>Buchung</p>
         <h1
           className="font-serif font-normal text-ink mb-2"
           style={{ fontSize: 'clamp(24px, 4vw, 38px)', lineHeight: '1.2' }}
