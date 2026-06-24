@@ -124,13 +124,13 @@ export default function Header() {
             {/* Divider */}
             <div className="w-12 my-4" style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
 
-            {/* CTA */}
+            {/* CTA — same as desktop: Kontakt → /kontakt */}
             <Link
-              href="/umrah/umrah-luxus-2026/booking"
+              href="/kontakt"
               className="inline-flex items-center justify-center font-medium text-white"
               style={{ backgroundColor: '#C2724A', height: '52px', borderRadius: '13px', padding: '0 32px', fontSize: '16px' }}
             >
-              Jetzt buchen
+              Kontakt
             </Link>
           </nav>
         </div>
