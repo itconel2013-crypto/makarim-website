@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { loadContent, saveBooking, markBookingSynced, decrementSeats } from '@/lib/db';
 import { sendInternalNotification, BookingEmailData } from '@/lib/email';
+import { bookingPrices } from '@/lib/pricing';
 
 const WEBHOOK_TIMEOUT_MS = 8_000;
 
@@ -24,8 +25,14 @@ export async function POST(request: NextRequest) {
 
     const createdAt = new Date().toISOString();
 
-    // 3) Persist booking in DB first (never lost even if webhook fails)
-    const bookingId = saveBooking(tripVg, { tripVg, travelers, contact, notes, createdAt });
+    // Compute the price server-side (never trust client amounts). Same logic the
+    // booking form used, so `gesamt` matches what the customer saw.
+    const { preisProPerson, gesamt } = bookingPrices(travelers, trip.price ?? 0);
+
+    // 3) Persist booking in DB first (never lost even if webhook fails).
+    //    Price fields live in the payload so the retry job re-sends them too.
+    const payload = { tripVg, travelers, contact, notes, createdAt, gesamt, preisProPerson };
+    const bookingId = saveBooking(tripVg, payload);
 
     // 4) Decrement seats + refresh cached public pages (seat counts changed)
     try {
@@ -71,7 +78,7 @@ export async function POST(request: NextRequest) {
         const res = await fetch(process.env.CRM_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-API-Key': process.env.CRM_API_KEY ?? '' },
-          body: JSON.stringify({ bookingId, tripVg, travelers, contact, notes, createdAt }),
+          body: JSON.stringify({ ...payload, bookingId }),
           signal: controller.signal,
         });
         clearTimeout(timer);

@@ -3,33 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
-
-const ROOM_TYPES = [
-  { value: 'VZ',  label: 'Vierbettzimmer',  mul: 0.85 },
-  { value: 'DZ3', label: 'Dreibettzimmer',  mul: 0.91 },
-  { value: 'DZ',  label: 'Doppelzimmer',   mul: 1.00 },
-];
-
-function roomPrice(basePrice: number, roomValue: string): number {
-  const r = ROOM_TYPES.find((x) => x.value === roomValue) ?? ROOM_TYPES[0];
-  return Math.round(basePrice * r.mul);
-}
-
-function ageCategory(geburtstag: string): 'Erwachsener' | 'Kind' | 'Baby' {
-  if (!geburtstag) return 'Erwachsener';
-  const ageMs = Date.now() - new Date(geburtstag).getTime();
-  const years = ageMs / (1000 * 60 * 60 * 24 * 365.25);
-  if (years < 2) return 'Baby';
-  if (years < 12) return 'Kind';
-  return 'Erwachsener';
-}
-
-function personPrice(geburtstag: string, zimmer: string, basePrice: number): number {
-  const cat = ageCategory(geburtstag);
-  if (cat === 'Baby') return 250;
-  const rp = roomPrice(basePrice, zimmer);
-  return cat === 'Kind' ? Math.round(rp * 0.82) : rp;
-}
+import { ROOM_TYPES, KID_MULTIPLIER, roomPrice, ageCategory, personPrice } from '@/lib/pricing';
 
 interface Traveler { anrede: string; vorname: string; nachname: string; geburtstag: string; zimmer: string; nationalitaet: string; }
 const defaultTraveler = (): Traveler => ({ anrede: 'Herr', vorname: '', nachname: '', geburtstag: '', zimmer: 'VZ', nationalitaet: '' });
@@ -128,7 +102,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                 <tbody>
                   {ROOM_TYPES.map((r, i) => {
                     const adult = roomPrice(base, r.value);
-                    const kid   = Math.round(adult * 0.82);
+                    const kid   = Math.round(adult * KID_MULTIPLIER);
                     return (
                       <tr key={r.value} style={{ borderTop: '1px solid #EAE3D8', backgroundColor: i % 2 === 0 ? '#FDFCF9' : 'white' }}>
                         <td style={{ padding: '12px 16px', color: '#16242B', fontWeight: 500 }}>{r.label}</td>
