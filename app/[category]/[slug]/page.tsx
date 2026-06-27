@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadContent } from '@/lib/db';
-import { deriveStatus, Trip } from '@/lib/content-schema';
+import { deriveStatus, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { truncateText } from '@/lib/utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -186,7 +186,9 @@ export default async function TripDetailPage({
             </p>
 
             {/* ── Enthaltene Leistungen ─────────────────────────────── */}
-            {trip.services && trip.services.length > 0 && (
+            {/* Read from trip data; trips never customized fall back to the
+                standard list (same one the CMS pre-fills with). */}
+            {(trip.services === undefined ? DEFAULT_INCLUDED : trip.services).length > 0 && (
               <section className="mb-14">
                 <h2
                   className="font-serif font-normal text-ink mb-8"
@@ -195,7 +197,7 @@ export default async function TripDetailPage({
                   Enthaltene Leistungen
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {trip.services.map((service, i) => (
+                  {(trip.services === undefined ? DEFAULT_INCLUDED : trip.services).map((service, i) => (
                     <div key={i} className="flex items-start gap-3">
                       {/* Green check circle — 24px, bg #EAF0E8, color #3E6B52 */}
                       <span

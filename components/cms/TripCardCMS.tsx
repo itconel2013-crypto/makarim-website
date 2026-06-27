@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, deriveStatus } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, deriveStatus, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
@@ -328,6 +328,78 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
   );
 }
 
+function IncludedSection({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const [open, setOpen] = useState(false);
+  // Trips never customized show the standard list; an explicit [] is respected.
+  const services = trip.services ?? DEFAULT_INCLUDED;
+
+  const set = (next: string[]) => upd({ services: next });
+  const updItem = (i: number, val: string) => set(services.map((s, j) => (j === i ? val : s)));
+  const addItem = () => set([...services, '']);
+  const removeItem = (i: number) => set(services.filter((_, j) => j !== i));
+  const move = (i: number, dir: -1 | 1) => {
+    const a = [...services];
+    [a[i], a[i + dir]] = [a[i + dir], a[i]];
+    set(a);
+  };
+
+  const sortBtn = (disabled: boolean): React.CSSProperties => ({
+    width: '32px', height: '32px', flexShrink: 0, border: '1px solid #E2DBCF',
+    borderRadius: '8px', background: '#fff', color: '#7C746A', fontSize: '14px',
+    cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.35 : 1,
+  });
+
+  return (
+    <div style={{ borderTop: '1px solid #F2ECE1', paddingTop: '14px' }}>
+      {/* Header (collapsible) */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        <span style={{ fontSize: '12px', color: '#9A9082', width: '12px', display: 'inline-block' }}>{open ? '▾' : '▸'}</span>
+        <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5A5448' }}>Enthaltene Leistungen</span>
+        <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#9A9082' }}>
+          {trip.services?.length ? `${trip.services.length} Leistungen` : 'Standard'}
+        </span>
+      </button>
+
+      {open && (
+        <div className="mt-3 space-y-2">
+          <p style={{ fontSize: '12px', color: '#9A9082', lineHeight: 1.5 }}>
+            Jede Zeile erscheint mit Häkchen in der Liste „Enthaltene Leistungen" auf der Reise-Detailseite. Reihenfolge = Anzeigereihenfolge (zweispaltig).
+          </p>
+
+          {services.map((service, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #EFE8DC', borderRadius: '11px', padding: '8px 10px', background: '#FBF9F4' }}>
+              <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '7px', background: '#EAF0E8', color: '#3E6B52', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>✓</span>
+              <input
+                value={service}
+                onChange={(e) => updItem(i, e.target.value)}
+                placeholder="Leistung…"
+                style={{ flex: 1, minWidth: 0, height: '40px', border: '1px solid #E2DBCF', borderRadius: '9px', background: '#fff', padding: '0 12px', fontSize: '14px', color: '#16242B', outline: 'none' }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = '#C2724A')}
+                onBlur={(e) => (e.currentTarget.style.borderColor = '#E2DBCF')}
+              />
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={sortBtn(i === 0)}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === services.length - 1} style={sortBtn(i === services.length - 1)}>↓</button>
+              <button type="button" onClick={() => removeItem(i)} style={{ width: '32px', height: '32px', flexShrink: 0, border: '1px solid #F0DAD3', borderRadius: '8px', background: '#FBF4F2', color: '#B0563F', fontSize: '13px', cursor: 'pointer' }}>✕</button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={addItem}
+            style={{ width: '100%', padding: '10px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', background: 'transparent', color: '#9A9082', cursor: 'pointer' }}
+          >
+            + Leistung hinzufügen
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   const program = trip.program ?? [];
 
@@ -349,6 +421,7 @@ function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => voi
 
   return (
     <div className="space-y-3">
+      <IncludedSection trip={trip} upd={upd} />
       {program.map((day, i) => (
         <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
           <div className="flex items-center justify-between mb-3">

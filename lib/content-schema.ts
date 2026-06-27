@@ -215,6 +215,22 @@ export interface CMSStore {
 // ============================================================================
 
 /**
+ * Default "Enthaltene Leistungen" list. Used to pre-fill trips that have never
+ * had services set (trip.services === undefined). An explicit empty array means
+ * the editor cleared it on purpose and is respected (no section shown).
+ */
+export const DEFAULT_INCLUDED: string[] = [
+  'Hin- und Rückflug ab Deutschland',
+  'Alle Transfers vor Ort',
+  'Hotels in Mekka & Medina',
+  'Visum & komplette Bearbeitung',
+  'Tägliches Frühstück',
+  'Deutschsprachige Reiseleitung',
+  'Begleitetes Ziyarat-Programm',
+  '24/7 Betreuung vor Ort',
+];
+
+/**
  * Derive trip availability status from seats and waitlist
  */
 export function deriveStatus(trip: Trip): string {
