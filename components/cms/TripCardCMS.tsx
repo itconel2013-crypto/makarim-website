@@ -541,6 +541,13 @@ function ProgrammContent({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) =>
 }
 
 function SEOTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  // Preview reflects the real fallbacks the website uses: title → trip title,
+  // description → excerpt of the Langtext when no Meta-Beschreibung is set.
+  const previewTitle = trip.seoTitle || trip.title;
+  const previewDesc = trip.seoDesc
+    || (trip.text ? (trip.text.length > 155 ? trip.text.slice(0, 155).trimEnd() + '…' : trip.text) : '');
+  const previewUrl = `makarim-reisen.de/${trip.category}/${trip.slug}`;
+
   return (
     <div className="space-y-4">
       <Field label="SEO-Titel" hint="60–65 Zeichen">
@@ -552,6 +559,20 @@ function SEOTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) 
       <Field label="Slug" hint="URL-Pfad (nicht ändern ohne Redirect)">
         <TextInput value={trip.slug} onChange={(v) => upd({ slug: v })} />
       </Field>
+
+      {/* Google snippet preview (same look as the global SEO page) */}
+      <div>
+        <p className="text-xs font-medium text-body-light mb-1">Google-Vorschau</p>
+        <div className="p-4 rounded-button" style={{ backgroundColor: '#F8F9FA', border: '1px solid #E2DBCF', fontFamily: 'Arial, sans-serif' }}>
+          <p className="text-xs mb-0.5" style={{ color: '#202124' }}>{previewUrl}</p>
+          <p className="text-base font-medium" style={{ color: '#1A0DAB', lineHeight: '1.3' }}>
+            {previewTitle || <span className="text-body-light">(kein Titel)</span>}
+          </p>
+          <p className="text-sm mt-1" style={{ color: '#4D5156', lineHeight: '1.5' }}>
+            {previewDesc || <span className="text-body-light">(keine Beschreibung)</span>}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
