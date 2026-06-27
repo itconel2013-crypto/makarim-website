@@ -180,10 +180,13 @@ export default async function TripDetailPage({
           {/* ── Main content ──────────────────────────────────────────── */}
           <div className="flex-1 min-w-0">
 
-            {/* Intro paragraph */}
-            <p className="mb-14 leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448' }}>
-              {trip.text}
-            </p>
+            {/* Intro paragraph — only when filled, so the page can start
+                directly with an H2 section if the Langtext is left empty. */}
+            {trip.text?.trim() && (
+              <p className="mb-14 leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
+                {trip.text}
+              </p>
+            )}
 
             {/* ── Freie Abschnitte (Überschrift + Text) ─────────────── */}
             {(trip.sections ?? [])
