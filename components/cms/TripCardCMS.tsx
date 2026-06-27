@@ -178,16 +178,32 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
         {pickerOpen && <MediaPickerModal onSelect={(url) => { upd({ url }); setPickerOpen(false); }} onClose={() => setPickerOpen(false)} />}
       </div>
 
-      {/* Marketing text */}
+      {/* Short text — shown on the overview card under the image */}
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Marketing-Text (Website)</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Kurztext – Übersicht (unter dem Bild)</p>
         <textarea
-          value={trip.text}
-          onChange={(e) => upd({ text: e.target.value })}
-          rows={3}
+          value={trip.description ?? ''}
+          onChange={(e) => upd({ description: e.target.value })}
+          rows={2}
+          placeholder="Kurzer Text auf der Reisekarte unter dem Bild (ca. 1–2 Zeilen)…"
           className="w-full px-4 py-3 rounded-card text-sm text-ink bg-white resize-none"
           style={{ border: '1px solid #E2DBCF', outline: 'none' }}
         />
+        <p className="text-xs text-body-light mt-1">Erscheint in der Reise-Übersicht. Wird auf der Karte auf ca. 2 Zeilen gekürzt.</p>
+      </div>
+
+      {/* Long text — shown on the opened trip detail page */}
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Langtext – Reise-Detailseite</p>
+        <textarea
+          value={trip.text}
+          onChange={(e) => upd({ text: e.target.value })}
+          rows={4}
+          placeholder="Ausführlicher Text auf der geöffneten Reise-Seite…"
+          className="w-full px-4 py-3 rounded-card text-sm text-ink bg-white resize-none"
+          style={{ border: '1px solid #E2DBCF', outline: 'none' }}
+        />
+        <p className="text-xs text-body-light mt-1">Erscheint, wenn die Reise geöffnet wird.</p>
       </div>
 
       {/* Banner editor */}
