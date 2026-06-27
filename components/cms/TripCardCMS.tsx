@@ -7,7 +7,50 @@ import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
 
 interface Props { trip: Trip; }
-type TabKey = 'inhalt' | 'hotels' | 'programm' | 'seo';
+
+/** One collapsible accordion section inside a trip card (replaces the old tabs). */
+function AccordionSection({ label, chip, summary, open, onToggle, children }: {
+  label: string;
+  chip?: React.ReactNode;
+  summary?: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ borderTop: '1px solid #F2ECE1', marginTop: '16px' }}>
+      <div onClick={onToggle} style={{ cursor: 'pointer', paddingTop: '14px', display: 'flex', alignItems: 'center', gap: '9px' }}>
+        <span style={{ color: '#A8542F', width: '14px', fontSize: '12px', display: 'inline-block', flexShrink: 0 }}>{open ? '▾' : '▸'}</span>
+        <span style={{ textTransform: 'uppercase', fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', color: '#9A9082' }}>{label}</span>
+        {chip}
+        {summary && <span style={{ marginLeft: 'auto', fontSize: '11.5px', color: '#B4AB9B' }}>{summary}</span>}
+      </div>
+      {open && <div style={{ paddingTop: '14px' }}>{children}</div>}
+    </div>
+  );
+}
+
+const ChipCRM = () => (
+  <span style={{ fontFamily: 'monospace', fontSize: '10px', color: '#A8542F', background: '#F0E4DC', borderRadius: '5px', padding: '3px 8px' }}>aus CRM</span>
+);
+const ChipOptional = () => (
+  <span style={{ fontSize: '10px', color: '#A99F8D', background: '#F2ECE1', borderRadius: '5px', padding: '3px 8px' }}>optional</span>
+);
+
+/** Shared dashed "add" button (Makarim style). */
+function AddButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{ width: '100%', height: '44px', fontSize: '14px', fontWeight: 500, border: '1px dashed #C9C0B1', borderRadius: '11px', background: '#FBF9F4', color: '#7C746A', cursor: 'pointer' }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#C2724A'; e.currentTarget.style.color = '#A8542F'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C9C0B1'; e.currentTarget.style.color = '#7C746A'; }}
+    >
+      {children}
+    </button>
+  );
+}
 
 const BANNER_COLORS = [
   '#C2724A', '#16242B', '#3E6B7A', '#A8542F', '#5A6B52',
@@ -48,18 +91,16 @@ function AvailBadge({ trip }: { trip: Trip }) {
 export function TripCardCMS({ trip }: Props) {
   const { updateTrip } = useCMS();
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<TabKey>('inhalt');
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const isOpen = (k: string) => !!openSections[k];
+  const toggleSection = (k: string) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
   const upd = (patch: Partial<Trip>) => updateTrip(trip.vg, patch);
   const updBanner = (patch: Partial<NonNullable<Trip['banner']>>) =>
     upd({ banner: { enabled: true, line1: '', line2: '', color: '#C2724A', ...trip.banner, ...patch } });
 
-  const tabs: Array<{ key: TabKey; label: string }> = [
-    { key: 'inhalt',    label: 'Inhalt' },
-    { key: 'hotels',    label: 'Hotels' },
-    { key: 'programm',  label: 'Programm' },
-    { key: 'seo',       label: 'SEO' },
-  ];
+  const programLen = trip.program?.length ?? 0;
+  const servicesLen = trip.services?.length ?? 0;
 
   return (
     <div className="rounded-card bg-white overflow-hidden" style={{ border: '1px solid #EAE3D8', boxShadow: '0 2px 6px rgba(40,30,20,0.04)' }}>
@@ -132,21 +173,27 @@ export function TripCardCMS({ trip }: Props) {
             <p className="text-xs text-body-light ml-auto">&gt;18 = verfügbar · 1–18 = begrenzte Plätze · 0 ohne Warteliste = ausgebucht</p>
           </div>
 
-          {/* Tabs */}
-          <div className="flex px-5 gap-1 pt-3" style={{ borderBottom: '1px solid #EAE3D8' }}>
-            {tabs.map(({ key, label }) => (
-              <button key={key} onClick={() => setTab(key)}
-                className="px-4 py-2 text-sm font-medium transition-colors"
-                style={{ color: tab === key ? '#C2724A' : '#9A9082', borderBottom: tab === key ? '2px solid #C2724A' : '2px solid transparent', marginBottom: '-1px' }}
-              >{label}</button>
-            ))}
-          </div>
+          {/* Accordion sections (replaces the old tab bar) */}
+          <div className="px-5 pb-5 pt-1">
+            <AccordionSection label="Inhalt" open={isOpen('inhalt')} onToggle={() => toggleSection('inhalt')}>
+              <InhaltTab trip={trip} upd={upd} updBanner={updBanner} />
+            </AccordionSection>
 
-          <div className="p-5 space-y-5">
-            {tab === 'inhalt'   && <InhaltTab   trip={trip} upd={upd} updBanner={updBanner} />}
-            {tab === 'hotels'   && <HotelsTab   trip={trip} upd={upd} />}
-            {tab === 'programm' && <ProgrammTab trip={trip} upd={upd} />}
-            {tab === 'seo'      && <SEOTab      trip={trip} upd={upd} />}
+            <AccordionSection label="Hotels" chip={<ChipCRM />} summary={`${trip.hotels?.length ?? 0} Hotels`} open={isOpen('hotels')} onToggle={() => toggleSection('hotels')}>
+              <HotelsTab trip={trip} upd={upd} />
+            </AccordionSection>
+
+            <AccordionSection label="Enthaltene Leistungen" summary={servicesLen ? `${servicesLen} Leistungen` : 'Standard'} open={isOpen('leistungen')} onToggle={() => toggleSection('leistungen')}>
+              <IncludedContent trip={trip} upd={upd} />
+            </AccordionSection>
+
+            <AccordionSection label="Programm" summary={programLen ? `${programLen} ${programLen === 1 ? 'Tag' : 'Tage'}` : 'Kein Programm'} open={isOpen('programm')} onToggle={() => toggleSection('programm')}>
+              <ProgrammContent trip={trip} upd={upd} />
+            </AccordionSection>
+
+            <AccordionSection label="SEO" chip={<ChipOptional />} open={isOpen('seo')} onToggle={() => toggleSection('seo')}>
+              <SEOTab trip={trip} upd={upd} />
+            </AccordionSection>
           </div>
         </div>
       )}
@@ -164,15 +211,22 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Reisebild</p>
         <div className="flex items-center gap-4">
-          <div className="flex-shrink-0 rounded-button overflow-hidden" style={{ width: '96px', height: '68px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA' }}>
+          <div className="flex-shrink-0 overflow-hidden" style={{ width: '108px', height: '80px', borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA' }}>
             {trip.url ? (
               <img src={trip.url} alt="" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-2xl opacity-30">{trip.heroIcon ?? '🕋'}</div>
             )}
           </div>
-          <button type="button" onClick={() => setPickerOpen(true)} className="px-4 py-2 rounded-button text-sm font-medium text-white" style={{ backgroundColor: '#16242B', border: 'none', cursor: 'pointer' }}>
-            Bild wählen
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="px-4 py-2 text-sm font-medium text-white"
+            style={{ backgroundColor: '#14617A', borderRadius: '9px', border: 'none', cursor: 'pointer' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F4F63')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#14617A')}
+          >
+            Bild ändern
           </button>
         </div>
         {pickerOpen && <MediaPickerModal onSelect={(url) => { upd({ url }); setPickerOpen(false); }} onClose={() => setPickerOpen(false)} />}
@@ -303,9 +357,11 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
               type="button"
               onClick={() => setPickerFor(i)}
               className="absolute bottom-2 right-2 px-2 py-1 text-xs font-medium text-white rounded"
-              style={{ backgroundColor: '#16242B', border: 'none', cursor: 'pointer' }}
+              style={{ backgroundColor: '#14617A', border: 'none', cursor: 'pointer' }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F4F63')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#14617A')}
             >
-              Bild wählen
+              Bild ändern
             </button>
           </div>
           {/* Fields */}
@@ -377,20 +433,13 @@ function SectionsEditor({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => 
           </div>
         ))}
 
-        <button
-          type="button"
-          onClick={add}
-          style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
-        >
-          + Abschnitt hinzufügen
-        </button>
+        <AddButton onClick={add}>+ Abschnitt hinzufügen</AddButton>
       </div>
     </div>
   );
 }
 
-function IncludedSection({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
-  const [open, setOpen] = useState(false);
+function IncludedContent({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   // Trips never customized show the standard list; an explicit [] is respected.
   const services = trip.services ?? DEFAULT_INCLUDED;
 
@@ -411,59 +460,35 @@ function IncludedSection({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) =>
   });
 
   return (
-    <div style={{ borderTop: '1px solid #F2ECE1', paddingTop: '14px' }}>
-      {/* Header (collapsible) */}
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-      >
-        <span style={{ fontSize: '12px', color: '#9A9082', width: '12px', display: 'inline-block' }}>{open ? '▾' : '▸'}</span>
-        <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5A5448' }}>Enthaltene Leistungen</span>
-        <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#9A9082' }}>
-          {trip.services?.length ? `${trip.services.length} Leistungen` : 'Standard'}
-        </span>
-      </button>
+    <div className="space-y-2">
+      <p style={{ fontSize: '12px', color: '#9A9082', lineHeight: 1.5 }}>
+        Jede Zeile erscheint mit Häkchen in der Liste „Enthaltene Leistungen" auf der Reise-Detailseite. Reihenfolge = Anzeigereihenfolge (zweispaltig).
+      </p>
 
-      {open && (
-        <div className="mt-3 space-y-2">
-          <p style={{ fontSize: '12px', color: '#9A9082', lineHeight: 1.5 }}>
-            Jede Zeile erscheint mit Häkchen in der Liste „Enthaltene Leistungen" auf der Reise-Detailseite. Reihenfolge = Anzeigereihenfolge (zweispaltig).
-          </p>
-
-          {services.map((service, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #EFE8DC', borderRadius: '11px', padding: '8px 10px', background: '#FBF9F4' }}>
-              <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '7px', background: '#EAF0E8', color: '#3E6B52', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>✓</span>
-              <input
-                value={service}
-                onChange={(e) => updItem(i, e.target.value)}
-                placeholder="Leistung…"
-                style={{ flex: 1, minWidth: 0, height: '40px', border: '1px solid #E2DBCF', borderRadius: '9px', background: '#fff', padding: '0 12px', fontSize: '14px', color: '#16242B', outline: 'none' }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#C2724A')}
-                onBlur={(e) => (e.currentTarget.style.borderColor = '#E2DBCF')}
-              />
-              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={sortBtn(i === 0)}>↑</button>
-              <button type="button" onClick={() => move(i, 1)} disabled={i === services.length - 1} style={sortBtn(i === services.length - 1)}>↓</button>
-              <button type="button" onClick={() => removeItem(i)} style={{ width: '32px', height: '32px', flexShrink: 0, border: '1px solid #F0DAD3', borderRadius: '8px', background: '#FBF4F2', color: '#B0563F', fontSize: '13px', cursor: 'pointer' }}>✕</button>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={addItem}
-            style={{ width: '100%', padding: '10px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', background: 'transparent', color: '#9A9082', cursor: 'pointer' }}
-          >
-            + Leistung hinzufügen
-          </button>
+      {services.map((service, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #EFE8DC', borderRadius: '11px', padding: '8px 10px', background: '#FBF9F4' }}>
+          <span style={{ flexShrink: 0, width: '24px', height: '24px', borderRadius: '7px', background: '#EAF0E8', color: '#3E6B52', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>✓</span>
+          <input
+            value={service}
+            onChange={(e) => updItem(i, e.target.value)}
+            placeholder="Leistung…"
+            style={{ flex: 1, minWidth: 0, height: '40px', border: '1px solid #E2DBCF', borderRadius: '9px', background: '#fff', padding: '0 12px', fontSize: '14px', color: '#16242B', outline: 'none' }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = '#C2724A')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = '#E2DBCF')}
+          />
+          <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={sortBtn(i === 0)}>↑</button>
+          <button type="button" onClick={() => move(i, 1)} disabled={i === services.length - 1} style={sortBtn(i === services.length - 1)}>↓</button>
+          <button type="button" onClick={() => removeItem(i)} style={{ width: '32px', height: '32px', flexShrink: 0, border: '1px solid #F0DAD3', borderRadius: '8px', background: '#FBF4F2', color: '#B0563F', fontSize: '13px', cursor: 'pointer' }}>✕</button>
         </div>
-      )}
+      ))}
+
+      <AddButton onClick={addItem}>+ Leistung hinzufügen</AddButton>
     </div>
   );
 }
 
-function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+function ProgrammContent({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   const program = trip.program ?? [];
-  const [open, setOpen] = useState(true);
 
   const addDay = () => upd({
     program: [...program, { day: `Tag ${program.length + 1}`, title: '', description: '' }],
@@ -483,61 +508,34 @@ function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => voi
 
   return (
     <div className="space-y-3">
-      <IncludedSection trip={trip} upd={upd} />
-
-      {/* Programm — collapsible (same pattern as Enthaltene Leistungen) */}
-      <div style={{ borderTop: '1px solid #F2ECE1', paddingTop: '14px' }}>
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-        >
-          <span style={{ fontSize: '12px', color: '#9A9082', width: '12px', display: 'inline-block' }}>{open ? '▾' : '▸'}</span>
-          <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5A5448' }}>Programm</span>
-          <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#9A9082' }}>
-            {program.length ? `${program.length} ${program.length === 1 ? 'Tag' : 'Tage'}` : 'Kein Programm'}
-          </span>
-        </button>
-
-        {open && (
-          <div className="mt-3 space-y-3">
-            {program.map((day, i) => (
-              <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
-                  <div className="flex gap-1">
-                    <button onClick={() => move(i, -1)} disabled={i === 0}
-                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>↑</button>
-                    <button onClick={() => move(i, 1)} disabled={i === program.length - 1}
-                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === program.length - 1 ? 'default' : 'pointer', opacity: i === program.length - 1 ? 0.35 : 1 }}>↓</button>
-                    <button onClick={() => removeDay(i)}
-                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #FCA5A5', borderRadius: '6px', backgroundColor: '#FEF2F2', color: '#B91C1C', cursor: 'pointer' }}>×</button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field label="Tag">
-                    <TextInput value={String(day.day)} onChange={(v) => updDay(i, { day: v })} placeholder="Tag 1" />
-                  </Field>
-                  <Field label="Titel">
-                    <TextInput value={day.title} onChange={(v) => updDay(i, { title: v })} placeholder="Ankunft in Medina" />
-                  </Field>
-                </div>
-                <Field label="Text">
-                  <TextInput value={day.description} onChange={(v) => updDay(i, { description: v })} multiline rows={2} placeholder="Kurze Beschreibung des Tagesprogramms…" />
-                </Field>
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={addDay}
-              style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
-            >
-              + Programmpunkt hinzufügen
-            </button>
+      {program.map((day, i) => (
+        <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EFE8DC', backgroundColor: '#FBF9F4' }}>
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
+            <div className="flex gap-1">
+              <button onClick={() => move(i, -1)} disabled={i === 0}
+                style={{ width: '30px', height: '30px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '8px', backgroundColor: '#fff', color: '#7C746A', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>↑</button>
+              <button onClick={() => move(i, 1)} disabled={i === program.length - 1}
+                style={{ width: '30px', height: '30px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '8px', backgroundColor: '#fff', color: '#7C746A', cursor: i === program.length - 1 ? 'default' : 'pointer', opacity: i === program.length - 1 ? 0.35 : 1 }}>↓</button>
+              <button onClick={() => removeDay(i)}
+                style={{ width: '30px', height: '30px', fontSize: '13px', border: '1px solid #F0DAD3', borderRadius: '8px', backgroundColor: '#FBF4F2', color: '#B0563F', cursor: 'pointer' }}>×</button>
+            </div>
           </div>
-        )}
-      </div>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Field label="Tag">
+              <TextInput value={String(day.day)} onChange={(v) => updDay(i, { day: v })} placeholder="Tag 1" />
+            </Field>
+            <Field label="Titel">
+              <TextInput value={day.title} onChange={(v) => updDay(i, { title: v })} placeholder="Ankunft in Medina" />
+            </Field>
+          </div>
+          <Field label="Text">
+            <TextInput value={day.description} onChange={(v) => updDay(i, { description: v })} multiline rows={2} placeholder="Kurze Beschreibung des Tagesprogramms…" />
+          </Field>
+        </div>
+      ))}
+
+      <AddButton onClick={addDay}>+ Programmpunkt hinzufügen</AddButton>
     </div>
   );
 }
