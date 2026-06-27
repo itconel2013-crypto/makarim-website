@@ -463,6 +463,7 @@ function IncludedSection({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) =>
 
 function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   const program = trip.program ?? [];
+  const [open, setOpen] = useState(true);
 
   const addDay = () => upd({
     program: [...program, { day: `Tag ${program.length + 1}`, title: '', description: '' }],
@@ -483,40 +484,60 @@ function ProgrammTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => voi
   return (
     <div className="space-y-3">
       <IncludedSection trip={trip} upd={upd} />
-      {program.map((day, i) => (
-        <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
-            <div className="flex gap-1">
-              <button onClick={() => move(i, -1)} disabled={i === 0}
-                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>↑</button>
-              <button onClick={() => move(i, 1)} disabled={i === program.length - 1}
-                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === program.length - 1 ? 'default' : 'pointer', opacity: i === program.length - 1 ? 0.35 : 1 }}>↓</button>
-              <button onClick={() => removeDay(i)}
-                style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #FCA5A5', borderRadius: '6px', backgroundColor: '#FEF2F2', color: '#B91C1C', cursor: 'pointer' }}>×</button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <Field label="Tag">
-              <TextInput value={String(day.day)} onChange={(v) => updDay(i, { day: v })} placeholder="Tag 1" />
-            </Field>
-            <Field label="Titel">
-              <TextInput value={day.title} onChange={(v) => updDay(i, { title: v })} placeholder="Ankunft in Medina" />
-            </Field>
-          </div>
-          <Field label="Text">
-            <TextInput value={day.description} onChange={(v) => updDay(i, { description: v })} multiline rows={2} placeholder="Kurze Beschreibung des Tagesprogramms…" />
-          </Field>
-        </div>
-      ))}
 
-      <button
-        type="button"
-        onClick={addDay}
-        style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
-      >
-        + Programmpunkt hinzufügen
-      </button>
+      {/* Programm — collapsible (same pattern as Enthaltene Leistungen) */}
+      <div style={{ borderTop: '1px solid #F2ECE1', paddingTop: '14px' }}>
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          <span style={{ fontSize: '12px', color: '#9A9082', width: '12px', display: 'inline-block' }}>{open ? '▾' : '▸'}</span>
+          <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#5A5448' }}>Programm</span>
+          <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#9A9082' }}>
+            {program.length ? `${program.length} ${program.length === 1 ? 'Tag' : 'Tage'}` : 'Kein Programm'}
+          </span>
+        </button>
+
+        {open && (
+          <div className="mt-3 space-y-3">
+            {program.map((day, i) => (
+              <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
+                  <div className="flex gap-1">
+                    <button onClick={() => move(i, -1)} disabled={i === 0}
+                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>↑</button>
+                    <button onClick={() => move(i, 1)} disabled={i === program.length - 1}
+                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px', backgroundColor: 'white', cursor: i === program.length - 1 ? 'default' : 'pointer', opacity: i === program.length - 1 ? 0.35 : 1 }}>↓</button>
+                    <button onClick={() => removeDay(i)}
+                      style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #FCA5A5', borderRadius: '6px', backgroundColor: '#FEF2F2', color: '#B91C1C', cursor: 'pointer' }}>×</button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <Field label="Tag">
+                    <TextInput value={String(day.day)} onChange={(v) => updDay(i, { day: v })} placeholder="Tag 1" />
+                  </Field>
+                  <Field label="Titel">
+                    <TextInput value={day.title} onChange={(v) => updDay(i, { title: v })} placeholder="Ankunft in Medina" />
+                  </Field>
+                </div>
+                <Field label="Text">
+                  <TextInput value={day.description} onChange={(v) => updDay(i, { description: v })} multiline rows={2} placeholder="Kurze Beschreibung des Tagesprogramms…" />
+                </Field>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addDay}
+              style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
+            >
+              + Programmpunkt hinzufügen
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
