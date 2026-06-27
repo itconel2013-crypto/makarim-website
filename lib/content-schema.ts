@@ -41,6 +41,7 @@ export interface Trip {
   seoDesc?: string;           // optional per-trip override
   hotels: Hotel[];
   services?: string[];        // included services list
+  sections?: TripSection[];   // free heading+text blocks (H2) on the detail page
   program?: ProgramDay[];     // day-by-day itinerary
 }
 
@@ -48,6 +49,12 @@ export interface ProgramDay {
   day: number | string;       // z.B. 1 oder "Tag 2–4"
   title: string;
   description: string;
+}
+
+/** A free content block on the trip detail page: heading (rendered as H2) + body text. */
+export interface TripSection {
+  heading: string;            // rendered as <h2> — good for SEO
+  body: string;               // paragraph text below the heading
 }
 
 export interface TrustCard {

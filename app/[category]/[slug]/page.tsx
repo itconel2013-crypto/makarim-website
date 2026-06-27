@@ -185,6 +185,27 @@ export default async function TripDetailPage({
               {trip.text}
             </p>
 
+            {/* ── Freie Abschnitte (Überschrift + Text) ─────────────── */}
+            {(trip.sections ?? [])
+              .filter((s) => s.heading?.trim() || s.body?.trim())
+              .map((s, i) => (
+                <section key={i} className="mb-14">
+                  {s.heading?.trim() && (
+                    <h2
+                      className="font-serif font-normal text-ink mb-4"
+                      style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
+                    >
+                      {s.heading}
+                    </h2>
+                  )}
+                  {s.body?.trim() && (
+                    <p className="leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
+                      {s.body}
+                    </p>
+                  )}
+                </section>
+              ))}
+
             {/* ── Enthaltene Leistungen ─────────────────────────────── */}
             {/* Read from trip data; trips never customized fall back to the
                 standard list (same one the CMS pre-fills with). */}

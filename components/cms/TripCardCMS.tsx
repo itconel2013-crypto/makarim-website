@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, deriveStatus, DEFAULT_INCLUDED } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, TripSection, deriveStatus, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
@@ -206,6 +206,9 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
         <p className="text-xs text-body-light mt-1">Erscheint, wenn die Reise geöffnet wird.</p>
       </div>
 
+      {/* Free heading+text sections (rendered as H2 + paragraph) */}
+      <SectionsEditor trip={trip} upd={upd} />
+
       {/* Banner editor */}
       <div className="rounded-card p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
         <div className="flex items-center justify-between mb-3">
@@ -324,6 +327,64 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
           onClose={() => setPickerFor(null)}
         />
       )}
+    </div>
+  );
+}
+
+function SectionsEditor({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const sections = trip.sections ?? [];
+
+  const set = (next: TripSection[]) => upd({ sections: next });
+  const updItem = (i: number, patch: Partial<TripSection>) =>
+    set(sections.map((s, j) => (j === i ? { ...s, ...patch } : s)));
+  const add = () => set([...sections, { heading: '', body: '' }]);
+  const remove = (i: number) => set(sections.filter((_, j) => j !== i));
+  const move = (i: number, dir: -1 | 1) => {
+    const a = [...sections];
+    [a[i], a[i + dir]] = [a[i + dir], a[i]];
+    set(a);
+  };
+
+  const sortBtn = (disabled: boolean): React.CSSProperties => ({
+    padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px',
+    backgroundColor: 'white', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.35 : 1,
+  });
+
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-1" style={{ fontSize: '11px' }}>Weitere Abschnitte (Überschrift + Text)</p>
+      <p className="text-xs text-body-light mb-3">Jeder Abschnitt erscheint auf der Reise-Detailseite als Zwischenüberschrift (H2) mit Text – gut für SEO. Reihenfolge = Anzeigereihenfolge.</p>
+
+      <div className="space-y-3">
+        {sections.map((s, i) => (
+          <div key={i} className="rounded-button p-4" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
+              <div className="flex gap-1">
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={sortBtn(i === 0)}>↑</button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === sections.length - 1} style={sortBtn(i === sections.length - 1)}>↓</button>
+                <button type="button" onClick={() => remove(i)} style={{ padding: '2px 8px', fontSize: '13px', border: '1px solid #F0DAD3', borderRadius: '6px', backgroundColor: '#FBF4F2', color: '#B0563F', cursor: 'pointer' }}>×</button>
+              </div>
+            </div>
+            <Field label="Überschrift">
+              <TextInput value={s.heading} onChange={(v) => updItem(i, { heading: v })} placeholder="z. B. Spirituelle Begleitung" />
+            </Field>
+            <div className="mt-3">
+              <Field label="Text">
+                <TextInput value={s.body} onChange={(v) => updItem(i, { body: v })} multiline rows={3} placeholder="Text dieses Abschnitts…" />
+              </Field>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={add}
+          style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: 500, border: '2px dashed #D4CDBE', borderRadius: '10px', backgroundColor: 'transparent', color: '#9A9082', cursor: 'pointer' }}
+        >
+          + Abschnitt hinzufügen
+        </button>
+      </div>
     </div>
   );
 }
