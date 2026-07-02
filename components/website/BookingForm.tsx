@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 
-interface Traveler { anrede: string; vorname: string; nachname: string; geburtstag: string; zimmer: string; nationalitaet: string; }
+interface Traveler {
+  anrede: string; geschlecht: string; vorname: string; nachname: string; geburtstag: string;
+  strasse: string; plz: string; ort: string; zimmer: string; nationalitaet: string;
+}
 
 interface BookingFormProps { trip: Trip; brand: Brand; }
 
@@ -13,7 +16,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const router = useRouter();
   const rooms = availableRooms(trip);                       // only categories the CRM prices
   const defaultRoom = rooms[0]?.value ?? 'VZ';
-  const makeTraveler = (): Traveler => ({ anrede: 'Herr', vorname: '', nachname: '', geburtstag: '', zimmer: defaultRoom, nationalitaet: '' });
+  const makeTraveler = (): Traveler => ({
+    anrede: 'Herr', geschlecht: 'm', vorname: '', nachname: '', geburtstag: '',
+    strasse: '', plz: '', ort: '', zimmer: defaultRoom, nationalitaet: '',
+  });
 
   const [travelers, setTravelers] = useState<Traveler[]>(() => [makeTraveler()]);
   const [contact, setContact] = useState({ vorname: '', nachname: '', email: '', telefon: '' });
@@ -32,6 +38,9 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       if (!t.vorname.trim()) return `Person ${i + 1}: Vorname fehlt`;
       if (!t.nachname.trim()) return `Person ${i + 1}: Nachname fehlt`;
       if (!t.geburtstag) return `Person ${i + 1}: Geburtsdatum fehlt`;
+      if (!t.strasse.trim()) return `Person ${i + 1}: Straße fehlt`;
+      if (!t.plz.trim()) return `Person ${i + 1}: PLZ fehlt`;
+      if (!t.ort.trim()) return `Person ${i + 1}: Ort fehlt`;
     }
     if (!contact.vorname.trim()) return 'Kontaktperson: Vorname fehlt';
     if (!contact.nachname.trim()) return 'Kontaktperson: Nachname fehlt';
@@ -139,13 +148,21 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                       )}
                     </div>
 
-                    {/* Row 1: Anrede + Vorname + Nachname */}
+                    {/* Row 1: Anrede + Geschlecht + Vorname + Nachname */}
                     <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Anrede</label>
                         <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
                           <option>Herr</option>
                           <option>Frau</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Geschlecht</label>
+                        <select value={t.geschlecht} onChange={(e) => updTraveler(idx, 'geschlecht', e.target.value)} style={inputStyle}>
+                          <option value="m">männlich</option>
+                          <option value="w">weiblich</option>
+                          <option value="d">divers</option>
                         </select>
                       </div>
                       <div>
@@ -176,6 +193,22 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                           </select>
                         </div>,
                       ]}
+                    </div>
+
+                    {/* Row 3: Straße + PLZ + Ort */}
+                    <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Straße &amp; Hausnr.</label>
+                        <input type="text" value={t.strasse} onChange={(e) => updTraveler(idx, 'strasse', e.target.value)} placeholder="z. B. Musterstraße 12" style={inputStyle} required />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>PLZ</label>
+                        <input type="text" inputMode="numeric" value={t.plz} onChange={(e) => updTraveler(idx, 'plz', e.target.value)} placeholder="12345" style={inputStyle} required />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Ort</label>
+                        <input type="text" value={t.ort} onChange={(e) => updTraveler(idx, 'ort', e.target.value)} placeholder="Musterstadt" style={inputStyle} required />
+                      </div>
                     </div>
 
                     {/* Computed summary line */}
