@@ -119,6 +119,17 @@ export default async function TripDetailPage({
     .map((r) => ({ label: r.label, p: effectiveRoomPrice(trip, r.value)! }))
     .filter((x) => x.p && x.p.adult > 0);
 
+  // Sidebar room list + "ab" price (= cheapest adult room). Works for explicit
+  // CRM prices AND legacy trips (min of the derived values).
+  const PERSONS_PER_ROOM: Record<string, string> = {
+    Vierbettzimmer: '4 Personen pro Zimmer',
+    Dreibettzimmer: '3 Personen pro Zimmer',
+    Doppelzimmer: '2 Personen pro Zimmer',
+  };
+  const roomList = priceRooms.map(({ label, p }) => ({ type: label, sub: PERSONS_PER_ROOM[label] ?? '', price: p.adult }));
+  const abPrice = roomList.length ? Math.min(...roomList.map((r) => r.price)) : (trip.price ?? 0);
+  const abRoomLabel = roomList.find((r) => r.price === abPrice)?.type ?? 'Vierbettzimmer';
+
   return (
     <>
       <script
@@ -410,10 +421,10 @@ export default async function TripDetailPage({
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
                 <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
                 <span style={{ fontFamily: "'Newsreader', serif", fontSize: '40px', color: '#16242B', lineHeight: 1 }}>
-                  {Math.round(trip.price * 0.85).toLocaleString('de-DE')} €
+                  {abPrice.toLocaleString('de-DE')} €
                 </span>
               </div>
-              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im Vierbettzimmer</div>
+              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im {abRoomLabel}</div>
 
               {/* Status badge */}
               <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '20px' }}>
@@ -435,11 +446,7 @@ export default async function TripDetailPage({
               {/* Zimmerkategorien */}
               <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: '#9A9082', textTransform: 'uppercase', marginBottom: '12px' }}>Zimmerkategorien</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', marginBottom: '22px' }}>
-                {[
-                  { type: 'Doppelzimmer', sub: '2 Personen pro Zimmer', price: trip.price },
-                  { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
-                  { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', price: Math.round(trip.price * 0.85) },
-                ].map((r) => (
+                {roomList.map((r) => (
                   <div key={r.type} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: '1px solid #EFE8DC', borderRadius: '11px' }}>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>{r.type}</div>
@@ -471,10 +478,10 @@ export default async function TripDetailPage({
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
             <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
             <span style={{ fontFamily: "'Newsreader', serif", fontSize: '38px', color: '#16242B', lineHeight: 1 }}>
-              {Math.round(trip.price * 0.85).toLocaleString('de-DE')} €
+              {abPrice.toLocaleString('de-DE')} €
             </span>
           </div>
-          <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im Vierbettzimmer</div>
+          <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im {abRoomLabel}</div>
 
           {/* Status badge */}
           <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '18px' }}>
@@ -496,11 +503,7 @@ export default async function TripDetailPage({
           {/* Zimmerkategorien */}
           <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: '#9A9082', textTransform: 'uppercase', marginBottom: '10px' }}>Zimmerkategorien</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-            {[
-              { type: 'Vierbettzimmer', sub: '4 Personen pro Zimmer', price: Math.round(trip.price * 0.85) },
-              { type: 'Dreibettzimmer', sub: '3 Personen pro Zimmer', price: Math.round(trip.price * 0.91) },
-              { type: 'Doppelzimmer',   sub: '2 Personen pro Zimmer', price: trip.price },
-            ].map((r) => (
+            {roomList.map((r) => (
               <div key={r.type} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', border: '1px solid #EFE8DC', borderRadius: '11px' }}>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>{r.type}</div>
