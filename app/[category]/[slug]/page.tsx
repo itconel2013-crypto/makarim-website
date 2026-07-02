@@ -68,7 +68,7 @@ export async function generateMetadata({
 
   const siteName = content.c.seo.siteName;
   const title = trip.seoTitle || `${trip.title} | ${siteName}`;
-  const description = trip.seoDesc || truncateText(trip.text, 158);
+  const description = trip.seoDesc || truncateText(trip.text || trip.description, 158) || content.c.seo.defaultDesc;
 
   return { title, description };
 }
@@ -95,7 +95,7 @@ export default async function TripDetailPage({
     '@context': 'https://schema.org',
     '@type': 'TouristTrip',
     name: trip.title,
-    description: trip.seoDesc || truncateText(trip.text, 200),
+    description: trip.seoDesc || truncateText(trip.text || trip.description, 200) || content.c.seo.defaultDesc,
     touristType: trip.typ,
     offers: {
       '@type': 'Offer',
