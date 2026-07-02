@@ -26,8 +26,9 @@ export async function POST(request: NextRequest) {
     const createdAt = new Date().toISOString();
 
     // Compute the price server-side (never trust client amounts). Same logic the
-    // booking form used, so `gesamt` matches what the customer saw.
-    const { preisProPerson, gesamt } = bookingPrices(travelers, trip.price ?? 0);
+    // booking form used, so `gesamt` matches what the customer saw. Uses the
+    // explicit CRM room prices (trip.prices) when present.
+    const { preisProPerson, gesamt } = bookingPrices(travelers, trip);
 
     // 3) Persist booking in DB first (never lost even if webhook fails).
     //    Price fields live in the payload so the retry job re-sends them too.

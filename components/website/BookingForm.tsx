@@ -3,23 +3,24 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
-import { ROOM_TYPES, KID_MULTIPLIER, roomPrice, ageCategory, personPrice } from '@/lib/pricing';
+import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 
 interface Traveler { anrede: string; vorname: string; nachname: string; geburtstag: string; zimmer: string; nationalitaet: string; }
-const defaultTraveler = (): Traveler => ({ anrede: 'Herr', vorname: '', nachname: '', geburtstag: '', zimmer: 'VZ', nationalitaet: '' });
 
 interface BookingFormProps { trip: Trip; brand: Brand; }
 
 export function BookingForm({ trip, brand }: BookingFormProps) {
   const router = useRouter();
-  const [travelers, setTravelers] = useState<Traveler[]>([defaultTraveler()]);
+  const rooms = availableRooms(trip);                       // only categories the CRM prices
+  const defaultRoom = rooms[0]?.value ?? 'VZ';
+  const makeTraveler = (): Traveler => ({ anrede: 'Herr', vorname: '', nachname: '', geburtstag: '', zimmer: defaultRoom, nationalitaet: '' });
+
+  const [travelers, setTravelers] = useState<Traveler[]>(() => [makeTraveler()]);
   const [contact, setContact] = useState({ vorname: '', nachname: '', email: '', telefon: '' });
   const [notes, setNotes] = useState('');
   const [agb, setAgb] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
-
-  const base = trip.price ?? 0;
 
   function updTraveler(idx: number, field: keyof Traveler, val: string) {
     setTravelers((p) => p.map((t, i) => (i === idx ? { ...t, [field]: val } : t)));
@@ -53,7 +54,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   }
 
   // Summary calculations
-  const totalPrice = travelers.reduce((sum, t) => sum + personPrice(t.geburtstag, t.zimmer, base), 0);
+  const totalPrice = travelers.reduce((sum, t) => sum + personPrice(t.geburtstag, t.zimmer, trip), 0);
   const adultsCount = travelers.filter((t) => ageCategory(t.geburtstag) === 'Erwachsener').length;
   const kidsCount   = travelers.filter((t) => ageCategory(t.geburtstag) === 'Kind').length;
   const babiesCount = travelers.filter((t) => ageCategory(t.geburtstag) === 'Baby').length;
@@ -100,15 +101,14 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {ROOM_TYPES.map((r, i) => {
-                    const adult = roomPrice(base, r.value);
-                    const kid   = Math.round(adult * KID_MULTIPLIER);
+                  {rooms.map((r, i) => {
+                    const p = effectiveRoomPrice(trip, r.value)!;
                     return (
                       <tr key={r.value} style={{ borderTop: '1px solid #EAE3D8', backgroundColor: i % 2 === 0 ? '#FDFCF9' : 'white' }}>
                         <td style={{ padding: '12px 16px', color: '#16242B', fontWeight: 500 }}>{r.label}</td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{adult.toLocaleString('de-DE')} €</td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{kid.toLocaleString('de-DE')} €</td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>250 €</td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.adult.toLocaleString('de-DE')} €</td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.child.toLocaleString('de-DE')} €</td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.baby.toLocaleString('de-DE')} €</td>
                       </tr>
                     );
                   })}
@@ -128,7 +128,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {travelers.map((t, idx) => {
                 const cat = ageCategory(t.geburtstag);
-                const price = personPrice(t.geburtstag, t.zimmer, base);
+                const price = personPrice(t.geburtstag, t.zimmer, trip);
                 const roomLabel = ROOM_TYPES.find((r) => r.value === t.zimmer)?.label ?? '';
                 return (
                   <div key={idx} style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '18px 20px', backgroundColor: 'white' }}>
@@ -172,7 +172,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                         <div key="zimmer">
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Zimmerkategorie</label>
                           <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
-                            {ROOM_TYPES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                            {rooms.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
                           </select>
                         </div>,
                       ]}
@@ -192,7 +192,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
               {/* Add person button */}
               <button
                 type="button"
-                onClick={() => setTravelers((p) => [...p, defaultTraveler()])}
+                onClick={() => setTravelers((p) => [...p, makeTraveler()])}
                 style={{ border: '1.5px dashed #D5CEBC', borderRadius: '14px', padding: '14px', fontSize: '14px', color: '#9A9082', backgroundColor: 'transparent', cursor: 'pointer', width: '100%' }}
               >
                 + Weitere Person hinzufügen

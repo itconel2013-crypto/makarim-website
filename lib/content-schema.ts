@@ -43,6 +43,7 @@ export interface Trip {
   services?: string[];        // included services list
   sections?: TripSection[];   // free heading+text blocks (H2) on the detail page
   program?: ProgramDay[];     // day-by-day itinerary
+  prices?: TripPrices;        // explicit per-room prices from CRM (authoritative when present)
 }
 
 export interface ProgramDay {
@@ -55,6 +56,24 @@ export interface ProgramDay {
 export interface TripSection {
   heading: string;            // rendered as <h2> — good for SEO
   body: string;               // paragraph text below the heading
+}
+
+/** Per-person prices for one room category (whole EUR). child/baby null = not priced by CRM. */
+export interface RoomPrice {
+  adult: number;
+  child: number | null;
+  baby: number | null;
+}
+
+/**
+ * Explicit room prices from the CRM (Option 1). Keys: quad=Vierbett, tpl=Dreibett,
+ * dbl=Zweibett. A category is null when not offered for this trip (hide the row).
+ * When `prices` is present it is authoritative — do NOT apply factors to set values.
+ */
+export interface TripPrices {
+  quad?: RoomPrice | null;
+  tpl?: RoomPrice | null;
+  dbl?: RoomPrice | null;
 }
 
 export interface TrustCard {
