@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { loadContent, saveBooking, markBookingSynced, decrementSeats } from '@/lib/db';
 import { sendInternalNotification, BookingEmailData } from '@/lib/email';
 import { bookingPrices } from '@/lib/pricing';
+import { getAvailability } from '@/lib/content-schema';
 
 const WEBHOOK_TIMEOUT_MS = 8_000;
 
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
     const trip  = store.c.trips.find((t) => t.vg === tripVg);
     if (!trip) {
       return NextResponse.json({ error: 'Reise nicht gefunden' }, { status: 404 });
+    }
+
+    // Ausgebucht (0 Plätze ohne Warteliste) → keine Buchung mehr möglich.
+    if (!getAvailability(trip).bookable) {
+      return NextResponse.json({ error: 'Diese Reise ist bereits ausgebucht.' }, { status: 409 });
     }
 
     // Derive geschlecht from anrede (no separate field in the form): Frau→w, sonst m.

@@ -139,6 +139,8 @@ export async function PATCH(request: NextRequest) {
         const merged = { ...prev, ...incoming };
         if (!incoming.url && prev.url) merged.url = prev.url;
         if (incoming.banner == null && prev.banner) merged.banner = prev.banner;
+        // "Warteliste erlaubt" wird im CMS gesetzt → CMS-Wert gewinnt beim Sync.
+        if (typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
         if (Array.isArray(incoming.hotels)) {
           const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
           merged.hotels = incoming.hotels.map((h: any, i: number) => {

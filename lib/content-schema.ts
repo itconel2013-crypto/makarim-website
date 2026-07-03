@@ -256,17 +256,41 @@ export const DEFAULT_INCLUDED: string[] = [
   '24/7 Betreuung vor Ort',
 ];
 
+/** Below this many free seats the exact count is shown (urgency); above it only "Begrenzte Plätze". */
+export const SEATS_SHOW_COUNT = 17;
+
+export interface Availability {
+  label: string;                        // text shown to the user
+  tone: 'green' | 'amber' | 'red';      // pill colour
+  bookable: boolean;                    // false only when sold out without waitlist
+}
+
 /**
- * Derive trip availability status from seats and waitlist
+ * Availability shown on the website / CMS, derived from seats + waitlist:
+ * - 0 seats + waitlist  → "Warteliste" (buchbar, geht ans CRM)
+ * - 0 seats, no waitlist→ "Ausgebucht" (NICHT buchbar)
+ * - 1..17 seats         → exakte Anzahl ("Noch X Plätze frei")
+ * - >17 seats           → "Begrenzte Plätze"
  */
+export function getAvailability(trip: Trip): Availability {
+  const seats = trip.seats ?? 0;
+  if (seats <= 0) {
+    return trip.waitlist
+      ? { label: 'Warteliste', tone: 'amber', bookable: true }
+      : { label: 'Ausgebucht', tone: 'red', bookable: false };
+  }
+  if (seats <= SEATS_SHOW_COUNT) {
+    return { label: `Noch ${seats} ${seats === 1 ? 'Platz' : 'Plätze'} frei`, tone: 'amber', bookable: true };
+  }
+  return { label: 'Begrenzte Plätze', tone: 'green', bookable: true };
+}
+
+/** @deprecated use getAvailability — kept for compatibility. */
 export function deriveStatus(trip: Trip): string {
-  if (trip.seats === 0) {
-    return trip.waitlist ? 'ausgebucht (Warteliste)' : 'ausgebucht';
-  }
-  if (trip.seats > 18) {
-    return 'verfügbar';
-  }
-  return 'begrenzte Plätze';
+  const seats = trip.seats ?? 0;
+  if (seats <= 0) return trip.waitlist ? 'ausgebucht (Warteliste)' : 'ausgebucht';
+  if (seats <= SEATS_SHOW_COUNT) return 'begrenzte Plätze';
+  return 'verfügbar';
 }
 
 /**

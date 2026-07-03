@@ -1,25 +1,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Trip, deriveStatus } from '@/lib/content-schema';
+import { Trip, getAvailability } from '@/lib/content-schema';
+
+const PILL_TONE = {
+  green: { bg: '#EAF0E8', color: '#3E6B52' },
+  amber: { bg: '#FEF3C7', color: '#92400E' },
+  red:   { bg: '#FEE2E2', color: '#991B1B' },
+} as const;
 
 function StatusPill({ trip }: { trip: Trip }) {
-  const status = deriveStatus(trip);
-  if (status === 'ausgebucht') return (
-    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEE2E2', color: '#991B1B' }}>
-      ausgebucht
+  const a = getAvailability(trip);
+  const c = PILL_TONE[a.tone];
+  return (
+    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: c.bg, color: c.color }}>
+      {a.label}
     </span>
   );
-  if (status === 'ausgebucht (Warteliste)') return (
-    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
-      Warteliste
-    </span>
-  );
-  if (status === 'begrenzte Plätze') return (
-    <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
-      noch {trip.seats} Plätze
-    </span>
-  );
-  return null;
 }
 
 interface TripCardProps {

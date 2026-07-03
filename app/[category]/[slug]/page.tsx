@@ -3,18 +3,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadContent } from '@/lib/db';
-import { deriveStatus, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
+import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { truncateText } from '@/lib/utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-function statusPillStyle(status: string): { bg: string; color: string; dot: string } {
-  if (status === 'verfügbar')
-    return { bg: '#EAF0E8', color: '#3E6B52', dot: '#3E6B52' };
-  if (status === 'begrenzte Plätze' || status === 'ausgebucht (Warteliste)')
-    return { bg: '#F6ECD9', color: '#956214', dot: '#E0A23C' };
-  return { bg: '#EAE3D8', color: '#6B6457', dot: '#9A9082' };
+function statusPillStyle(tone: 'green' | 'amber' | 'red'): { bg: string; color: string; dot: string } {
+  if (tone === 'green') return { bg: '#EAF0E8', color: '#3E6B52', dot: '#3E6B52' };
+  if (tone === 'amber') return { bg: '#F6ECD9', color: '#956214', dot: '#E0A23C' };
+  return { bg: '#FEE2E2', color: '#991B1B', dot: '#DC2626' };
 }
 
 // Distance pill for hotel card
@@ -88,8 +86,9 @@ export default async function TripDetailPage({
   );
   if (!trip) notFound();
 
-  const status = deriveStatus(trip);
-  const pill = statusPillStyle(status);
+  const avail = getAvailability(trip);
+  const pill = statusPillStyle(avail.tone);
+  const ctaText = !avail.bookable ? 'Ausgebucht' : ((trip.seats ?? 0) <= 0 ? 'Auf die Warteliste' : 'Zur Buchung');
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -428,7 +427,7 @@ export default async function TripDetailPage({
 
               {/* Status badge */}
               <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '20px' }}>
-                {status === 'begrenzte Plätze' ? `Nur noch ${trip.seats} Plätze frei` : status === 'verfügbar' ? `${trip.seats} Plätze verfügbar` : status}
+                {avail.label}
               </div>
 
               {/* Termin + Dauer */}
@@ -461,13 +460,19 @@ export default async function TripDetailPage({
               </div>
 
               {/* CTA */}
-              <Link
-                href={`/${category}/${slug}/booking`}
-                className="block w-full text-center text-white hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
-              >
-                Zur Buchung
-              </Link>
+              {avail.bookable ? (
+                <Link
+                  href={`/${category}/${slug}/booking`}
+                  className="block w-full text-center text-white hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
+                >
+                  {ctaText}
+                </Link>
+              ) : (
+                <div className="block w-full text-center" style={{ backgroundColor: '#EAE3D8', color: '#9A9082', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed' }}>
+                  {ctaText}
+                </div>
+              )}
             </div>
           </aside>
         </div>
@@ -485,7 +490,7 @@ export default async function TripDetailPage({
 
           {/* Status badge */}
           <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '18px' }}>
-            {status === 'begrenzte Plätze' ? `Nur noch ${trip.seats} Plätze frei` : status === 'verfügbar' ? `${trip.seats} Plätze verfügbar` : status}
+            {avail.label}
           </div>
 
           {/* Termin + Dauer */}
@@ -518,13 +523,19 @@ export default async function TripDetailPage({
           </div>
 
           {/* CTA */}
+          {avail.bookable ? (
           <Link
             href={`/${category}/${slug}/booking`}
             className="block w-full text-center text-white hover:opacity-90 transition-opacity"
             style={{ backgroundColor: '#C2724A', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, boxShadow: '0 8px 20px rgba(194,114,74,0.32)' }}
           >
-            Zur Buchung
+            {ctaText}
           </Link>
+          ) : (
+            <div className="block w-full text-center" style={{ backgroundColor: '#EAE3D8', color: '#9A9082', height: '54px', lineHeight: '54px', borderRadius: '13px', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed' }}>
+              {ctaText}
+            </div>
+          )}
         </div>
       </div>
     </main>

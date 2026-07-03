@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, TripSection, deriveStatus, DEFAULT_INCLUDED } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
@@ -74,18 +74,18 @@ function Toggle({ checked, onChange, colorOn = '#3E6B52' }: { checked: boolean; 
   );
 }
 
+const CMS_PILL_TONE = {
+  green: { bg: '#EAF0E8', color: '#3E6B52' },
+  amber: { bg: '#FEF3C7', color: '#92400E' },
+  red:   { bg: '#FEE2E2', color: '#991B1B' },
+} as const;
+
 function AvailBadge({ trip }: { trip: Trip }) {
-  const status = deriveStatus(trip);
-  if (status === 'ausgebucht') return (
-    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: '#FEE2E2', color: '#991B1B' }}>ausgebucht</span>
+  const a = getAvailability(trip);
+  const c = CMS_PILL_TONE[a.tone];
+  return (
+    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: c.bg, color: c.color }}>{a.label}</span>
   );
-  if (status === 'ausgebucht (Warteliste)') return (
-    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>Warteliste</span>
-  );
-  if (status === 'begrenzte Plätze') return (
-    <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>noch {trip.seats} Plätze</span>
-  );
-  return null;
 }
 
 export function TripCardCMS({ trip }: Props) {
@@ -160,6 +160,7 @@ export function TripCardCMS({ trip }: Props) {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-medium uppercase tracking-wide text-body-light" style={{ fontSize: '11px' }}>Warteliste bei 0</span>
+              <Toggle checked={!!trip.waitlist} onChange={() => upd({ waitlist: !trip.waitlist })} />
               <span className="text-xs text-body-light">{trip.waitlist ? 'Warteliste' : 'Ausgebucht'}</span>
             </div>
             <p className="text-xs text-body-light ml-auto">&gt;18 = verfügbar · 1–18 = begrenzte Plätze · 0 ohne Warteliste = ausgebucht</p>
