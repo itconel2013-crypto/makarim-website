@@ -141,6 +141,11 @@ export async function PATCH(request: NextRequest) {
         if (incoming.banner == null && prev.banner) merged.banner = prev.banner;
         // "Warteliste erlaubt" wird im CMS gesetzt → CMS-Wert gewinnt beim Sync.
         if (typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
+        // CMS-eigene Inhaltsfelder: der CMS-Wert gewinnt bei Re-Syncs (bei der
+        // Erst-Anlage einer Reise – ohne prev – kommen die CRM-Werte durch).
+        for (const f of ['services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
+          merged[f] = prev[f];
+        }
         if (Array.isArray(incoming.hotels)) {
           const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
           merged.hotels = incoming.hotels.map((h: any, i: number) => {
