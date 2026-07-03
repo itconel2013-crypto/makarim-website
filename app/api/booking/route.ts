@@ -23,6 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Reise nicht gefunden' }, { status: 404 });
     }
 
+    // Derive geschlecht from anrede (no separate field in the form): Frau→w, sonst m.
+    // Respect an explicit geschlecht if a client ever sends one.
+    const travelersWithGeschlecht = travelers.map((t: any) => ({
+      ...t,
+      geschlecht: t.geschlecht ?? (t.anrede === 'Frau' ? 'w' : 'm'),
+    }));
+
     const createdAt = new Date().toISOString();
 
     // Compute the price server-side (never trust client amounts). Same logic the
@@ -32,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // 3) Persist booking in DB first (never lost even if webhook fails).
     //    Price fields live in the payload so the retry job re-sends them too.
-    const payload = { tripVg, travelers, contact, notes, createdAt, gesamt, preisProPerson };
+    const payload = { tripVg, travelers: travelersWithGeschlecht, contact, notes, createdAt, gesamt, preisProPerson };
     const bookingId = saveBooking(tripVg, payload);
 
     // 4) Decrement seats + refresh cached public pages (seat counts changed)

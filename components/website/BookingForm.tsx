@@ -6,7 +6,7 @@ import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 
 interface Traveler {
-  anrede: string; geschlecht: string; vorname: string; nachname: string; geburtstag: string;
+  anrede: string; vorname: string; nachname: string; geburtstag: string;
   strasse: string; plz: string; ort: string; zimmer: string; nationalitaet: string;
 }
 
@@ -17,7 +17,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const rooms = availableRooms(trip);                       // only categories the CRM prices
   const defaultRoom = rooms[0]?.value ?? 'VZ';
   const makeTraveler = (): Traveler => ({
-    anrede: 'Herr', geschlecht: 'm', vorname: '', nachname: '', geburtstag: '',
+    anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',
     strasse: '', plz: '', ort: '', zimmer: defaultRoom, nationalitaet: '',
   });
 
@@ -30,6 +30,12 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
   function updTraveler(idx: number, field: keyof Traveler, val: string) {
     setTravelers((p) => p.map((t, i) => (i === idx ? { ...t, [field]: val } : t)));
+  }
+
+  function copyPrevAddress(idx: number) {
+    setTravelers((p) => p.map((t, i) => (i === idx && p[idx - 1]
+      ? { ...t, strasse: p[idx - 1].strasse, plz: p[idx - 1].plz, ort: p[idx - 1].ort }
+      : t)));
   }
 
   function validate(): string {
@@ -148,21 +154,13 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                       )}
                     </div>
 
-                    {/* Row 1: Anrede + Geschlecht + Vorname + Nachname */}
+                    {/* Row 1: Anrede + Vorname + Nachname */}
                     <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Anrede</label>
                         <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
                           <option>Herr</option>
                           <option>Frau</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Geschlecht</label>
-                        <select value={t.geschlecht} onChange={(e) => updTraveler(idx, 'geschlecht', e.target.value)} style={inputStyle}>
-                          <option value="m">männlich</option>
-                          <option value="w">weiblich</option>
-                          <option value="d">divers</option>
                         </select>
                       </div>
                       <div>
@@ -194,6 +192,17 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                         </div>,
                       ]}
                     </div>
+
+                    {/* Address copy helper — from the previous traveler */}
+                    {idx > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => copyPrevAddress(idx)}
+                        style={{ marginBottom: '8px', fontSize: '12.5px', color: '#A8542F', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                      >
+                        ↩ Adresse von Person {idx} übernehmen
+                      </button>
+                    )}
 
                     {/* Row 3: Straße + PLZ + Ort */}
                     <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>

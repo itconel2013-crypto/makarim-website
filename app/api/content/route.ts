@@ -131,8 +131,23 @@ export async function PATCH(request: NextRequest) {
       const existing = row ? JSON.parse(row.data) : {};
       const trips: any[] = existing.c?.trips ?? [];
       const idx = trips.findIndex((t: any) => t.vg === trip.vg);
+      // Preserve CMS-managed images (hero + hotel photos) when a CRM sync doesn't
+      // send them — otherwise every sync would wipe the pictures set in the CMS.
+      const mergeTrip = (prev: any, incoming: any) => {
+        const merged = { ...prev, ...incoming };
+        if (!incoming.url && prev.url) merged.url = prev.url;
+        if (Array.isArray(incoming.hotels)) {
+          const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
+          merged.hotels = incoming.hotels.map((h: any, i: number) => {
+            if (h.photo) return h;
+            const match = prevHotels.find((o: any) => o.city && h.city && String(o.city).toLowerCase() === String(h.city).toLowerCase()) ?? prevHotels[i];
+            return match?.photo ? { ...h, photo: match.photo } : h;
+          });
+        }
+        return merged;
+      };
       const updated = idx >= 0
-        ? trips.map((t: any, i: number) => i === idx ? { ...t, ...trip } : t)
+        ? trips.map((t: any, i: number) => i === idx ? mergeTrip(t, trip) : t)
         : [...trips, trip];
       const newData = { ...existing, c: { ...existing.c, trips: updated } };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(newData));
