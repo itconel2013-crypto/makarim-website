@@ -155,19 +155,11 @@ export function TripCardCMS({ trip }: Props) {
           <div className="flex items-center gap-6 px-5 py-3" style={{ backgroundColor: '#FDFCF9', borderBottom: '1px solid #EAE3D8' }}>
             <div className="flex items-center gap-3">
               <span className="text-xs font-medium uppercase tracking-wide text-body-light" style={{ fontSize: '11px' }}>Verfügbare Plätze</span>
-              <input
-                type="number"
-                min={0}
-                value={trip.seats}
-                onChange={(e) => upd({ seats: Number(e.target.value) })}
-                className="w-16 px-2 py-1 rounded text-sm text-ink text-center tabular-nums"
-                style={{ border: '1px solid #E2DBCF', outline: 'none' }}
-                onClick={(e) => e.stopPropagation()}
-              />
+              <span className="text-sm font-semibold text-ink tabular-nums" style={{ minWidth: '28px', textAlign: 'center' }}>{trip.seats ?? 0}</span>
+              <span className="text-xs text-body-light" style={{ fontStyle: 'italic' }}>vom CRM verwaltet</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-medium uppercase tracking-wide text-body-light" style={{ fontSize: '11px' }}>Warteliste bei 0</span>
-              <Toggle checked={!!trip.waitlist} onChange={() => upd({ waitlist: !trip.waitlist })} />
               <span className="text-xs text-body-light">{trip.waitlist ? 'Warteliste' : 'Ausgebucht'}</span>
             </div>
             <p className="text-xs text-body-light ml-auto">&gt;18 = verfügbar · 1–18 = begrenzte Plätze · 0 ohne Warteliste = ausgebucht</p>

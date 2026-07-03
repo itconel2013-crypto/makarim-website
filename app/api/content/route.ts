@@ -131,17 +131,23 @@ export async function PATCH(request: NextRequest) {
       const existing = row ? JSON.parse(row.data) : {};
       const trips: any[] = existing.c?.trips ?? [];
       const idx = trips.findIndex((t: any) => t.vg === trip.vg);
-      // Preserve CMS-managed images (hero + hotel photos) when a CRM sync doesn't
-      // send them — otherwise every sync would wipe the pictures set in the CMS.
+      // CMS-managed fields survive a CRM sync that doesn't (meaningfully) send them:
+      // hero image (url), banner ("Balken auf dem Bild"), and per-hotel photo + nights.
+      // Everything else (seats, price, prices, dates, hotel name/rating/dist, …) comes
+      // from the CRM and overwrites.
       const mergeTrip = (prev: any, incoming: any) => {
         const merged = { ...prev, ...incoming };
         if (!incoming.url && prev.url) merged.url = prev.url;
+        if (incoming.banner == null && prev.banner) merged.banner = prev.banner;
         if (Array.isArray(incoming.hotels)) {
           const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
           merged.hotels = incoming.hotels.map((h: any, i: number) => {
-            if (h.photo) return h;
             const match = prevHotels.find((o: any) => o.city && h.city && String(o.city).toLowerCase() === String(h.city).toLowerCase()) ?? prevHotels[i];
-            return match?.photo ? { ...h, photo: match.photo } : h;
+            return {
+              ...h,
+              photo: h.photo || match?.photo,       // keep CMS photo
+              nights: match?.nights || h.nights,    // keep CMS-pflegte Nächtezahl
+            };
           });
         }
         return merged;
