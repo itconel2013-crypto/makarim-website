@@ -32,6 +32,9 @@ export interface BookingEmailData {
     nachname: string;
     email: string;
     telefon: string;
+    strasse?: string;
+    plz?: string;
+    ort?: string;
   };
   notes?: string;
   // Bank
@@ -185,7 +188,9 @@ export async function sendInternalNotification(data: BookingEmailData) {
     <p style="font-size:13px;font-weight:600;color:${COLORS.ink};margin:0 0 8px;text-transform:uppercase;letter-spacing:0.08em;">Kontaktperson</p>
     <p style="margin:0 0 4px;font-size:14px;color:${COLORS.ink};">${data.contact.vorname} ${data.contact.nachname}</p>
     <p style="margin:0 0 4px;font-size:14px;color:${COLORS.ink};">📧 <a href="mailto:${data.contact.email}" style="color:${COLORS.primary};">${data.contact.email}</a></p>
-    <p style="margin:0 0 24px;font-size:14px;color:${COLORS.ink};">📞 <a href="tel:${data.contact.telefon}" style="color:${COLORS.primary};">${data.contact.telefon}</a></p>
+    <p style="margin:0 0 4px;font-size:14px;color:${COLORS.ink};">📞 <a href="tel:${data.contact.telefon}" style="color:${COLORS.primary};">${data.contact.telefon}</a></p>
+    ${data.contact.strasse || data.contact.plz || data.contact.ort ? `
+    <p style="margin:0 0 24px;font-size:14px;color:${COLORS.ink};">📍 ${[data.contact.strasse, [data.contact.plz, data.contact.ort].filter(Boolean).join(' ')].filter(Boolean).join(', ')}</p>` : '<div style="margin-bottom:24px;"></div>'}
 
     <p style="font-size:13px;font-weight:600;color:${COLORS.ink};margin:0 0 8px;text-transform:uppercase;letter-spacing:0.08em;">Reisende (${data.travelers.length})</p>
     <ul style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#5A5448;">

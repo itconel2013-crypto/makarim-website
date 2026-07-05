@@ -22,7 +22,8 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   });
 
   const [travelers, setTravelers] = useState<Traveler[]>(() => [makeTraveler()]);
-  const [contact, setContact] = useState({ vorname: '', nachname: '', email: '', telefon: '' });
+  const [contact, setContact] = useState({ vorname: '', nachname: '', email: '', telefon: '', strasse: '', plz: '', ort: '' });
+  const [contactSameAsTraveler, setContactSameAsTraveler] = useState(false);
   const [notes, setNotes] = useState('');
   const [agb, setAgb] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -37,6 +38,13 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       ? { ...t, strasse: p[idx - 1].strasse, plz: p[idx - 1].plz, ort: p[idx - 1].ort }
       : t)));
   }
+
+  // When "Daten vom Reisenden übernehmen" is active, the contact's name and
+  // address mirror the first traveler live — a later edit there stays in sync.
+  // E-Mail/Telefon exist only on the contact, so those always stay manual.
+  const contactMirror = contactSameAsTraveler
+    ? { vorname: travelers[0].vorname, nachname: travelers[0].nachname, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
+    : { vorname: contact.vorname, nachname: contact.nachname, strasse: contact.strasse, plz: contact.plz, ort: contact.ort };
 
   function validate(): string {
     for (let i = 0; i < travelers.length; i++) {
@@ -62,7 +70,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
     if (err) { setFormError(err); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     setFormError(''); setSubmitting(true);
     try {
-      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers, contact, notes }) });
+      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers, contact: { ...contact, ...contactMirror }, notes }) });
       if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Versand fehlgeschlagen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       router.push(`/${trip.category}/${trip.slug}/confirm`);
     } catch { setFormError('Netzwerkfehler — bitte erneut versuchen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -246,18 +254,44 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Kontaktperson</h2>
             <div style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '20px', backgroundColor: 'white' }}>
+
+              {/* Ganze Person (Name + Adresse) von Person 1 übernehmen */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', cursor: travelers.length ? 'pointer' : 'default' }}>
+                <input type="checkbox" checked={contactSameAsTraveler} onChange={(e) => setContactSameAsTraveler(e.target.checked)} style={{ width: '16px', height: '16px', flexShrink: 0 }} />
+                <span style={{ fontSize: '13px', color: '#5A5448' }}>Kontaktperson ist Person 1 — Name &amp; Adresse vom Reisenden übernehmen</span>
+              </label>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { key: 'vorname',  label: 'Vorname',  type: 'text',  ph: 'Vorname' },
-                  { key: 'nachname', label: 'Nachname', type: 'text',  ph: 'Nachname' },
-                  { key: 'email',    label: 'E-Mail',   type: 'email', ph: 'E-Mail' },
-                  { key: 'telefon',  label: 'Telefon',  type: 'tel',   ph: 'Telefon' },
-                ].map(({ key, label, type, ph }) => (
-                  <div key={key}>
-                    <label style={labelStyle}>{label}</label>
-                    <input type={type} value={contact[key as keyof typeof contact]} onChange={(e) => setContact((p) => ({ ...p, [key]: e.target.value }))} placeholder={ph} style={inputStyle} required />
-                  </div>
-                ))}
+                  { key: 'vorname',  label: 'Vorname',  type: 'text',  ph: 'Vorname',  mirror: true  },
+                  { key: 'nachname', label: 'Nachname', type: 'text',  ph: 'Nachname', mirror: true  },
+                  { key: 'email',    label: 'E-Mail',   type: 'email', ph: 'E-Mail',   mirror: false },
+                  { key: 'telefon',  label: 'Telefon',  type: 'tel',   ph: 'Telefon',  mirror: false },
+                ].map(({ key, label, type, ph, mirror }) => {
+                  const locked = mirror && contactSameAsTraveler;
+                  const val = mirror ? contactMirror[key as 'vorname' | 'nachname'] : contact[key as 'email' | 'telefon'];
+                  return (
+                    <div key={key}>
+                      <label style={labelStyle}>{label}</label>
+                      <input type={type} value={val} onChange={(e) => setContact((p) => ({ ...p, [key]: e.target.value }))} placeholder={ph} disabled={locked} style={{ ...inputStyle, ...(locked ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} required />
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', marginTop: '12px' }}>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>Straße &amp; Hausnr.</label>
+                  <input type="text" value={contactMirror.strasse} onChange={(e) => setContact((p) => ({ ...p, strasse: e.target.value }))} placeholder="z. B. Musterstraße 12" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
+                </div>
+                <div>
+                  <label style={labelStyle}>PLZ</label>
+                  <input type="text" inputMode="numeric" value={contactMirror.plz} onChange={(e) => setContact((p) => ({ ...p, plz: e.target.value }))} placeholder="12345" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Ort</label>
+                  <input type="text" value={contactMirror.ort} onChange={(e) => setContact((p) => ({ ...p, ort: e.target.value }))} placeholder="Musterstadt" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
+                </div>
               </div>
             </div>
           </section>

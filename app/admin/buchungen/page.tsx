@@ -70,6 +70,7 @@ export default function BuchungenPage() {
                     <span style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>{contact.vorname} {contact.nachname}</span>
                     <span style={{ fontSize: '13px', color: '#5A5448' }}>{contact.email}</span>
                     {contact.telefon && <span style={{ fontSize: '13px', color: '#5A5448' }}>{contact.telefon}</span>}
+                    {(contact.strasse || contact.plz || contact.ort) && <span style={{ fontSize: '13px', color: '#5A5448' }}>📍 {[contact.strasse, [contact.plz, contact.ort].filter(Boolean).join(' ')].filter(Boolean).join(', ')}</span>}
                     <span style={{ fontSize: '12px', fontWeight: 600, borderRadius: '20px', padding: '3px 10px', backgroundColor: pill.bg, color: pill.color }}>
                       {row.status}
                     </span>
