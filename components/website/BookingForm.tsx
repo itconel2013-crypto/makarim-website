@@ -52,9 +52,14 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       if (!t.vorname.trim()) return `Person ${i + 1}: Vorname fehlt`;
       if (!t.nachname.trim()) return `Person ${i + 1}: Nachname fehlt`;
       if (!t.geburtstag) return `Person ${i + 1}: Geburtsdatum fehlt`;
-      if (!t.strasse.trim()) return `Person ${i + 1}: Straße fehlt`;
-      if (!t.plz.trim()) return `Person ${i + 1}: PLZ fehlt`;
-      if (!t.ort.trim()) return `Person ${i + 1}: Ort fehlt`;
+      // Adresse ist nur bei Person 1 Pflicht (dient auch als Kofferkarten-Adresse).
+      // Weitere Reisende dürfen optional eine eigene Adresse angeben; bleibt sie
+      // leer, wird beim Absenden die Adresse von Person 1 übernommen.
+      if (i === 0) {
+        if (!t.strasse.trim()) return 'Person 1: Straße fehlt';
+        if (!t.plz.trim()) return 'Person 1: PLZ fehlt';
+        if (!t.ort.trim()) return 'Person 1: Ort fehlt';
+      }
     }
     if (!contact.vorname.trim()) return 'Kontaktperson: Vorname fehlt';
     if (!contact.nachname.trim()) return 'Kontaktperson: Nachname fehlt';
@@ -69,8 +74,14 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
     const err = validate();
     if (err) { setFormError(err); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     setFormError(''); setSubmitting(true);
+    // Reisende ohne eigene Adresse erben die Adresse von Person 1, damit jede
+    // Kofferkarte eine vollständige Adresse hat.
+    const travelersToSend = travelers.map((t, i) =>
+      i > 0 && !t.strasse.trim()
+        ? { ...t, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
+        : t);
     try {
-      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers, contact: { ...contact, ...contactMirror }, notes }) });
+      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes }) });
       if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Versand fehlgeschlagen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       router.push(`/${trip.category}/${trip.slug}/confirm`);
     } catch { setFormError('Netzwerkfehler — bitte erneut versuchen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -203,28 +214,33 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
                     {/* Address copy helper — from the previous traveler */}
                     {idx > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => copyPrevAddress(idx)}
-                        style={{ marginBottom: '8px', fontSize: '12.5px', color: '#A8542F', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                      >
-                        ↩ Adresse von Person {idx} übernehmen
-                      </button>
+                      <div style={{ marginBottom: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => copyPrevAddress(idx)}
+                          style={{ fontSize: '12.5px', color: '#A8542F', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                        >
+                          ↩ Adresse von Person {idx} übernehmen
+                        </button>
+                        <p style={{ fontSize: '11.5px', color: '#9A9082', margin: '4px 0 0' }}>
+                          Adresse optional — leer gelassen wird die Adresse von Person 1 übernommen (auch für die Kofferkarte).
+                        </p>
+                      </div>
                     )}
 
                     {/* Row 3: Straße + PLZ + Ort */}
                     <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
                       <div style={{ gridColumn: '1 / -1' }}>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Straße &amp; Hausnr.</label>
-                        <input type="text" value={t.strasse} onChange={(e) => updTraveler(idx, 'strasse', e.target.value)} placeholder="z. B. Musterstraße 12" style={inputStyle} required />
+                        <input type="text" value={t.strasse} onChange={(e) => updTraveler(idx, 'strasse', e.target.value)} placeholder="z. B. Musterstraße 12" style={inputStyle} required={idx === 0} />
                       </div>
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>PLZ</label>
-                        <input type="text" inputMode="numeric" value={t.plz} onChange={(e) => updTraveler(idx, 'plz', e.target.value)} placeholder="12345" style={inputStyle} required />
+                        <input type="text" inputMode="numeric" value={t.plz} onChange={(e) => updTraveler(idx, 'plz', e.target.value)} placeholder="12345" style={inputStyle} required={idx === 0} />
                       </div>
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Ort</label>
-                        <input type="text" value={t.ort} onChange={(e) => updTraveler(idx, 'ort', e.target.value)} placeholder="Musterstadt" style={inputStyle} required />
+                        <input type="text" value={t.ort} onChange={(e) => updTraveler(idx, 'ort', e.target.value)} placeholder="Musterstadt" style={inputStyle} required={idx === 0} />
                       </div>
                     </div>
 
