@@ -12,6 +12,23 @@ function bustPublicCache(): void {
   revalidatePath('/', 'layout');
 }
 
+/**
+ * Diagnose-Log: meldet, wenn eine eingehende Reise ihre (im CMS vorhandenen)
+ * Hotels verlieren würde — z. B. weil der CRM-Sync eine leere Hotelliste schickt.
+ * So sehen wir in den Railway-Logs, über welchen Endpoint der Verlust reinkommt.
+ */
+function warnOnHotelLoss(prevTrips: any[], nextTrips: any[], via: string): void {
+  if (!Array.isArray(prevTrips) || !Array.isArray(nextTrips)) return;
+  for (const next of nextTrips) {
+    const prev = prevTrips.find((t) => t.vg === next.vg);
+    const prevCount = Array.isArray(prev?.hotels) ? prev.hotels.length : 0;
+    const nextCount = Array.isArray(next?.hotels) ? next.hotels.length : 0;
+    if (prevCount > 0 && nextCount === 0) {
+      console.warn(`[Hotel-Schutz/${via}] Reise ${next.vg}: eingehende Hotelliste leer/fehlt (vorher ${prevCount}). CMS-Hotels werden bewahrt.`);
+    }
+  }
+}
+
 function deepMerge(target: any, source: any): any {
   if (typeof source !== 'object' || source === null) return source;
   const result = { ...target };
@@ -91,6 +108,7 @@ export async function POST(request: NextRequest) {
     
     // Load current content and merge
     const current = await loadContent();
+    if (body.c?.trips) warnOnHotelLoss((current as any).c?.trips ?? [], body.c.trips, 'POST');
     const updated = { ...current, ...body };
     
     // Save to database
@@ -131,6 +149,7 @@ export async function PATCH(request: NextRequest) {
       const existing = row ? JSON.parse(row.data) : {};
       const trips: any[] = existing.c?.trips ?? [];
       const idx = trips.findIndex((t: any) => t.vg === trip.vg);
+      warnOnHotelLoss(trips, [trip], 'PATCH trip');
       // CMS-managed fields survive a CRM sync that doesn't (meaningfully) send them:
       // hero image (url), banner ("Balken auf dem Bild"), and per-hotel photo + nights.
       // Everything else (seats, price, prices, dates, hotel name/rating/dist, …) comes
@@ -146,16 +165,23 @@ export async function PATCH(request: NextRequest) {
         for (const f of ['services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
           merged[f] = prev[f];
         }
-        if (Array.isArray(incoming.hotels)) {
-          const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
+        // Hotels dürfen durch einen CRM-Sync NIE verloren gehen. Schickt das CRM
+        // keine oder eine leere Hotelliste, bleibt der bestehende CMS-Stand erhalten.
+        // Sonst wird pro Hotel gemergt und jedes im CMS gepflegte Feld (Foto, Name,
+        // Nächte) behält den CMS-Wert, falls das CRM es leer lässt.
+        const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
+        if (Array.isArray(incoming.hotels) && incoming.hotels.length > 0) {
           merged.hotels = incoming.hotels.map((h: any, i: number) => {
             const match = prevHotels.find((o: any) => o.city && h.city && String(o.city).toLowerCase() === String(h.city).toLowerCase()) ?? prevHotels[i];
             return {
               ...h,
-              photo: h.photo || match?.photo,       // keep CMS photo
+              name:   h.name  || match?.name,       // keep CMS name if CRM leaves it empty
+              photo:  h.photo || match?.photo,      // keep CMS photo
               nights: match?.nights || h.nights,    // keep CMS-pflegte Nächtezahl
             };
           });
+        } else {
+          merged.hotels = prevHotels;               // CRM sendet keine Hotels → CMS-Stand behalten
         }
         return merged;
       };
@@ -174,6 +200,7 @@ export async function PATCH(request: NextRequest) {
       const db = getDb();
       const row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
       const existing = row ? JSON.parse(row.data) : {};
+      warnOnHotelLoss(existing.c?.trips ?? [], body.c?.trips ?? [], 'PATCH c');
       const updated = { ...existing, c: body.c };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(updated));
       db.close();
