@@ -165,19 +165,21 @@ export async function PATCH(request: NextRequest) {
         for (const f of ['services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
           merged[f] = prev[f];
         }
-        // Hotels dürfen durch einen CRM-Sync NIE verloren gehen. Schickt das CRM
-        // keine oder eine leere Hotelliste, bleibt der bestehende CMS-Stand erhalten.
-        // Sonst wird pro Hotel gemergt und jedes im CMS gepflegte Feld (Foto, Name,
-        // Nächte) behält den CMS-Wert, falls das CRM es leer lässt.
+        // Hotel-Datenhoheit:
+        //  • CRM besitzt: die Hotelliste (welche/wie viele), city und name → überschreibt.
+        //  • CMS besitzt: photo (Bild), nights, rating, dist → müssen den Sync überleben.
+        // Schickt das CRM keine/leere Hotelliste, bleibt der komplette CMS-Stand erhalten.
         const prevHotels: any[] = Array.isArray(prev.hotels) ? prev.hotels : [];
         if (Array.isArray(incoming.hotels) && incoming.hotels.length > 0) {
           merged.hotels = incoming.hotels.map((h: any, i: number) => {
+            // Zuordnung über city (CRM-stabil), sonst per Position.
             const match = prevHotels.find((o: any) => o.city && h.city && String(o.city).toLowerCase() === String(h.city).toLowerCase()) ?? prevHotels[i];
             return {
-              ...h,
-              name:   h.name  || match?.name,       // keep CMS name if CRM leaves it empty
-              photo:  h.photo || match?.photo,      // keep CMS photo
-              nights: match?.nights || h.nights,    // keep CMS-pflegte Nächtezahl
+              ...h,                                  // city + name vom CRM
+              photo:  match?.photo  || h.photo,      // CMS-Bild gewinnt
+              nights: match?.nights || h.nights,     // CMS-Wert gewinnt
+              rating: match?.rating || h.rating,     // CMS-Wert gewinnt
+              dist:   match?.dist   || h.dist,       // CMS-Wert gewinnt
             };
           });
         } else {
