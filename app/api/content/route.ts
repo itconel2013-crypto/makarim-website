@@ -150,6 +150,16 @@ export async function PATCH(request: NextRequest) {
       const trips: any[] = existing.c?.trips ?? [];
       const idx = trips.findIndex((t: any) => t.vg === trip.vg);
       warnOnHotelLoss(trips, [trip], 'PATCH trip');
+      // Diagnose: bei Umbenennung sehen wir hier, welche Namens-/URL-Felder das CRM
+      // schickt und ob title/slug auseinanderlaufen (title-Anzeige vs. URL).
+      {
+        const p = trips[idx];
+        const inc = `title=${JSON.stringify(trip.title)} name=${JSON.stringify(trip.name)} slug=${JSON.stringify(trip.slug)} url=${JSON.stringify(trip.url)}`;
+        const old = p ? `title=${JSON.stringify(p.title)} slug=${JSON.stringify(p.slug)}` : '(neu)';
+        if (!p || trip.title !== p.title || trip.slug !== p.slug || trip.url !== p.url) {
+          console.log(`[Trip-Sync] ${trip.vg} · eingehend: ${inc} | bisher: ${old}`);
+        }
+      }
       // CMS-managed fields survive a CRM sync that doesn't (meaningfully) send them:
       // hero image (url), banner ("Balken auf dem Bild"), and per-hotel photo + nights.
       // Everything else (seats, price, prices, dates, hotel name/rating/dist, …) comes
