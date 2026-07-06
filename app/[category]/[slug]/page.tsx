@@ -25,7 +25,7 @@ function DistancePill({ city, dist }: { city: string; dist: string }) {
     return (
       <span
         className="inline-flex items-center gap-1.5 font-medium"
-        style={{ fontSize: '12px', color: '#A8542F', backgroundColor: '#F2E8DF', borderRadius: '20px', padding: '3px 10px' }}
+        style={{ fontSize: '12px', color: '#8A6A2C', backgroundColor: '#F5EDD6', borderRadius: '20px', padding: '3px 10px' }}
       >
         🕋 {dist}
       </span>
