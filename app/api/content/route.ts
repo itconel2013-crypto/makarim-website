@@ -166,13 +166,16 @@ export async function PATCH(request: NextRequest) {
       // from the CRM and overwrites.
       const mergeTrip = (prev: any, incoming: any) => {
         const merged = { ...prev, ...incoming };
-        if (!incoming.url && prev.url) merged.url = prev.url;
+        if (prev.url) merged.url = prev.url;
         if (incoming.banner == null && prev.banner) merged.banner = prev.banner;
         // "Warteliste erlaubt" wird im CMS gesetzt → CMS-Wert gewinnt beim Sync.
         if (typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
         // CMS-eigene Inhaltsfelder: der CMS-Wert gewinnt bei Re-Syncs (bei der
         // Erst-Anlage einer Reise – ohne prev – kommen die CRM-Werte durch).
-        for (const f of ['services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
+        // title + slug gehören dazu: Anzeige-Titel und URL werden im CMS gepflegt
+        // und dürfen sich durch eine CRM-Umbenennung NICHT ändern (sonst laufen
+        // URL und Titel auseinander, wie zuletzt beobachtet).
+        for (const f of ['title', 'slug', 'services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
           merged[f] = prev[f];
         }
         // Hotel-Datenhoheit:
