@@ -17,7 +17,9 @@ function statusPillStyle(tone: 'green' | 'amber' | 'red'): { bg: string; color: 
 
 // Distance pill for hotel card
 function DistancePill({ city, dist }: { city: string; dist: string }) {
-  const isMekka = city.toLowerCase().includes('mekk') || city.toLowerCase().includes('mecca');
+  // Erkennt alle gängigen Schreibweisen: Mekka, Makkah, Makka, Mecca (die
+  // Stadt kommt aus dem CRM und kann anders transliteriert sein als "Mekka").
+  const isMekka = /mekk|makk|mecc/.test(city.toLowerCase());
 
   if (isMekka) {
     return (
