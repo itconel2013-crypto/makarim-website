@@ -200,6 +200,20 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
 
   return (
     <div className="space-y-5">
+      {/* Titel — H1 auf der Reise-Seite & Name in der Übersicht (CMS-eigen) */}
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Titel der Reise</p>
+        <input
+          type="text"
+          value={trip.title ?? ''}
+          onChange={(e) => upd({ title: e.target.value })}
+          placeholder="z. B. Winter Umrah"
+          className="w-full px-4 py-3 rounded-card text-sm text-ink bg-white"
+          style={{ border: '1px solid #E2DBCF', outline: 'none' }}
+        />
+        <p className="text-xs text-body-light mt-1">Große Überschrift auf der Reise-Seite und Name in der Übersicht. Wird nicht vom CRM überschrieben. Die URL änderst du separat im Bereich SEO (Slug).</p>
+      </div>
+
       {/* Image upload */}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Reisebild</p>
