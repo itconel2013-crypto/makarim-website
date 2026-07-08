@@ -15,6 +15,9 @@ export interface Trip {
   vg: string;                 // Vorgangsnummer (id), e.g., "2026-0912"
   name: string;               // Display name (e.g., "Umrah Luxus")
   title: string;
+  // Überschrift-Hoheit: false/fehlt = title folgt beim CRM-Sync automatisch dem CRM-Namen.
+  // true = im CMS bewusst übersteuert — der Sync lässt title dann in Ruhe (Reset im Editor).
+  titleOverride?: boolean;
   slug: string;               // URL-safe slug for routes
   category: 'umrah' | 'hajj' | 'kulturreisen';  // Category key for routing
   description: string;        // Short marketing text for cards

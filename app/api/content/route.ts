@@ -172,12 +172,19 @@ export async function PATCH(request: NextRequest) {
         if (typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
         // CMS-eigene Inhaltsfelder: der CMS-Wert gewinnt bei Re-Syncs (bei der
         // Erst-Anlage einer Reise – ohne prev – kommen die CRM-Werte durch).
-        // title + slug gehören dazu: Anzeige-Titel und URL werden im CMS gepflegt
-        // und dürfen sich durch eine CRM-Umbenennung NICHT ändern (sonst laufen
-        // URL und Titel auseinander, wie zuletzt beobachtet).
-        for (const f of ['title', 'slug', 'services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
+        // slug gehört dazu: URLs bleiben stabil, egal was im CRM passiert.
+        for (const f of ['slug', 'services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
           merged[f] = prev[f];
         }
+        // Überschrift (title): CRM führt, CMS darf übersteuern.
+        //  • Ohne Override folgt sie dem CRM-NAMEN (nicht incoming.title: das CRM-eigene
+        //    title-Feld kann bei alten Duplikaten veraltet sein und hat dort keine Pflege-UI).
+        //    → Umbenennen im CRM wirkt beim nächsten Sync auf die Website.
+        //  • Mit Override (im CMS-Editor gesetzt) bleibt der CMS-Titel unangetastet.
+        //    Ein leerer Override zählt nicht — sonst stünde eine leere H1 auf der Seite.
+        const override = prev.titleOverride === true && String(prev.title ?? '').trim() !== '';
+        merged.title = override ? prev.title : (incoming.name ?? incoming.title ?? prev.title);
+        merged.titleOverride = override;
         // Hotel-Datenhoheit:
         //  • CRM besitzt: die Hotelliste (welche/wie viele), city und name → überschreibt.
         //  • CMS besitzt: photo (Bild), nights, rating, dist → müssen den Sync überleben.
@@ -202,7 +209,9 @@ export async function PATCH(request: NextRequest) {
       };
       const updated = idx >= 0
         ? trips.map((t: any, i: number) => i === idx ? mergeTrip(t, trip) : t)
-        : [...trips, trip];
+        // Erst-Anlage: Überschrift startet als CRM-Name (das CRM-title-Feld kann bei alten
+        // Duplikaten veraltet sein) — ab dann gilt die Merge-Regel oben.
+        : [...trips, { ...trip, title: trip.name ?? trip.title, titleOverride: false }];
       const newData = { ...existing, c: { ...existing.c, trips: updated } };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(newData));
       db.close();

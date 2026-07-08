@@ -200,18 +200,43 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
 
   return (
     <div className="space-y-5">
-      {/* Titel — H1 auf der Reise-Seite & Name in der Übersicht (CMS-eigen) */}
+      {/* Titel — H1 auf der Reise-Seite & Name in der Übersicht.
+          Hoheit: CRM führt, CMS darf übersteuern. Tippt der Admin hier etwas, wird
+          titleOverride gesetzt und der CRM-Sync lässt den Titel fortan in Ruhe.
+          Der Rückweg (wieder dem CRM-Namen folgen) steht direkt darunter. */}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Titel der Reise</p>
         <input
           type="text"
           value={trip.title ?? ''}
-          onChange={(e) => upd({ title: e.target.value })}
+          onChange={(e) => upd({ title: e.target.value, titleOverride: true })}
+          onBlur={(e) => {
+            // Leer verlassen = kein eigener Titel gewollt → zurück zum CRM-Namen.
+            // Verhindert außerdem eine leere H1 auf der Reise-Seite.
+            if (!e.target.value.trim()) upd({ title: trip.name ?? '', titleOverride: false });
+          }}
           placeholder="z. B. Winter Umrah"
           className="w-full px-4 py-3 rounded-card text-sm text-ink bg-white"
           style={{ border: '1px solid #E2DBCF', outline: 'none' }}
         />
-        <p className="text-xs text-body-light mt-1">Große Überschrift auf der Reise-Seite und Name in der Übersicht. Wird nicht vom CRM überschrieben. Die URL änderst du separat im Bereich SEO (Slug).</p>
+        {trip.titleOverride ? (
+          <p className="text-xs text-body-light mt-1">
+            Eigener Titel — Umbenennungen im CRM ändern ihn nicht.{' '}
+            <button
+              type="button"
+              onClick={() => upd({ title: trip.name ?? '', titleOverride: false })}
+              className="underline"
+              style={{ color: '#8E6B2E', background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'inherit' }}
+            >
+              ↩ wieder dem CRM-Namen folgen
+            </button>
+          </p>
+        ) : (
+          <p className="text-xs text-body-light mt-1">
+            Folgt dem Reisenamen aus dem CRM{trip.name ? ` („${trip.name}")` : ''} — Umbenennungen dort erscheinen
+            beim nächsten Sync automatisch hier. Sobald du den Titel änderst, gilt deiner. Die URL änderst du separat im Bereich SEO (Slug).
+          </p>
+        )}
       </div>
 
       {/* Image upload */}
