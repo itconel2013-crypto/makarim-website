@@ -61,8 +61,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
         if (!t.ort.trim()) return 'Person 1: Ort fehlt';
       }
     }
-    if (!contact.vorname.trim()) return 'Kontaktperson: Vorname fehlt';
-    if (!contact.nachname.trim()) return 'Kontaktperson: Nachname fehlt';
+    // Bei "Daten vom Reisenden übernehmen" stehen Vor-/Nachname in contactMirror
+    // (aus Person 1), nicht im Roh-State contact — daher gegen contactMirror prüfen.
+    if (!contactMirror.vorname.trim()) return 'Kontaktperson: Vorname fehlt';
+    if (!contactMirror.nachname.trim()) return 'Kontaktperson: Nachname fehlt';
     if (!contact.email.trim() || !contact.email.includes('@')) return 'Kontaktperson: Gültige E-Mail erforderlich';
     if (!contact.telefon.trim()) return 'Kontaktperson: Telefonnummer fehlt';
     if (!agb) return 'Bitte Reisebedingungen akzeptieren';
