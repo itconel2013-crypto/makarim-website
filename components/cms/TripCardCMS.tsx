@@ -6,7 +6,13 @@ import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
 
-interface Props { trip: Trip; }
+interface Props {
+  trip: Trip;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+}
 
 /** One collapsible accordion section inside a trip card (replaces the old tabs). */
 function AccordionSection({ label, chip, summary, open, onToggle, children }: {
@@ -88,8 +94,9 @@ function AvailBadge({ trip }: { trip: Trip }) {
   );
 }
 
-export function TripCardCMS({ trip }: Props) {
+export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: Props) {
   const { updateTrip } = useCMS();
+  const showReorder = !!(onMoveUp || onMoveDown);
   const [open, setOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const isOpen = (k: string) => !!openSections[k];
@@ -106,6 +113,33 @@ export function TripCardCMS({ trip }: Props) {
     <div className="rounded-card bg-white overflow-hidden" style={{ border: '1px solid #EAE3D8', boxShadow: '0 2px 6px rgba(40,30,20,0.04)' }}>
       {/* Header row */}
       <div className="flex items-center gap-3 px-5 py-4 cursor-pointer select-none" onClick={() => setOpen(!open)}>
+
+        {/* Reorder arrows (verschiebt die Reise innerhalb ihrer Rubrik/Liste) */}
+        {showReorder && (
+          <div className="flex flex-col flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={onMoveUp}
+              disabled={!canMoveUp}
+              title="Nach oben"
+              aria-label="Reise nach oben verschieben"
+              style={{ fontSize: '11px', lineHeight: 1, color: canMoveUp ? '#A8542F' : '#D8D1C4', background: 'none', border: 'none', cursor: canMoveUp ? 'pointer' : 'default', padding: '1px 4px' }}
+            >
+              ▲
+            </button>
+            <button
+              type="button"
+              onClick={onMoveDown}
+              disabled={!canMoveDown}
+              title="Nach unten"
+              aria-label="Reise nach unten verschieben"
+              style={{ fontSize: '11px', lineHeight: 1, color: canMoveDown ? '#A8542F' : '#D8D1C4', background: 'none', border: 'none', cursor: canMoveDown ? 'pointer' : 'default', padding: '1px 4px' }}
+            >
+              ▼
+            </button>
+          </div>
+        )}
+
         <span className="text-body-light text-sm w-4 flex-shrink-0" style={{ transform: open ? 'rotate(90deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-block' }}>▶</span>
 
         {/* Thumbnail */}

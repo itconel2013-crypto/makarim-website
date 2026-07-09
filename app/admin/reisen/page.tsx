@@ -7,6 +7,7 @@ import { TripCardCMS } from '@/components/cms/TripCardCMS';
 import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { ReisenPreview } from '@/components/cms/previews/ReisenPreview';
 import { Trip } from '@/lib/content-schema';
+import { moveTripInList } from '@/lib/utils';
 
 const FILTER_TABS = [
   { key: 'all',          label: 'Alle' },
@@ -46,6 +47,10 @@ export default function ReisenManager() {
   const addTrip = () => {
     const cat = (filter === 'all' || filter === 'draft') ? 'umrah' : filter;
     updateSection('trips', [...store.c.trips, newTrip(cat)]);
+  };
+
+  const moveTrip = (vg: string, dir: 'up' | 'down') => {
+    updateSection('trips', moveTripInList(store.c.trips, trips, vg, dir));
   };
 
   return (
@@ -105,7 +110,16 @@ export default function ReisenManager() {
                 <p className="text-body-light text-sm">Keine Reisen in dieser Ansicht.</p>
               </div>
             ) : (
-              trips.map((trip) => <TripCardCMS key={trip.vg} trip={trip} />)
+              trips.map((trip, idx) => (
+                <TripCardCMS
+                  key={trip.vg}
+                  trip={trip}
+                  onMoveUp={() => moveTrip(trip.vg, 'up')}
+                  onMoveDown={() => moveTrip(trip.vg, 'down')}
+                  canMoveUp={idx > 0}
+                  canMoveDown={idx < trips.length - 1}
+                />
+              ))
             )}
           </main>
         </div>

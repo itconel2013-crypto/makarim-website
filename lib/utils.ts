@@ -26,6 +26,31 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/**
+ * Verschiebt eine Reise um eine Position innerhalb der aktuell angezeigten Liste
+ * (`displayed`, ggf. nach Rubrik gefiltert) und gibt ein neues, vollständiges
+ * `allTrips`-Array mit vertauschten Positionen zurück. Getauscht werden die
+ * beiden Elemente an ihrer Position in der Gesamtliste, damit die Reihenfolge
+ * auch in der gefilterten Ansicht stimmt. Ist der Zug nicht möglich (Rand),
+ * wird `allTrips` unverändert zurückgegeben.
+ */
+export function moveTripInList<T extends { vg: string }>(
+  allTrips: T[],
+  displayed: T[],
+  vg: string,
+  dir: 'up' | 'down',
+): T[] {
+  const di = displayed.findIndex((t) => t.vg === vg);
+  const tj = dir === 'up' ? di - 1 : di + 1;
+  if (di < 0 || tj < 0 || tj >= displayed.length) return allTrips;
+  const gi = allTrips.findIndex((t) => t.vg === displayed[di].vg);
+  const gj = allTrips.findIndex((t) => t.vg === displayed[tj].vg);
+  if (gi < 0 || gj < 0) return allTrips;
+  const next = allTrips.slice();
+  [next[gi], next[gj]] = [next[gj], next[gi]];
+  return next;
+}
+
 export function truncateText(text: string | undefined | null, maxLength: number): string {
   if (!text) return '';
   if (text.length <= maxLength) return text;
