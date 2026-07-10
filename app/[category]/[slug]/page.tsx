@@ -227,41 +227,6 @@ export default async function TripDetailPage({
                 </section>
               ))}
 
-            {/* ── Preise pro Person ─────────────────────────────────── */}
-            {priceRooms.length > 0 && (
-              <section className="mb-14">
-                <h2
-                  className="font-serif font-normal text-ink mb-6"
-                  style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
-                >
-                  Preise pro Person
-                </h2>
-                <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', overflow: 'hidden', overflowX: 'auto' }}>
-                  <table style={{ width: '100%', minWidth: '420px', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                      <tr style={{ backgroundColor: '#16242B', color: 'white' }}>
-                        <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 500 }}>Zimmer</th>
-                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 500 }}>Erwachsener</th>
-                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 500 }}>Kind 2–11</th>
-                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 500 }}>Baby 0–1</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {priceRooms.map(({ label, p }, i) => (
-                        <tr key={label} style={{ borderTop: '1px solid #EAE3D8', backgroundColor: i % 2 === 0 ? '#FDFCF9' : 'white' }}>
-                          <td style={{ padding: '12px 16px', color: '#16242B', fontWeight: 500 }}>{label}</td>
-                          <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.adult.toLocaleString('de-DE')} €</td>
-                          <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.child.toLocaleString('de-DE')} €</td>
-                          <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#16242B' }}>{p.baby.toLocaleString('de-DE')} €</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <p style={{ fontSize: '12px', color: '#9A9082', marginTop: '8px' }}>Preise pro Person inkl. Flug, Hotel &amp; Visum. Die Alterskategorie ergibt sich aus dem Geburtsdatum.</p>
-              </section>
-            )}
-
             {/* ── Enthaltene Leistungen ─────────────────────────────── */}
             {/* Read from trip data; trips never customized fall back to the
                 standard list (same one the CMS pre-fills with). */}
