@@ -7,6 +7,7 @@ import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPric
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
+  email: string; telefon: string;
   strasse: string; plz: string; ort: string; zimmer: string; nationalitaet: string;
 }
 
@@ -18,6 +19,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const defaultRoom = rooms[0]?.value ?? 'VZ';
   const makeTraveler = (): Traveler => ({
     anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',
+    email: '', telefon: '',
     strasse: '', plz: '', ort: '', zimmer: defaultRoom, nationalitaet: '',
   });
 
@@ -39,12 +41,12 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       : t)));
   }
 
-  // When "Daten vom Reisenden übernehmen" is active, the contact's name and
-  // address mirror the first traveler live — a later edit there stays in sync.
-  // E-Mail/Telefon exist only on the contact, so those always stay manual.
+  // When "Daten vom Reisenden übernehmen" is active, the contact's fields mirror
+  // the first traveler live — a later edit there stays in sync. Person 1 now also
+  // has E-Mail/Telefon, so those get mirrored too.
   const contactMirror = contactSameAsTraveler
-    ? { vorname: travelers[0].vorname, nachname: travelers[0].nachname, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
-    : { vorname: contact.vorname, nachname: contact.nachname, strasse: contact.strasse, plz: contact.plz, ort: contact.ort };
+    ? { vorname: travelers[0].vorname, nachname: travelers[0].nachname, email: travelers[0].email, telefon: travelers[0].telefon, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
+    : { vorname: contact.vorname, nachname: contact.nachname, email: contact.email, telefon: contact.telefon, strasse: contact.strasse, plz: contact.plz, ort: contact.ort };
 
   function validate(): string {
     for (let i = 0; i < travelers.length; i++) {
@@ -56,17 +58,19 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       // Weitere Reisende dürfen optional eine eigene Adresse angeben; bleibt sie
       // leer, wird beim Absenden die Adresse von Person 1 übernommen.
       if (i === 0) {
+        if (!t.email.trim() || !t.email.includes('@')) return 'Person 1: Gültige E-Mail erforderlich';
+        if (!t.telefon.trim()) return 'Person 1: Handynummer fehlt';
         if (!t.strasse.trim()) return 'Person 1: Straße fehlt';
         if (!t.plz.trim()) return 'Person 1: PLZ fehlt';
         if (!t.ort.trim()) return 'Person 1: Ort fehlt';
       }
     }
-    // Bei "Daten vom Reisenden übernehmen" stehen Vor-/Nachname in contactMirror
+    // Bei "Daten vom Reisenden übernehmen" stehen die Kontaktfelder in contactMirror
     // (aus Person 1), nicht im Roh-State contact — daher gegen contactMirror prüfen.
     if (!contactMirror.vorname.trim()) return 'Kontaktperson: Vorname fehlt';
     if (!contactMirror.nachname.trim()) return 'Kontaktperson: Nachname fehlt';
-    if (!contact.email.trim() || !contact.email.includes('@')) return 'Kontaktperson: Gültige E-Mail erforderlich';
-    if (!contact.telefon.trim()) return 'Kontaktperson: Telefonnummer fehlt';
+    if (!contactMirror.email.trim() || !contactMirror.email.includes('@')) return 'Kontaktperson: Gültige E-Mail erforderlich';
+    if (!contactMirror.telefon.trim()) return 'Kontaktperson: Telefonnummer fehlt';
     if (!agb) return 'Bitte Reisebedingungen akzeptieren';
     return '';
   }
@@ -246,6 +250,20 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
                       </div>
                     </div>
 
+                    {/* Row 4: E-Mail + Handynummer — nur Person 1 (Haupt-Kontaktdaten) */}
+                    {idx === 0 && (
+                      <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>E-Mail</label>
+                          <input type="email" value={t.email} onChange={(e) => updTraveler(idx, 'email', e.target.value)} placeholder="name@beispiel.de" style={inputStyle} required />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Handynummer</label>
+                          <input type="tel" value={t.telefon} onChange={(e) => updTraveler(idx, 'telefon', e.target.value)} placeholder="+49 …" style={inputStyle} required />
+                        </div>
+                      </div>
+                    )}
+
                     {/* Computed summary line */}
                     {t.geburtstag && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -276,18 +294,18 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
               {/* Ganze Person (Name + Adresse) von Person 1 übernehmen */}
               <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', cursor: travelers.length ? 'pointer' : 'default' }}>
                 <input type="checkbox" checked={contactSameAsTraveler} onChange={(e) => setContactSameAsTraveler(e.target.checked)} style={{ width: '16px', height: '16px', flexShrink: 0 }} />
-                <span style={{ fontSize: '13px', color: '#5A5448' }}>Kontaktperson ist Person 1 — Name &amp; Adresse vom Reisenden übernehmen</span>
+                <span style={{ fontSize: '13px', color: '#5A5448' }}>Kontaktperson ist Person 1 — Daten (Name, E-Mail, Telefon &amp; Adresse) vom Reisenden übernehmen</span>
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { key: 'vorname',  label: 'Vorname',  type: 'text',  ph: 'Vorname',  mirror: true  },
-                  { key: 'nachname', label: 'Nachname', type: 'text',  ph: 'Nachname', mirror: true  },
-                  { key: 'email',    label: 'E-Mail',   type: 'email', ph: 'E-Mail',   mirror: false },
-                  { key: 'telefon',  label: 'Telefon',  type: 'tel',   ph: 'Telefon',  mirror: false },
-                ].map(({ key, label, type, ph, mirror }) => {
-                  const locked = mirror && contactSameAsTraveler;
-                  const val = mirror ? contactMirror[key as 'vorname' | 'nachname'] : contact[key as 'email' | 'telefon'];
+                  { key: 'vorname',  label: 'Vorname',  type: 'text',  ph: 'Vorname'  },
+                  { key: 'nachname', label: 'Nachname', type: 'text',  ph: 'Nachname' },
+                  { key: 'email',    label: 'E-Mail',   type: 'email', ph: 'E-Mail'   },
+                  { key: 'telefon',  label: 'Telefon',  type: 'tel',   ph: 'Telefon'  },
+                ].map(({ key, label, type, ph }) => {
+                  const locked = contactSameAsTraveler;
+                  const val = contactMirror[key as 'vorname' | 'nachname' | 'email' | 'telefon'];
                   return (
                     <div key={key}>
                       <label style={labelStyle}>{label}</label>
