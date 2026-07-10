@@ -171,9 +171,9 @@ export default async function TripDetailPage({
             alt="Reiseleiter"
             className="absolute bottom-0 right-0"
             style={{
-              height: '92%',
+              height: '74%',
               width: 'auto',
-              maxWidth: '46%',
+              maxWidth: '40%',
               objectFit: 'contain',
               objectPosition: 'bottom right',
               zIndex: 5,
