@@ -175,7 +175,7 @@ export default async function TripDetailPage({
         </div>
 
         {/* Bottom-left: kicker + H1 */}
-        <div className="relative z-10 container-max pb-10" style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%' }}>
+        <div className="absolute inset-x-0 bottom-0 z-10 container-max pb-10">
           <p
             className="font-mono uppercase mb-3 text-white"
             style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#F0CDA8' }}
