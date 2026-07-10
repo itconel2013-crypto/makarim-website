@@ -57,6 +57,25 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
+        {/* Reiseleiter-Foto (freigestellt) — unten rechts, angeschnitten */}
+        {trip.leaderPhoto && (
+          <img
+            src={trip.leaderPhoto}
+            alt="Reiseleiter"
+            style={{
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+              height: '86%',
+              width: 'auto',
+              maxWidth: '60%',
+              objectFit: 'contain',
+              objectPosition: 'bottom right',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
         {/* Banner — left:0, top:42px, no border-radius, Quicksand font */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
           <div style={{

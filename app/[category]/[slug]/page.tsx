@@ -164,6 +164,24 @@ export default async function TripDetailPage({
           style={{ background: 'linear-gradient(180deg, rgba(20,14,8,0.18) 0%, rgba(20,14,8,0.72) 100%)' }}
         />
 
+        {/* Reiseleiter-Foto (freigestellt) — unten rechts, angeschnitten */}
+        {trip.leaderPhoto && (
+          <img
+            src={trip.leaderPhoto}
+            alt="Reiseleiter"
+            className="absolute bottom-0 right-0"
+            style={{
+              height: '92%',
+              width: 'auto',
+              maxWidth: '46%',
+              objectFit: 'contain',
+              objectPosition: 'bottom right',
+              zIndex: 5,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
         {/* Back link */}
         <div className="relative z-10 container-max pt-6">
           <Link

@@ -34,6 +34,7 @@ export interface Trip {
   waitlist: boolean;          // waitlist enabled?
   badge?: string;             // optional badge text (e.g., "Bestseller", "Early Bird")
   heroIcon?: string;          // optional emoji or icon for card display
+  leaderPhoto?: string;       // freigestelltes Reiseleiter-Foto (PNG, base64/URL) – CMS-only, unten rechts im Bild
   banner?: {
     enabled: boolean;
     line1: string;
