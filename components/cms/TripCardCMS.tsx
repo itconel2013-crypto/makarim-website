@@ -303,9 +303,9 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Reiseleiter-Foto <span className="text-body-light normal-case tracking-normal">(optional)</span></p>
         <div className="flex items-center gap-4">
-          <div className="flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: '80px', height: '80px', borderRadius: '50%', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA' }}>
+          <div className="flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA', backgroundImage: 'linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%),linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%)', backgroundSize: '14px 14px', backgroundPosition: '0 0,7px 7px' }}>
             {trip.leaderPhoto ? (
-              <img src={trip.leaderPhoto} alt="" className="w-full h-full object-cover" style={{ objectPosition: 'top' }} />
+              <img src={trip.leaderPhoto} alt="" className="w-full h-full object-contain" style={{ objectPosition: 'bottom' }} />
             ) : (
               <span className="text-2xl opacity-30">🧔</span>
             )}
@@ -333,7 +333,7 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
             )}
           </div>
         </div>
-        <p className="text-xs text-body-light mt-1">Wird als <strong>rundes Portrait</strong> unten rechts im Reisebild angezeigt (Übersicht &amp; Detailseite). Am besten ein quadratisches Porträt (Kopf/Schulter).</p>
+        <p className="text-xs text-body-light mt-1">Erscheint unten rechts im Reisebild (Übersicht &amp; Detailseite). Am besten ein <strong>freigestelltes PNG</strong> (transparenter Hintergrund).</p>
         {leaderPickerOpen && <MediaPickerModal onSelect={(url) => { upd({ leaderPhoto: url }); setLeaderPickerOpen(false); }} onClose={() => setLeaderPickerOpen(false)} />}
       </div>
 

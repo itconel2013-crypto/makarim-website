@@ -57,22 +57,20 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
-        {/* Reiseleiter-Foto — rundes Portrait unten rechts */}
+        {/* Reiseleiter-Foto (freigestellt) — unten rechts, angeschnitten */}
         {trip.leaderPhoto && (
           <img
             src={trip.leaderPhoto}
             alt="Reiseleiter"
             style={{
               position: 'absolute',
-              right: '12px',
-              bottom: '12px',
-              width: '82px',
-              height: '82px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              objectPosition: 'top',
-              border: '3px solid #fff',
-              boxShadow: '0 3px 10px rgba(0,0,0,0.18)',
+              right: 0,
+              bottom: 0,
+              height: '68%',
+              width: 'auto',
+              maxWidth: '50%',
+              objectFit: 'contain',
+              objectPosition: 'bottom right',
               pointerEvents: 'none',
             }}
           />

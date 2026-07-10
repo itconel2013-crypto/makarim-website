@@ -164,22 +164,18 @@ export default async function TripDetailPage({
           style={{ background: 'linear-gradient(180deg, rgba(20,14,8,0.18) 0%, rgba(20,14,8,0.72) 100%)' }}
         />
 
-        {/* Reiseleiter-Foto — rundes Portrait unten rechts */}
+        {/* Reiseleiter-Foto (freigestellt) — unten rechts, angeschnitten */}
         {trip.leaderPhoto && (
           <img
             src={trip.leaderPhoto}
             alt="Reiseleiter"
-            className="absolute"
+            className="absolute bottom-0 right-0"
             style={{
-              right: '28px',
-              bottom: '28px',
-              width: '132px',
-              height: '132px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              objectPosition: 'top',
-              border: '4px solid rgba(255,255,255,0.92)',
-              boxShadow: '0 6px 20px rgba(0,0,0,0.28)',
+              height: '74%',
+              width: 'auto',
+              maxWidth: '40%',
+              objectFit: 'contain',
+              objectPosition: 'bottom right',
               zIndex: 5,
               pointerEvents: 'none',
             }}
