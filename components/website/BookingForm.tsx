@@ -13,6 +13,10 @@ interface Traveler {
 
 interface BookingFormProps { trip: Trip; brand: Brand; }
 
+/** Partner-Kennung aus dem mk_ref-Cookie (von RefCapture gesetzt). Fehlt sie → undefined. */
+const getRef = (): string | undefined =>
+  document.cookie.split('; ').find((c) => c.startsWith('mk_ref='))?.split('=')[1] || undefined;
+
 export function BookingForm({ trip, brand }: BookingFormProps) {
   const router = useRouter();
   const rooms = availableRooms(trip);                       // only categories the CRM prices
@@ -87,7 +91,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
         ? { ...t, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
         : t);
     try {
-      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes }) });
+      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes, ref: getRef() }) });
       if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Versand fehlgeschlagen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       router.push(`/${trip.category}/${trip.slug}/confirm`);
     } catch { setFormError('Netzwerkfehler — bitte erneut versuchen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }

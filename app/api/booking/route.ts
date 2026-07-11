@@ -10,7 +10,13 @@ const WEBHOOK_TIMEOUT_MS = 8_000;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { tripVg, travelers, contact, notes } = body;
+    const { tripVg, travelers, contact, notes, ref } = body;
+
+    // Partner-Kennung (optional). Kommt vom Client → Datenvertrag hier nochmal
+    // erzwingen: klein, nur [a-z0-9_-], max. 40 Zeichen. Leer/ungültig → kein Partner.
+    const refClean = typeof ref === 'string'
+      ? (ref.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40) || undefined)
+      : undefined;
 
     // 1) Validate
     if (!tripVg || !travelers?.length || !contact?.email) {
@@ -45,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // 3) Persist booking in DB first (never lost even if webhook fails).
     //    Price fields live in the payload so the retry job re-sends them too.
-    const payload = { tripVg, travelers: travelersWithGeschlecht, contact, notes, createdAt, gesamt, preisProPerson };
+    const payload = { tripVg, travelers: travelersWithGeschlecht, contact, notes, createdAt, gesamt, preisProPerson, ref: refClean };
     const bookingId = saveBooking(tripVg, payload);
 
     // 4) Decrement seats + refresh cached public pages (seat counts changed)

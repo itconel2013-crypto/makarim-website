@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
+import { RefCapture } from '@/components/layout/RefCapture';
 
 // Render public pages per-request (always reflect live CMS content, and avoid
 // baking stale build-time data — the SQLite volume isn't mounted at build).
@@ -27,6 +28,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="min-h-screen flex flex-col">
+        <RefCapture />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
