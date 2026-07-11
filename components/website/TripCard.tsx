@@ -25,6 +25,15 @@ interface TripCardProps {
 export function TripCard({ trip }: TripCardProps) {
   const href = `/${trip.category}/${trip.slug}`;
 
+  // Reiseleiter-Fotos: Liste (altes Einzelfeld als Fallback). Bei mehreren stehen
+  // sie leicht überlappend nebeneinander und werden etwas kleiner, damit Balken
+  // (links) und Preis-Badge (oben rechts) frei bleiben.
+  const leaders = (trip.leaderPhotos?.length
+    ? trip.leaderPhotos
+    : trip.leaderPhoto ? [trip.leaderPhoto] : []
+  ).slice(0, 3);
+  const multi = leaders.length > 1;
+
   return (
     <Link
       href={href}
@@ -57,23 +66,36 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
-        {/* Reiseleiter-Foto (freigestellt) — unten rechts, angeschnitten */}
-        {trip.leaderPhoto && (
-          <img
-            src={trip.leaderPhoto}
-            alt="Reiseleiter"
+        {/* Reiseleiter-Fotos (freigestellt) — unten rechts, angeschnitten, leicht überlappend */}
+        {leaders.length > 0 && (
+          <div
             style={{
               position: 'absolute',
-              right: 0,
-              bottom: 0,
-              height: '68%',
-              width: 'auto',
-              maxWidth: '50%',
-              objectFit: 'contain',
-              objectPosition: 'bottom right',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'flex-end',
               pointerEvents: 'none',
             }}
-          />
+          >
+            {leaders.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt="Reiseleiter"
+                style={{
+                  height: multi ? '62%' : '68%',
+                  width: 'auto',
+                  maxWidth: multi ? '36%' : '50%',
+                  objectFit: 'contain',
+                  objectPosition: 'bottom',
+                  marginLeft: i > 0 ? '-14px' : 0,   // leichte Überlappung
+                  position: 'relative',
+                  zIndex: i,                          // spätere Person steht vorn
+                }}
+              />
+            ))}
+          </div>
         )}
 
         {/* Banner — left:0, top:42px, no border-radius, Quicksand font */}

@@ -27,6 +27,9 @@ function normalizeTrip(trip: any): Trip {
     typ: trip.typ,
     nights: (trip.nights ?? parseInt(trip.nights as any, 10)) || 0,
     hotels: trip.hotels ?? [],
+    // Reiseleiter: früher ein Einzelfeld (leaderPhoto), jetzt eine Liste. Alte
+    // Reisen werden hier transparent übernommen — kein Datenverlust, keine Migration.
+    leaderPhotos: trip.leaderPhotos ?? (trip.leaderPhoto ? [trip.leaderPhoto] : []),
   };
 }
 

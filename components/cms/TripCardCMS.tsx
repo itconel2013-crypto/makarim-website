@@ -233,6 +233,13 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
   const [pickerOpen, setPickerOpen] = useState(false);
   const [leaderPickerOpen, setLeaderPickerOpen] = useState(false);
 
+  // Reiseleiter: Liste. Altes Einzelfeld (leaderPhoto) wird als erstes Element
+  // gelesen und beim ersten Speichern durch die Liste ersetzt.
+  const leaders = trip.leaderPhotos?.length
+    ? trip.leaderPhotos
+    : trip.leaderPhoto ? [trip.leaderPhoto] : [];
+  const setLeaders = (list: string[]) => upd({ leaderPhotos: list, leaderPhoto: undefined });
+
   return (
     <div className="space-y-5">
       {/* Titel — H1 auf der Reise-Seite & Name in der Übersicht.
@@ -299,42 +306,56 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
         {pickerOpen && <MediaPickerModal onSelect={(url) => { upd({ url }); setPickerOpen(false); }} onClose={() => setPickerOpen(false)} />}
       </div>
 
-      {/* Reiseleiter-Foto (freigestellt) — unten rechts im Reisebild */}
+      {/* Reiseleiter-Fotos (freigestellt) — unten rechts auf der Reisekarte */}
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>Reiseleiter-Foto <span className="text-body-light normal-case tracking-normal">(optional)</span></p>
-        <div className="flex items-center gap-4">
-          <div className="flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: '80px', height: '80px', borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA', backgroundImage: 'linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%),linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%)', backgroundSize: '14px 14px', backgroundPosition: '0 0,7px 7px' }}>
-            {trip.leaderPhoto ? (
-              <img src={trip.leaderPhoto} alt="" className="w-full h-full object-contain" style={{ objectPosition: 'bottom' }} />
-            ) : (
-              <span className="text-2xl opacity-30">🧔</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setLeaderPickerOpen(true)}
-              className="px-4 py-2 text-sm font-medium text-white"
-              style={{ backgroundColor: '#14617A', borderRadius: '9px', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F4F63')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#14617A')}
-            >
-              {trip.leaderPhoto ? 'Foto ändern' : 'Foto wählen'}
-            </button>
-            {trip.leaderPhoto && (
+        <p className="text-xs font-medium uppercase tracking-wide text-body-dark mb-2" style={{ fontSize: '11px' }}>
+          Reiseleiter-Fotos <span className="text-body-light normal-case tracking-normal">(optional, mehrere möglich)</span>
+        </p>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          {leaders.map((src, i) => (
+            <div key={i} className="relative flex-shrink-0" style={{ width: '80px', height: '80px' }}>
+              <div
+                className="w-full h-full overflow-hidden flex items-center justify-center"
+                style={{ borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA', backgroundImage: 'linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%),linear-gradient(45deg,#E7E1D5 25%,transparent 25%,transparent 75%,#E7E1D5 75%)', backgroundSize: '14px 14px', backgroundPosition: '0 0,7px 7px' }}
+              >
+                <img src={src} alt="" className="w-full h-full object-contain" style={{ objectPosition: 'bottom' }} />
+              </div>
               <button
                 type="button"
-                onClick={() => upd({ leaderPhoto: undefined })}
-                className="px-3 py-2 text-sm font-medium"
-                style={{ backgroundColor: 'transparent', color: '#9A9082', borderRadius: '9px', border: '1px solid #E2DBCF', cursor: 'pointer' }}
+                onClick={() => setLeaders(leaders.filter((_, j) => j !== i))}
+                title="Foto entfernen"
+                aria-label="Foto entfernen"
+                className="absolute flex items-center justify-center"
+                style={{ top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#fff', border: '1px solid #E2DBCF', color: '#9A9082', fontSize: '13px', lineHeight: 1, cursor: 'pointer', padding: 0 }}
               >
-                Entfernen
+                ×
               </button>
-            )}
-          </div>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => setLeaderPickerOpen(true)}
+            className="flex-shrink-0 flex items-center justify-center"
+            style={{ width: '80px', height: '80px', borderRadius: '10px', border: '1px dashed #C9C0B1', background: '#FBF9F4', color: '#7C746A', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#C2724A'; e.currentTarget.style.color = '#A8542F'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#C9C0B1'; e.currentTarget.style.color = '#7C746A'; }}
+          >
+            + Foto
+          </button>
         </div>
-        <p className="text-xs text-body-light mt-1">Erscheint unten rechts im Reisebild (Übersicht &amp; Detailseite). Am besten ein <strong>freigestelltes PNG</strong> (transparenter Hintergrund).</p>
-        {leaderPickerOpen && <MediaPickerModal onSelect={(url) => { upd({ leaderPhoto: url }); setLeaderPickerOpen(false); }} onClose={() => setLeaderPickerOpen(false)} />}
+
+        <p className="text-xs text-body-light mt-2">
+          Erscheinen unten rechts auf der Reisekarte (Übersicht). Bei zwei oder mehr stehen sie leicht überlappend nebeneinander. Am besten <strong>freigestellte PNGs</strong> (transparenter Hintergrund).
+        </p>
+
+        {leaderPickerOpen && (
+          <MediaPickerModal
+            onSelect={(url) => { setLeaders([...leaders, url]); setLeaderPickerOpen(false); }}
+            onClose={() => setLeaderPickerOpen(false)}
+          />
+        )}
       </div>
 
       {/* Short text — shown on the overview card under the image */}
