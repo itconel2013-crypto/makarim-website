@@ -143,7 +143,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
             <div style={{ backgroundColor: '#FFFBEA', border: '1px solid #F5E3B3', borderRadius: '10px', padding: '14px 18px', marginBottom: '24px', display: 'flex', gap: '10px' }}>
               <span style={{ flexShrink: 0 }}>ℹ️</span>
               <p style={{ fontSize: '14px', color: '#7A5B1E', margin: 0, lineHeight: 1.5 }}>
-                Diese Reise ist noch nicht fest bestätigt. Du reservierst <strong>unverbindlich</strong> – es ist noch keine Zahlung nötig. Wir melden uns, sobald die Durchführung feststeht.
+Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung. Sobald es Neuigkeiten gibt, melden wir uns bei dir und laden dich zu einem Online-Seminar ein.
               </p>
             </div>
           )}
