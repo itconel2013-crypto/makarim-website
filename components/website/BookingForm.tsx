@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { hasPrice, PRICE_ON_REQUEST, PRICE_ON_REQUEST_HINT } from '@/lib/utils';
+import { hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -153,8 +153,8 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
             <section style={{ marginBottom: '32px' }}>
               <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preis</h2>
               <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9', padding: '18px 20px' }}>
-                <p style={{ fontSize: '16px', fontWeight: 600, color: '#16242B', margin: '0 0 4px' }}>{PRICE_ON_REQUEST}</p>
-                <p style={{ fontSize: '13px', color: '#9A9082', margin: 0 }}>{PRICE_ON_REQUEST_HINT} — wir melden uns mit allen Details bei dir.</p>
+                <p style={{ fontSize: '15px', fontWeight: 600, color: '#16242B', margin: '0 0 4px' }}>Der endgültige Reisepreis steht noch nicht fest.</p>
+                <p style={{ fontSize: '13px', color: '#9A9082', margin: 0, lineHeight: 1.5 }}>Nach der Preisbekanntgabe kannst du deine Reservierung jederzeit kostenlos stornieren.</p>
               </div>
             </section>
           ) : (
