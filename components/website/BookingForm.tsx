@@ -148,7 +148,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="booking-form">
-      <div className="flex flex-col lg:flex-row gap-8 items-start pb-28 lg:pb-0">
+      <div className="flex flex-col lg:flex-row gap-8 items-start pb-36 lg:pb-0">
 
         {/* ── LEFT: form ─────────────────────────────────────── */}
         <div className="flex-1 min-w-0 w-full">
@@ -437,8 +437,8 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
               )}
             </div>
 
-            {/* AGB Checkbox */}
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '16px', cursor: 'pointer' }}>
+            {/* AGB Checkbox — auf dem Handy steht sie in der fixierten Leiste unten */}
+            <label className="hidden lg:flex" style={{ alignItems: 'flex-start', gap: '10px', marginBottom: '16px', cursor: 'pointer' }}>
               <input type="checkbox" checked={agb} onChange={(e) => setAgb(e.target.checked)} style={{ marginTop: '2px', flexShrink: 0, width: '16px', height: '16px' }} />
               <span style={{ fontSize: '13px', color: '#5A5448', lineHeight: 1.4 }}>Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
             </label>
@@ -461,26 +461,32 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
         </aside>
       </div>
 
-      {/* Mobile: fixierte Zusammenfassungs-/Buchungsleiste */}
+      {/* Mobile: fixierte Zusammenfassungs-/Buchungsleiste (mit AGB direkt hier) */}
       <div
         className="lg:hidden"
-        style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(6px)', borderTop: '1px solid #EAE3D8', boxShadow: '0 -6px 20px rgba(40,30,20,0.10)', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}
+        style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(6px)', borderTop: '1px solid #EAE3D8', boxShadow: '0 -6px 20px rgba(40,30,20,0.10)', padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: '9px' }}
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: '11px', color: '#9A9082', lineHeight: 1.1 }}>Gesamt</div>
-          {priceAvailable ? (
-            <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.1 }}>{totalPrice.toLocaleString('de-DE')} €</div>
-          ) : (
-            <div style={{ fontSize: '13px', color: '#16242B', fontWeight: 600, lineHeight: 1.2 }}>Preis folgt</div>
-          )}
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
+          <input type="checkbox" checked={agb} onChange={(e) => setAgb(e.target.checked)} style={{ marginTop: '1px', flexShrink: 0, width: '16px', height: '16px' }} />
+          <span style={{ fontSize: '11.5px', color: '#5A5448', lineHeight: 1.3 }}>Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
+        </label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '11px', color: '#9A9082', lineHeight: 1.1 }}>Gesamt</div>
+            {priceAvailable ? (
+              <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.1 }}>{totalPrice.toLocaleString('de-DE')} €</div>
+            ) : (
+              <div style={{ fontSize: '13px', color: '#16242B', fontWeight: 600, lineHeight: 1.2 }}>Preis folgt</div>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            style={{ flexShrink: 0, height: '48px', padding: '0 22px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
+          >
+            {submitting ? 'Wird gesendet…' : (isVorres ? 'Vorreservieren' : 'Jetzt buchen')}
+          </button>
         </div>
-        <button
-          type="submit"
-          disabled={submitting}
-          style={{ flexShrink: 0, height: '48px', padding: '0 22px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
-        >
-          {submitting ? 'Wird gesendet…' : (isVorres ? 'Vorreservieren' : 'Jetzt buchen')}
-        </button>
       </div>
     </form>
   );

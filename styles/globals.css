@@ -107,3 +107,11 @@ html.scroll-smooth {
 .booking-form textarea:disabled {
   box-shadow: none;
 }
+
+/* Auf Buchungsseiten am Handy den WhatsApp-Button ausblenden — die fixierte
+   Buchungsleiste unten hat dort Vorrang (sonst überdeckt der Button den CTA). */
+@media (max-width: 1023px) {
+  .wa-fab.on-booking {
+    display: none !important;
+  }
+}
