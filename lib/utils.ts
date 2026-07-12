@@ -10,8 +10,7 @@ export function hasPrice(price?: number | null): boolean {
   return typeof price === 'number' && price > 0;
 }
 
-export const PRICE_ON_REQUEST = 'Preis auf Anfrage';
-export const PRICE_ON_REQUEST_HINT = 'Buchung über Nusuk';
+export const PRICE_ON_REQUEST = 'Preis wird in Kürze veröffentlicht';
 
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat('de-DE', {

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { loadContent } from '@/lib/db';
 import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { truncateText, hasPrice, PRICE_ON_REQUEST, PRICE_ON_REQUEST_HINT } from '@/lib/utils';
+import { truncateText, hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -399,12 +399,9 @@ export default async function TripDetailPage({
                   <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im {abRoomLabel}</div>
                 </>
               ) : (
-                <>
-                  <div style={{ fontFamily: "'Newsreader', serif", fontSize: '30px', color: '#16242B', lineHeight: 1.15, marginBottom: '4px' }}>
-                    {PRICE_ON_REQUEST}
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>{PRICE_ON_REQUEST_HINT}</div>
-                </>
+                <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.25, marginBottom: '16px' }}>
+                  {PRICE_ON_REQUEST}
+                </div>
               )}
 
               {/* Status badge */}
@@ -473,12 +470,9 @@ export default async function TripDetailPage({
               <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im {abRoomLabel}</div>
             </>
           ) : (
-            <>
-              <div style={{ fontFamily: "'Newsreader', serif", fontSize: '28px', color: '#16242B', lineHeight: 1.15, marginBottom: '4px' }}>
-                {PRICE_ON_REQUEST}
-              </div>
-              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>{PRICE_ON_REQUEST_HINT}</div>
-            </>
+            <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.25, marginBottom: '14px' }}>
+              {PRICE_ON_REQUEST}
+            </div>
           )}
 
           {/* Status badge */}
