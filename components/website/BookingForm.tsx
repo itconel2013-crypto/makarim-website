@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
+import { hasPrice, PRICE_ON_REQUEST, PRICE_ON_REQUEST_HINT } from '@/lib/utils';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -21,6 +22,12 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const router = useRouter();
   const rooms = availableRooms(trip);                       // only categories the CRM prices
   const defaultRoom = rooms[0]?.value ?? 'VZ';
+
+  // Vorreservierung (CRM): Reise noch nicht bestätigt → unverbindlich, keine Zahlung.
+  const isVorres = trip.vorreservierung === true;
+  // Reisen ohne Preis (z. B. Hajj → Buchung über Nusuk) dürfen nirgends „0 €" zeigen.
+  const priceAvailable = hasPrice(trip.price)
+    || rooms.some((r) => hasPrice(effectiveRoomPrice(trip, r.value)?.adult));
   const makeTraveler = (): Traveler => ({
     anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',
     email: '', telefon: '',
@@ -131,7 +138,26 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
             </div>
           )}
 
-          {/* Preise pro Person */}
+          {/* Vorreservierung — Reise noch nicht bestätigt */}
+          {isVorres && (
+            <div style={{ backgroundColor: '#FFFBEA', border: '1px solid #F5E3B3', borderRadius: '10px', padding: '14px 18px', marginBottom: '24px', display: 'flex', gap: '10px' }}>
+              <span style={{ flexShrink: 0 }}>ℹ️</span>
+              <p style={{ fontSize: '14px', color: '#7A5B1E', margin: 0, lineHeight: 1.5 }}>
+                Diese Reise ist noch nicht fest bestätigt. Du reservierst <strong>unverbindlich</strong> – es ist noch keine Zahlung nötig. Wir melden uns, sobald die Durchführung feststeht.
+              </p>
+            </div>
+          )}
+
+          {/* Preise pro Person — nur wenn es überhaupt Preise gibt (Hajj: über Nusuk) */}
+          {!priceAvailable ? (
+            <section style={{ marginBottom: '32px' }}>
+              <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preis</h2>
+              <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9', padding: '18px 20px' }}>
+                <p style={{ fontSize: '16px', fontWeight: 600, color: '#16242B', margin: '0 0 4px' }}>{PRICE_ON_REQUEST}</p>
+                <p style={{ fontSize: '13px', color: '#9A9082', margin: 0 }}>{PRICE_ON_REQUEST_HINT} — wir melden uns mit allen Details bei dir.</p>
+              </div>
+            </section>
+          ) : (
           <section style={{ marginBottom: '32px' }}>
             <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preise pro Person</h2>
             <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', overflow: 'hidden', overflowX: 'auto' }}>
@@ -161,6 +187,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
             </div>
             <p style={{ fontSize: '12px', color: '#9A9082', marginTop: '8px' }}>Preise pro Person inkl. Flug, Hotel & Visum. Die Alterskategorie ergibt sich automatisch aus dem Geburtsdatum (Stand Reisedatum).</p>
           </section>
+          )}
 
           {/* Reisende */}
           <section style={{ marginBottom: '32px' }}>
@@ -370,9 +397,13 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
               ))}
             </div>
 
-            <div style={{ borderTop: '1px solid #F0EADF', paddingTop: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <span style={{ fontSize: '14px', color: '#9A9082' }}>Gesamtsumme</span>
-              <span style={{ fontFamily: "'Newsreader', serif", fontSize: '32px', color: '#16242B', lineHeight: 1 }}>{totalPrice.toLocaleString('de-DE')} €</span>
+            <div style={{ borderTop: '1px solid #F0EADF', paddingTop: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px' }}>
+              <span style={{ fontSize: '14px', color: '#9A9082', flexShrink: 0 }}>Gesamtsumme</span>
+              {priceAvailable ? (
+                <span style={{ fontFamily: "'Newsreader', serif", fontSize: '32px', color: '#16242B', lineHeight: 1 }}>{totalPrice.toLocaleString('de-DE')} €</span>
+              ) : (
+                <span style={{ fontFamily: "'Newsreader', serif", fontSize: '20px', color: '#16242B', lineHeight: 1.2, textAlign: 'right' }}>{PRICE_ON_REQUEST}</span>
+              )}
             </div>
 
             {/* AGB Checkbox */}
@@ -387,10 +418,12 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
               disabled={submitting}
               style={{ width: '100%', height: '54px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '13px', fontSize: '16px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
             >
-              {submitting ? 'Wird gesendet…' : 'Jetzt buchen'}
+              {submitting ? 'Wird gesendet…' : (isVorres ? 'Unverbindlich vorreservieren' : 'Jetzt buchen')}
             </button>
 
-            <p style={{ fontSize: '12px', color: '#9A9082', textAlign: 'center', marginTop: '10px' }}>Zahlung später bequem per Überweisung</p>
+            <p style={{ fontSize: '12px', color: '#9A9082', textAlign: 'center', marginTop: '10px' }}>
+              {isVorres ? 'Unverbindlich – jetzt noch keine Zahlung nötig' : 'Zahlung später bequem per Überweisung'}
+            </p>
           </div>
         </aside>
       </div>

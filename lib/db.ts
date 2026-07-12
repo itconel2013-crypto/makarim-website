@@ -30,6 +30,8 @@ function normalizeTrip(trip: any): Trip {
     // Reiseleiter: früher ein Einzelfeld (leaderPhoto), jetzt eine Liste. Alte
     // Reisen werden hier transparent übernommen — kein Datenverlust, keine Migration.
     leaderPhotos: trip.leaderPhotos ?? (trip.leaderPhoto ? [trip.leaderPhoto] : []),
+    // Vorreservierung (CRM): Reise noch nicht bestätigt → unverbindlich reservieren.
+    vorreservierung: trip.vorreservierung === true,
   };
 }
 

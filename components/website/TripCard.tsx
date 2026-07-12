@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Trip, getAvailability } from '@/lib/content-schema';
+import { hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
 
 const PILL_TONE = {
   green: { bg: '#EAF0E8', color: '#3E6B52' },
@@ -121,7 +122,7 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
-        {/* Price badge — top-right, beige background */}
+        {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €". */}
         <div style={{
           position: 'absolute',
           top: '12px',
@@ -134,15 +135,20 @@ export function TripCard({ trip }: TripCardProps) {
           padding: '6px 14px',
           boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
         }}>
-          ab {trip.price?.toLocaleString('de-DE')} €
+          {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : PRICE_ON_REQUEST}
         </div>
       </div>
 
       {/* Card body */}
       <div style={{ padding: '20px 20px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        {/* Status pill */}
-        <div style={{ marginBottom: '12px' }}>
+        {/* Status pill + Hinweis auf Vorreservierung (Reise noch nicht bestätigt) */}
+        <div style={{ marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           <StatusPill trip={trip} />
+          {trip.vorreservierung && (
+            <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
+              Noch nicht bestätigt – Vorreservierung
+            </span>
+          )}
         </div>
 
         {/* Title */}

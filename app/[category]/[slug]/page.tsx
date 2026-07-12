@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { loadContent } from '@/lib/db';
 import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { truncateText } from '@/lib/utils';
+import { truncateText, hasPrice, PRICE_ON_REQUEST, PRICE_ON_REQUEST_HINT } from '@/lib/utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -90,7 +90,11 @@ export default async function TripDetailPage({
 
   const avail = getAvailability(trip);
   const pill = statusPillStyle(avail.tone);
-  const ctaText = !avail.bookable ? 'Ausgebucht' : ((trip.seats ?? 0) <= 0 ? 'Auf die Warteliste' : 'Zur Buchung');
+  // Vorreservierung (CRM: Reise noch nicht bestätigt) hat Vorrang vor dem normalen
+  // Buchungs-CTA — der Kunde soll nicht „Zur Buchung" lesen, wenn er nur reserviert.
+  const ctaText = trip.vorreservierung
+    ? 'Unverbindlich vorreservieren'
+    : !avail.bookable ? 'Ausgebucht' : ((trip.seats ?? 0) <= 0 ? 'Auf die Warteliste' : 'Zur Buchung');
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -383,14 +387,25 @@ export default async function TripDetailPage({
             style={{ width: '372px', position: 'sticky', top: '96px' }}
           >
             <div style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '20px', padding: '26px', boxShadow: '0 10px 30px rgba(40,30,20,0.08)' }}>
-              {/* Price */}
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
-                <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
-                <span style={{ fontFamily: "'Newsreader', serif", fontSize: '40px', color: '#16242B', lineHeight: 1 }}>
-                  {abPrice.toLocaleString('de-DE')} €
-                </span>
-              </div>
-              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im {abRoomLabel}</div>
+              {/* Price — ohne Preis (z. B. Hajj → Nusuk) niemals „0 €" zeigen */}
+              {hasPrice(abPrice) ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
+                    <span style={{ fontFamily: "'Newsreader', serif", fontSize: '40px', color: '#16242B', lineHeight: 1 }}>
+                      {abPrice.toLocaleString('de-DE')} €
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>pro Person im {abRoomLabel}</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontFamily: "'Newsreader', serif", fontSize: '30px', color: '#16242B', lineHeight: 1.15, marginBottom: '4px' }}>
+                    {PRICE_ON_REQUEST}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '16px' }}>{PRICE_ON_REQUEST_HINT}</div>
+                </>
+              )}
 
               {/* Status badge */}
               <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '20px' }}>
@@ -446,14 +461,25 @@ export default async function TripDetailPage({
 
         {/* Mobile CTA — shown below content on small screens */}
         <div className="lg:hidden mt-8" style={{ background: '#fff', border: '1px solid #EAE3D8', borderRadius: '20px', padding: '24px', boxShadow: '0 10px 30px rgba(40,30,20,0.08)' }}>
-          {/* Price */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
-            <span style={{ fontFamily: "'Newsreader', serif", fontSize: '38px', color: '#16242B', lineHeight: 1 }}>
-              {abPrice.toLocaleString('de-DE')} €
-            </span>
-          </div>
-          <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im {abRoomLabel}</div>
+          {/* Price — ohne Preis (z. B. Hajj → Nusuk) niemals „0 €" zeigen */}
+          {hasPrice(abPrice) ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '13px', color: '#9A9082' }}>ab</span>
+                <span style={{ fontFamily: "'Newsreader', serif", fontSize: '38px', color: '#16242B', lineHeight: 1 }}>
+                  {abPrice.toLocaleString('de-DE')} €
+                </span>
+              </div>
+              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>pro Person im {abRoomLabel}</div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontFamily: "'Newsreader', serif", fontSize: '28px', color: '#16242B', lineHeight: 1.15, marginBottom: '4px' }}>
+                {PRICE_ON_REQUEST}
+              </div>
+              <div style={{ fontSize: '13px', color: '#9A9082', marginBottom: '14px' }}>{PRICE_ON_REQUEST_HINT}</div>
+            </>
+          )}
 
           {/* Status badge */}
           <div style={{ display: 'inline-flex', fontSize: '12.5px', fontWeight: 600, borderRadius: '20px', padding: '6px 14px', backgroundColor: pill.bg, color: pill.color, marginBottom: '18px' }}>

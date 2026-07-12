@@ -2,6 +2,17 @@
  * Utility functions for API and components
  */
 
+/**
+ * Das CRM liefert für Reisen ohne öffentlichen Preis (z. B. Hajj → Buchung über
+ * Nusuk) `price: 0`. Solche Reisen dürfen NICHT als „0 €" erscheinen.
+ */
+export function hasPrice(price?: number | null): boolean {
+  return typeof price === 'number' && price > 0;
+}
+
+export const PRICE_ON_REQUEST = 'Preis auf Anfrage';
+export const PRICE_ON_REQUEST_HINT = 'Buchung über Nusuk';
+
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat('de-DE', {
     style: 'currency',

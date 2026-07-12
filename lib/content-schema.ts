@@ -32,6 +32,7 @@ export interface Trip {
   published: boolean;         // draft/publish toggle (website shows only published !== false)
   seats: number;              // available seats
   waitlist: boolean;          // waitlist enabled?
+  vorreservierung?: boolean;  // CRM: Reise noch nicht bestätigt → nur unverbindlich vorreservieren (keine Zahlung)
   badge?: string;             // optional badge text (e.g., "Bestseller", "Early Bird")
   heroIcon?: string;          // optional emoji or icon for card display
   leaderPhoto?: string;       // LEGACY (Einzelfoto) – wird beim Laden nach leaderPhotos migriert

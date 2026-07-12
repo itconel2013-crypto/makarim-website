@@ -33,6 +33,14 @@ export default async function ConfirmPage({
   const bank = content.c.brand.bank;
   const cfg = { ...defaultBookingPage, ...(content.c.brand.bookingPage ?? {}) };
 
+  // Vorreservierung: eigene Überschrift/Text, und KEINE Bankdaten/Schritte —
+  // es ist noch keine Zahlung nötig (die Kundenmail verschickt das CRM).
+  const isVorres = trip.vorreservierung === true;
+  const heading = isVorres ? 'Vorreservierung eingegangen' : cfg.heading;
+  const intro = isVorres
+    ? 'Vielen Dank für deine Vorreservierung. Die Reise ist noch nicht bestätigt – wir melden uns, sobald sie feststeht. Eine Zahlung ist jetzt noch nicht nötig.'
+    : fillTemplate(cfg.intro, trip);
+
   return (
     <main className="min-h-screen bg-page">
       <div className="container-max py-16 max-w-2xl">
@@ -59,14 +67,16 @@ export default async function ConfirmPage({
             className="font-serif font-normal text-ink mb-4"
             style={{ fontSize: '38px', lineHeight: '1.2' }}
           >
-            {cfg.heading}
+            {heading}
           </h1>
           <p style={{ fontSize: '16.5px', color: '#5A5448', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
-            {fillTemplate(cfg.intro, trip)}
+            {intro}
           </p>
         </div>
 
-        {/* ── Nächste Schritte / Bankdaten ──────────────────────────── */}
+        {/* ── Nächste Schritte / Bankdaten — bei Vorreservierung ausgeblendet
+              (noch keine Zahlung nötig) ──────────────────────────────── */}
+        {!isVorres && (
         <div
           className="rounded-card p-8 mb-8"
           style={{ backgroundColor: 'white', border: '1px solid #EAE3D8', boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}
@@ -121,6 +131,7 @@ export default async function ConfirmPage({
             </dl>
           </div>
         </div>
+        )}
 
         {/* ── Back to trip / Home ────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-4">
