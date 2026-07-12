@@ -200,7 +200,9 @@ export default async function TripDetailPage({
         <div className="flex flex-col lg:flex-row gap-10 items-start">
 
           {/* ── Main content ──────────────────────────────────────────── */}
-          <div className="flex-1 min-w-0">
+          {/* w-full ist wichtig: im Spalten-Flex (Handy) verhindert items-start das
+              Strecken — ohne w-full schrumpfen Grids (z. B. die Hotel-Karten). */}
+          <div className="flex-1 min-w-0 w-full">
 
             {/* Intro paragraph — only when filled, so the page can start
                 directly with an H2 section if the Langtext is left empty. */}
@@ -278,11 +280,9 @@ export default async function TripDetailPage({
                       className="overflow-hidden rounded-card bg-white"
                       style={{ border: '1px solid #EAE3D8', boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}
                     >
-                      {/* Hotel photo — 158px tall */}
-                      <div
-                        className="relative overflow-hidden bg-page"
-                        style={{ height: '158px' }}
-                      >
+                      {/* Hotel photo — auf dem Handy höher (volle Kartenbreite),
+                          ab Tablet wieder kompakter */}
+                      <div className="relative overflow-hidden bg-page h-52 sm:h-40">
                         {hotel.photo ? (
                           <Image
                             src={hotel.photo}
