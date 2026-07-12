@@ -273,9 +273,9 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                       </div>
                     )}
 
-                    {/* Row 3: Straße + PLZ + Ort */}
-                    <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
-                      <div style={{ gridColumn: '1 / -1' }}>
+                    {/* Row 3: Straße (breit) + PLZ + Ort in einer Zeile (Handy: gestapelt) */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                      <div className="col-span-2">
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Straße &amp; Hausnr.</label>
                         <input type="text" value={t.strasse} onChange={(e) => updTraveler(idx, 'strasse', e.target.value)} placeholder="z. B. Musterstraße 12" style={inputStyle} required={idx === 0} />
                       </div>
@@ -291,7 +291,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
 
                     {/* Row 4: E-Mail + Handynummer — nur Person 1 (Haupt-Kontaktdaten) */}
                     {idx === 0 && (
-                      <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>E-Mail</label>
                           <input type="email" value={t.email} onChange={(e) => updTraveler(idx, 'email', e.target.value)} placeholder="name@beispiel.de" style={inputStyle} required />
@@ -358,8 +358,8 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                 })}
               </div>
 
-              <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', marginTop: '12px' }}>
-                <div style={{ gridColumn: '1 / -1' }}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
+                <div className="col-span-2">
                   <label style={labelStyle}>Straße &amp; Hausnr.</label>
                   <input type="text" value={contactMirror.strasse} onChange={(e) => setContact((p) => ({ ...p, strasse: e.target.value }))} placeholder="z. B. Musterstraße 12" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
                 </div>
