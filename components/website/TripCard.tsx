@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Trip, getAvailability } from '@/lib/content-schema';
-import { hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
+import { hasPrice } from '@/lib/utils';
 
 const PILL_TONE = {
   green: { bg: '#EAF0E8', color: '#3E6B52' },
@@ -134,8 +134,9 @@ export function TripCard({ trip }: TripCardProps) {
           borderRadius: '20px',
           padding: '6px 14px',
           boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
+          whiteSpace: 'nowrap',
         }}>
-          {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : PRICE_ON_REQUEST}
+          {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : 'wird in Kürze veröffentlicht'}
         </div>
       </div>
 
