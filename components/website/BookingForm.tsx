@@ -214,8 +214,10 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                       )}
                     </div>
 
-                    {/* Row 1: Anrede + Vorname + Nachname */}
-                    <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
+                    {/* Personendaten: ein Grid, das mobil 2- und ab Desktop 3-spaltig
+                        fließt — so entsteht kein leerer Platz hinter dem Nachnamen.
+                        Handy: Anrede+Vorname · Nachname+Geburtsdatum · Nationalität+Zimmer */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
                       <div>
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Anrede</label>
                         <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
@@ -231,30 +233,24 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Nachname</label>
                         <input type="text" value={t.nachname} onChange={(e) => updTraveler(idx, 'nachname', e.target.value)} placeholder="Nachname" style={inputStyle} required />
                       </div>
-                    </div>
-
-                    {/* Row 2: Geburtsdatum + Nationalität + Zimmer */}
-                    <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
-                      {[
-                        <div key="geb">
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Geburtsdatum</label>
-                          <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
-                        </div>,
-                        <div key="nat">
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Nationalität</label>
-                          <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="z. B. Deutsch" style={inputStyle} />
-                        </div>,
-                        <div key="zimmer">
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Zimmerkategorie</label>
-                          {roomsUnknown ? (
-                            <div style={{ ...inputStyle, backgroundColor: '#F7F4EE', color: '#9A9082', display: 'flex', alignItems: 'center' }}>{ROOM_LATER}</div>
-                          ) : (
-                            <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
-                              {rooms.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-                            </select>
-                          )}
-                        </div>,
-                      ]}
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Geburtsdatum</label>
+                        <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Nationalität</label>
+                        <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="z. B. Deutsch" style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Zimmerkategorie</label>
+                        {roomsUnknown ? (
+                          <div style={{ ...inputStyle, backgroundColor: '#F7F4EE', color: '#9A9082', display: 'flex', alignItems: 'center' }}>{ROOM_LATER}</div>
+                        ) : (
+                          <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
+                            {rooms.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                          </select>
+                        )}
+                      </div>
                     </div>
 
                     {/* Address copy helper — from the previous traveler */}
