@@ -146,7 +146,7 @@ export function TripCard({ trip }: TripCardProps) {
           <StatusPill trip={trip} />
           {trip.vorreservierung && (
             <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
-              Noch nicht bestätigt – Vorreservierung
+              Vorreservierung
             </span>
           )}
         </div>
