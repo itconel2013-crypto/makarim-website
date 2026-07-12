@@ -89,3 +89,21 @@
 html.scroll-smooth {
   scroll-behavior: smooth;
 }
+
+/* Booking form — dezenter Marken-Fokusring + weicher Übergang für alle Felder */
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.booking-form input:focus,
+.booking-form select:focus,
+.booking-form textarea:focus {
+  border-color: #c2724a !important;
+  box-shadow: 0 0 0 3px rgba(194, 114, 74, 0.15);
+}
+.booking-form input:disabled,
+.booking-form select:disabled,
+.booking-form textarea:disabled {
+  box-shadow: none;
+}

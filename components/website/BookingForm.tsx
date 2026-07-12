@@ -18,6 +18,26 @@ interface BookingFormProps { trip: Trip; brand: Brand; }
 const getRef = (): string | undefined =>
   document.cookie.split('; ').find((c) => c.startsWith('mk_ref='))?.split('=')[1] || undefined;
 
+/** Einheitlicher Feld-Label-Stil (überall im Formular gleich). */
+const fieldLabel: React.CSSProperties = {
+  display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.07em',
+  textTransform: 'uppercase', color: '#6B6457', marginBottom: '6px',
+};
+
+/** Abschnitts-Überschrift mit Icon + Trennlinie (einheitliche Blöcke). */
+function SectionHeader({ icon, title, hint, note }: { icon: string; title: string; hint?: string; note?: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '18px', paddingBottom: '12px', borderBottom: '1px solid #EFE8DC' }}>
+      <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ fontSize: '17px' }} aria-hidden>{icon}</span>
+        {title}
+        {hint && <span style={{ fontFamily: 'sans-serif', fontSize: '14px', fontWeight: 400, color: '#9A9082' }}>{hint}</span>}
+      </h2>
+      {note}
+    </div>
+  );
+}
+
 export function BookingForm({ trip, brand }: BookingFormProps) {
   const router = useRouter();
   const rooms = availableRooms(trip);                       // only categories the CRM prices
@@ -125,11 +145,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
 
   // Field style
   const inputStyle: React.CSSProperties = { border: '1px solid #E2DBCF', outline: 'none', borderRadius: '9px', padding: '10px 14px', fontSize: '14px', color: '#16242B', backgroundColor: 'white', width: '100%' };
-  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9A9082', marginBottom: '6px' };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
+    <form onSubmit={handleSubmit} className="booking-form">
+      <div className="flex flex-col lg:flex-row gap-8 items-start pb-28 lg:pb-0">
 
         {/* ── LEFT: form ─────────────────────────────────────── */}
         <div className="flex-1 min-w-0 w-full">
@@ -154,16 +173,16 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
 
           {/* Preise pro Person — nur wenn es überhaupt Preise gibt (Hajj: über Nusuk) */}
           {!priceAvailable ? (
-            <section style={{ marginBottom: '32px' }}>
-              <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preis</h2>
+            <section style={{ marginBottom: '40px' }}>
+              <SectionHeader icon="🏷️" title="Preis" />
               <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9', padding: '18px 20px' }}>
                 <p style={{ fontSize: '15px', fontWeight: 600, color: '#16242B', margin: '0 0 4px' }}>Der endgültige Reisepreis steht noch nicht fest.</p>
                 <p style={{ fontSize: '13px', color: '#9A9082', margin: 0, lineHeight: 1.5 }}>Nach der Preisbekanntgabe kannst du deine Reservierung jederzeit kostenlos stornieren.</p>
               </div>
             </section>
           ) : (
-          <section style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Preise pro Person</h2>
+          <section style={{ marginBottom: '40px' }}>
+            <SectionHeader icon="🏷️" title="Preise pro Person" />
             <div style={{ borderRadius: '12px', border: '1px solid #EAE3D8', overflow: 'hidden', overflowX: 'auto' }}>
               <table style={{ width: '100%', minWidth: '420px', borderCollapse: 'collapse', fontSize: '14px' }}>
                 <thead>
@@ -194,11 +213,12 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
           )}
 
           {/* Reisende */}
-          <section style={{ marginBottom: '32px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', margin: 0 }}>Reisende</h2>
-              <span style={{ fontSize: '13px', color: '#A8542F' }}>{roomsUnknown ? 'Zimmerkategorie wird später festgelegt' : 'Eigene Zimmerkategorie pro Person wählbar'}</span>
-            </div>
+          <section style={{ marginBottom: '40px' }}>
+            <SectionHeader
+              icon="👥"
+              title="Reisende"
+              note={<span style={{ fontSize: '13px', color: '#A8542F' }}>{roomsUnknown ? 'Zimmerkategorie wird später festgelegt' : 'Eigene Zimmerkategorie pro Person wählbar'}</span>}
+            />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {travelers.map((t, idx) => {
@@ -206,9 +226,14 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                 const price = personPrice(t.geburtstag, t.zimmer, trip);
                 const roomLabel = ROOM_TYPES.find((r) => r.value === t.zimmer)?.label ?? '';
                 return (
-                  <div key={idx} style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '18px 20px', backgroundColor: 'white' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A8542F' }}>Person {idx + 1}</span>
+                  <div key={idx} style={{ border: '1px solid #EAE3D8', borderRadius: '16px', padding: '22px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(40,30,20,0.04)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ width: '26px', height: '26px', borderRadius: '50%', backgroundColor: '#16242B', color: '#fff', fontSize: '13px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{idx + 1}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 600, color: '#16242B' }}>
+                          Person {idx + 1}{idx === 0 && <span style={{ color: '#9A9082', fontWeight: 400 }}> · Hauptkontakt</span>}
+                        </span>
+                      </span>
                       {travelers.length > 1 && (
                         <button type="button" onClick={() => setTravelers((p) => p.filter((_, i) => i !== idx))} style={{ fontSize: '12px', color: '#9A9082', background: 'none', border: 'none', cursor: 'pointer' }}>Entfernen</button>
                       )}
@@ -219,30 +244,30 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                         Handy: Anrede+Vorname · Nachname+Geburtsdatum · Nationalität+Zimmer */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Anrede</label>
+                        <label style={fieldLabel}>Anrede</label>
                         <select value={t.anrede} onChange={(e) => updTraveler(idx, 'anrede', e.target.value)} style={inputStyle}>
                           <option>Herr</option>
                           <option>Frau</option>
                         </select>
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Vorname</label>
+                        <label style={fieldLabel}>Vorname</label>
                         <input type="text" value={t.vorname} onChange={(e) => updTraveler(idx, 'vorname', e.target.value)} placeholder="Vorname" style={inputStyle} required />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Nachname</label>
+                        <label style={fieldLabel}>Nachname</label>
                         <input type="text" value={t.nachname} onChange={(e) => updTraveler(idx, 'nachname', e.target.value)} placeholder="Nachname" style={inputStyle} required />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Geburtsdatum</label>
+                        <label style={fieldLabel}>Geburtsdatum</label>
                         <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Nationalität</label>
+                        <label style={fieldLabel}>Nationalität</label>
                         <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="z. B. Deutsch" style={inputStyle} />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Zimmerkategorie</label>
+                        <label style={fieldLabel}>Zimmerkategorie</label>
                         {roomsUnknown ? (
                           <div style={{ ...inputStyle, backgroundColor: '#F7F4EE', color: '#9A9082', display: 'flex', alignItems: 'center' }}>{ROOM_LATER}</div>
                         ) : (
@@ -272,15 +297,15 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                     {/* Row 3: Straße (breit) + PLZ + Ort in einer Zeile (Handy: gestapelt) */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                       <div className="col-span-2">
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Straße &amp; Hausnr.</label>
+                        <label style={fieldLabel}>Straße &amp; Hausnr.</label>
                         <input type="text" value={t.strasse} onChange={(e) => updTraveler(idx, 'strasse', e.target.value)} placeholder="z. B. Musterstraße 12" style={inputStyle} required={idx === 0} />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>PLZ</label>
+                        <label style={fieldLabel}>PLZ</label>
                         <input type="text" inputMode="numeric" value={t.plz} onChange={(e) => updTraveler(idx, 'plz', e.target.value)} placeholder="12345" style={inputStyle} required={idx === 0} />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Ort</label>
+                        <label style={fieldLabel}>Ort</label>
                         <input type="text" value={t.ort} onChange={(e) => updTraveler(idx, 'ort', e.target.value)} placeholder="Musterstadt" style={inputStyle} required={idx === 0} />
                       </div>
                     </div>
@@ -289,11 +314,11 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                     {idx === 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>E-Mail</label>
+                          <label style={fieldLabel}>E-Mail</label>
                           <input type="email" value={t.email} onChange={(e) => updTraveler(idx, 'email', e.target.value)} placeholder="name@beispiel.de" style={inputStyle} required />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Handynummer</label>
+                          <label style={fieldLabel}>Handynummer</label>
                           <input type="tel" value={t.telefon} onChange={(e) => updTraveler(idx, 'telefon', e.target.value)} placeholder="+49 …" style={inputStyle} required />
                         </div>
                       </div>
@@ -326,9 +351,9 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
           </section>
 
           {/* Kontaktperson */}
-          <section style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>Kontaktperson</h2>
-            <div style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '20px', backgroundColor: 'white' }}>
+          <section style={{ marginBottom: '40px' }}>
+            <SectionHeader icon="✉️" title="Kontaktperson" />
+            <div style={{ border: '1px solid #EAE3D8', borderRadius: '14px', padding: '22px', backgroundColor: 'white', boxShadow: '0 2px 8px rgba(40,30,20,0.04)' }}>
 
               {/* Ganze Person (Name + Adresse) von Person 1 übernehmen */}
               <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', cursor: travelers.length ? 'pointer' : 'default' }}>
@@ -347,7 +372,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                   const val = contactMirror[key as 'vorname' | 'nachname' | 'email' | 'telefon'];
                   return (
                     <div key={key}>
-                      <label style={labelStyle}>{label}</label>
+                      <label style={fieldLabel}>{label}</label>
                       <input type={type} value={val} onChange={(e) => setContact((p) => ({ ...p, [key]: e.target.value }))} placeholder={ph} disabled={locked} style={{ ...inputStyle, ...(locked ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} required />
                     </div>
                   );
@@ -356,15 +381,15 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
                 <div className="col-span-2">
-                  <label style={labelStyle}>Straße &amp; Hausnr.</label>
+                  <label style={fieldLabel}>Straße &amp; Hausnr.</label>
                   <input type="text" value={contactMirror.strasse} onChange={(e) => setContact((p) => ({ ...p, strasse: e.target.value }))} placeholder="z. B. Musterstraße 12" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
                 </div>
                 <div>
-                  <label style={labelStyle}>PLZ</label>
+                  <label style={fieldLabel}>PLZ</label>
                   <input type="text" inputMode="numeric" value={contactMirror.plz} onChange={(e) => setContact((p) => ({ ...p, plz: e.target.value }))} placeholder="12345" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
                 </div>
                 <div>
-                  <label style={labelStyle}>Ort</label>
+                  <label style={fieldLabel}>Ort</label>
                   <input type="text" value={contactMirror.ort} onChange={(e) => setContact((p) => ({ ...p, ort: e.target.value }))} placeholder="Musterstadt" disabled={contactSameAsTraveler} style={{ ...inputStyle, ...(contactSameAsTraveler ? { backgroundColor: '#F7F4EE', color: '#9A9082' } : {}) }} />
                 </div>
               </div>
@@ -373,9 +398,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
 
           {/* Anmerkungen */}
           <section>
-            <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', marginBottom: '16px' }}>
-              Anmerkungen <span style={{ fontFamily: 'sans-serif', fontSize: '15px', fontWeight: 400, color: '#9A9082' }}>(optional)</span>
-            </h2>
+            <SectionHeader icon="📝" title="Anmerkungen" hint="(optional)" />
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -420,20 +443,44 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
               <span style={{ fontSize: '13px', color: '#5A5448', lineHeight: 1.4 }}>Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
             </label>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={submitting}
-              style={{ width: '100%', height: '54px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '13px', fontSize: '16px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
-            >
-              {submitting ? 'Wird gesendet…' : (isVorres ? 'Unverbindlich vorreservieren' : 'Jetzt buchen')}
-            </button>
+            {/* Submit — auf dem Handy übernimmt die fixierte Leiste unten */}
+            <div className="hidden lg:block">
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{ width: '100%', height: '54px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '13px', fontSize: '16px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
+              >
+                {submitting ? 'Wird gesendet…' : (isVorres ? 'Unverbindlich vorreservieren' : 'Jetzt buchen')}
+              </button>
 
-            <p style={{ fontSize: '12px', color: '#9A9082', textAlign: 'center', marginTop: '10px' }}>
-              {isVorres ? 'Unverbindlich – jetzt noch keine Zahlung nötig' : 'Zahlung später bequem per Überweisung'}
-            </p>
+              <p style={{ fontSize: '12px', color: '#9A9082', textAlign: 'center', marginTop: '10px' }}>
+                {isVorres ? 'Unverbindlich – jetzt noch keine Zahlung nötig' : 'Zahlung später bequem per Überweisung'}
+              </p>
+            </div>
           </div>
         </aside>
+      </div>
+
+      {/* Mobile: fixierte Zusammenfassungs-/Buchungsleiste */}
+      <div
+        className="lg:hidden"
+        style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 30, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(6px)', borderTop: '1px solid #EAE3D8', boxShadow: '0 -6px 20px rgba(40,30,20,0.10)', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '11px', color: '#9A9082', lineHeight: 1.1 }}>Gesamt</div>
+          {priceAvailable ? (
+            <div style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', color: '#16242B', lineHeight: 1.1 }}>{totalPrice.toLocaleString('de-DE')} €</div>
+          ) : (
+            <div style={{ fontSize: '13px', color: '#16242B', fontWeight: 600, lineHeight: 1.2 }}>Preis folgt</div>
+          )}
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          style={{ flexShrink: 0, height: '48px', padding: '0 22px', backgroundColor: '#16242B', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.6 : 1 }}
+        >
+          {submitting ? 'Wird gesendet…' : (isVorres ? 'Vorreservieren' : 'Jetzt buchen')}
+        </button>
       </div>
     </form>
   );
