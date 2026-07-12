@@ -28,6 +28,10 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   // Reisen ohne Preis (z. B. Hajj → Buchung über Nusuk) dürfen nirgends „0 €" zeigen.
   const priceAvailable = hasPrice(trip.price)
     || rooms.some((r) => hasPrice(effectiveRoomPrice(trip, r.value)?.adult));
+  // Keine buchbaren Zimmerkategorien (z. B. Vorreservierung/Hajj) → Zimmer steht
+  // noch nicht fest, statt fälschlich „Vierbettzimmer" zu zeigen.
+  const roomsUnknown = rooms.length === 0;
+  const ROOM_LATER = 'wird später festgelegt';
   const makeTraveler = (): Traveler => ({
     anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',
     email: '', telefon: '',
@@ -193,7 +197,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
           <section style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <h2 style={{ fontFamily: "'Newsreader', serif", fontSize: '22px', fontWeight: 400, color: '#16242B', margin: 0 }}>Reisende</h2>
-              <span style={{ fontSize: '13px', color: '#A8542F' }}>Eigene Zimmerkategorie pro Person wählbar</span>
+              <span style={{ fontSize: '13px', color: '#A8542F' }}>{roomsUnknown ? 'Zimmerkategorie wird später festgelegt' : 'Eigene Zimmerkategorie pro Person wählbar'}</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -242,9 +246,13 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                         </div>,
                         <div key="zimmer">
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#5A5448', marginBottom: '5px' }}>Zimmerkategorie</label>
-                          <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
-                            {rooms.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-                          </select>
+                          {roomsUnknown ? (
+                            <div style={{ ...inputStyle, backgroundColor: '#F7F4EE', color: '#9A9082', display: 'flex', alignItems: 'center' }}>{ROOM_LATER}</div>
+                          ) : (
+                            <select value={t.zimmer} onChange={(e) => updTraveler(idx, 'zimmer', e.target.value)} style={inputStyle}>
+                              {rooms.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                            </select>
+                          )}
                         </div>,
                       ]}
                     </div>
@@ -299,7 +307,11 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                     {t.geburtstag && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, backgroundColor: '#EAF0E8', color: '#3E6B52', borderRadius: '20px', padding: '2px 10px' }}>{cat}</span>
-                        <span style={{ fontSize: '13px', color: '#6B6457' }}>{roomLabel} · <strong style={{ color: '#16242B' }}>{price.toLocaleString('de-DE')} €</strong></span>
+                        {roomsUnknown ? (
+                          <span style={{ fontSize: '13px', color: '#6B6457' }}>Zimmer &amp; Preis {ROOM_LATER}</span>
+                        ) : (
+                          <span style={{ fontSize: '13px', color: '#6B6457' }}>{roomLabel} · <strong style={{ color: '#16242B' }}>{price.toLocaleString('de-DE')} €</strong></span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -387,7 +399,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
               {[
                 { label: 'Reise', value: trip.title },
-                { label: 'Zimmer', value: `${travelers.length}× ${dominantRoomLabel}` },
+                { label: 'Zimmer', value: roomsUnknown ? ROOM_LATER : `${travelers.length}× ${dominantRoomLabel}` },
                 { label: 'Reisende', value: summaryReisende || '—' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', fontSize: '14px' }}>
