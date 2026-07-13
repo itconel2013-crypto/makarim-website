@@ -10,6 +10,7 @@ import { youtubeId } from '@/lib/utils';
 
 function ItemCard({
   item, upd, remove, onMoveUp, onMoveDown, canMoveUp, canMoveDown,
+  onDragStart, onDragEnd, onDragOverItem, onDropItem, isDragging, isDropTarget,
 }: {
   item: GalleryItem;
   upd: (patch: Partial<GalleryItem>) => void;
@@ -18,16 +19,45 @@ function ItemCard({
   onMoveDown: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+  onDragOverItem: () => void;
+  onDropItem: () => void;
+  isDragging: boolean;
+  isDropTarget: boolean;
 }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const vid = item.type === 'video' ? youtubeId(item.url) : null;
   const linkOk = item.type !== 'video' || !item.url || !!vid;
 
   return (
-    <div className="rounded-card bg-white p-5" style={{ border: '1px solid #EAE3D8', boxShadow: '0 2px 6px rgba(40,30,20,0.04)' }}>
+    <div
+      className="rounded-card bg-white p-5"
+      // Ablageziel: die ganze Karte. Der Ziehgriff links ist die Ziehquelle —
+      // so bleiben Textfelder normal bedienbar (kein versehentliches Ziehen).
+      onDragOver={(e) => { e.preventDefault(); onDragOverItem(); }}
+      onDrop={(e) => { e.preventDefault(); onDropItem(); }}
+      style={{
+        border: '1px solid',
+        borderColor: isDropTarget ? '#C2724A' : '#EAE3D8',
+        boxShadow: isDropTarget ? '0 0 0 3px rgba(194,114,74,0.15)' : '0 2px 6px rgba(40,30,20,0.04)',
+        opacity: isDragging ? 0.45 : 1,
+        transition: 'border-color .12s, box-shadow .12s, opacity .12s',
+      }}
+    >
       <div className="flex items-start gap-4">
-        {/* Sortier-Pfeile */}
-        <div className="flex flex-col flex-shrink-0 pt-1">
+        {/* Ziehgriff + Sortier-Pfeile */}
+        <div className="flex flex-col items-center flex-shrink-0 pt-1 gap-1">
+          <div
+            draggable
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            title="Ziehen zum Umsortieren"
+            aria-label="Ziehen zum Umsortieren"
+            style={{ cursor: 'grab', color: '#B4AB9B', fontSize: '15px', lineHeight: 1, padding: '2px 4px', userSelect: 'none' }}
+          >
+            ⠿
+          </div>
           <button
             type="button" onClick={onMoveUp} disabled={!canMoveUp} title="Nach oben"
             style={{ fontSize: '11px', lineHeight: 1, color: canMoveUp ? '#A8542F' : '#D8D1C4', background: 'none', border: 'none', cursor: canMoveUp ? 'pointer' : 'default', padding: '1px 4px' }}
@@ -114,10 +144,27 @@ function ItemCard({
 
 export default function GalerieManager() {
   const { store, updateSection } = useCMS();
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
   if (!store) return null;
 
   const items: GalleryItem[] = store.c.gallery ?? [];
   const setItems = (list: GalleryItem[]) => updateSection('gallery', list);
+
+  /** Element von `from` an Position `to` einfügen (echtes Verschieben, kein Tausch). */
+  const reorder = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) return;
+    const next = items.slice();
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setItems(next);
+  };
+
+  const handleDrop = () => {
+    if (dragIdx !== null && overIdx !== null) reorder(dragIdx, overIdx);
+    setDragIdx(null);
+    setOverIdx(null);
+  };
 
   const addItem = (type: 'image' | 'video') =>
     setItems([...items, { id: `gal-${Date.now()}`, type, url: '', published: false }]);
@@ -145,6 +192,7 @@ export default function GalerieManager() {
       <main className="flex-1 p-7 overflow-auto">
         <div className="mb-5 flex items-center justify-between gap-3 flex-wrap">
           <p className="text-sm text-body-light" style={{ maxWidth: '640px' }}>
+            Reihenfolge frei änderbar: am Griff <span style={{ color: '#7C746A' }}>⠿</span> ziehen und ablegen (oder ▲▼ nutzen).
             Bilder kommen aus der Mediathek. Videos werden <strong>nicht hochgeladen</strong> — lade sie bei YouTube hoch
             und füge hier nur den Link ein (spart Speicher und lädt schneller).
           </p>
@@ -174,6 +222,12 @@ export default function GalerieManager() {
                 onMoveDown={() => move(item.id, 'down')}
                 canMoveUp={idx > 0}
                 canMoveDown={idx < items.length - 1}
+                onDragStart={() => setDragIdx(idx)}
+                onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}
+                onDragOverItem={() => setOverIdx(idx)}
+                onDropItem={handleDrop}
+                isDragging={dragIdx === idx}
+                isDropTarget={dragIdx !== null && overIdx === idx && dragIdx !== idx}
               />
             ))}
           </div>
