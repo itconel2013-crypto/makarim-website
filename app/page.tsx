@@ -51,6 +51,7 @@ export default async function Home() {
         headline={content.c.home.headline}
         sub={content.c.home.sub}
         heroImage={content.c.home.heroUrl}
+        btnSecondary={content.c.home.btnS}
       />
 
       {/* Stats Bar — 40+, 10.000+, 300+, 100% */}

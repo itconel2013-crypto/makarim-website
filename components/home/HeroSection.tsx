@@ -7,9 +7,11 @@ interface HeroSectionProps {
   headline: string;
   sub: string;
   heroImage?: string;
+  /** Text des zweiten Buttons — aus dem CMS (home.btnS). */
+  btnSecondary?: string;
 }
 
-export function HeroSection({ kicker, headline, sub, heroImage }: HeroSectionProps) {
+export function HeroSection({ kicker, headline, sub, heroImage, btnSecondary }: HeroSectionProps) {
   return (
     <section className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: '88vh' }}>
       {/* Background image */}
@@ -90,7 +92,7 @@ export function HeroSection({ kicker, headline, sub, heroImage }: HeroSectionPro
               backgroundColor: 'rgba(255,255,255,0.12)',
             }}
           >
-            Mehr erfahren
+            {btnSecondary || 'Über uns'}
           </Link>
         </div>
       </div>

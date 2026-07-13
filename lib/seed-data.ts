@@ -7,7 +7,7 @@ export const defaultContent: CMSStore = {
       headline: 'Deine Reise zu den heiligen Stätten',
       sub: 'Erlebe authentische Pilgerfahrten nach Mekka, Medina und darüber hinaus — mit Fürsorge und Stil.',
       btnP: 'Reisen entdecken',
-      btnS: 'Mehr erfahren',
+      btnS: 'Über uns',
       heroUrl: '/assets/examples/hero-a.jpg',
       featuredSection: {
         kicker: 'Aktuelle Reisen',
