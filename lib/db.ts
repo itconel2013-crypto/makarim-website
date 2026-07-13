@@ -1,60 +1,78 @@
 import Database from 'better-sqlite3';
 import { defaultContent } from './seed-data';
 import { Category, Trip, CMSStore } from './content-schema';
+import { slugify } from './utils';
+
+// ---------------------------------------------------------------------------
+// Normalisierung
+//
+// Grundsatz: Sie sichert die STRUKTUR ab (fehlende Felder, fehlende Arrays) und
+// erfindet KEINE Inhalte. Für wohlgeformte Daten ist sie ein No-op — sie füllt
+// nur echte Lücken. Sonst würde sie CMS-Felder still befüllen und beim nächsten
+// Speichern festschreiben.
+// ---------------------------------------------------------------------------
 
 function normalizeCategory(category: any): Category {
-  const key = category.key ?? category.url ?? category.title?.toLowerCase().replace(/\s+/g, '-') ?? 'category';
+  const key = category.key || category.url || (category.title ? slugify(category.title) : '') || 'category';
   return {
+    ...category,                                     // unbekannte Felder erhalten
     key,
-    name: category.name ?? category.title ?? category.url ?? key,
-    title: category.title ?? category.name ?? category.url ?? key,
-    description: category.description ?? category.text ?? '',
-    text: category.text ?? category.description ?? '',
-    icon: category.icon,
+    name:  category.name  ?? category.title ?? key,
+    title: category.title ?? category.name  ?? key,
+    description: category.description ?? '',
+    text:        category.text        ?? '',
     url: category.url ?? key,
   };
 }
 
 function normalizeTrip(trip: any): Trip {
-  const categoryKey = trip.category ?? (trip.typ ? trip.typ.toLowerCase() : undefined) ?? 'umrah';
-  const slug = trip.slug ?? trip.url ?? trip.title?.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/(^-|-$)/g, '') ?? trip.vg;
+  // ACHTUNG: `trip.url` ist das REISEBILD (Mediathek-URL), kein Slug. Früher stand
+  // es in der Slug-Fallback-Kette — fehlte einmal der Slug, wäre eine Bild-URL zur
+  // URL der Reise geworden. Fallback ist jetzt der Titel (mit Umlaut-Behandlung),
+  // zuletzt die Vorgangsnummer.
+  const slug = trip.slug || (trip.title ? slugify(trip.title) : '') || trip.vg;
   return {
     ...trip,
-    category: categoryKey,
+    category: trip.category ?? (trip.typ ? String(trip.typ).toLowerCase() : 'umrah'),
     slug,
     name: trip.name ?? trip.title ?? slug,
-    description: trip.description ?? trip.text ?? '',
-    typ: trip.typ,
-    nights: (trip.nights ?? parseInt(trip.nights as any, 10)) || 0,
-    hotels: trip.hotels ?? [],
-    // Reiseleiter: früher ein Einzelfeld (leaderPhoto), jetzt eine Liste. Alte
-    // Reisen werden hier transparent übernommen — kein Datenverlust, keine Migration.
+    // Bewusst KEIN Fallback auf trip.text: der Kurztext ist ein eigenes CMS-Feld
+    // und darf nicht still mit dem Langtext vorbefüllt werden. Die Anzeige nutzt
+    // ohnehin `description || text`.
+    description: trip.description ?? '',
+    nights: Number(trip.nights) || 0,
+    hotels: Array.isArray(trip.hotels) ? trip.hotels : [],
+    // Reiseleiter: früher Einzelfeld (leaderPhoto), jetzt Liste — transparent übernehmen.
     leaderPhotos: trip.leaderPhotos ?? (trip.leaderPhoto ? [trip.leaderPhoto] : []),
     // Vorreservierung (CRM): Reise noch nicht bestätigt → unverbindlich reservieren.
     vorreservierung: trip.vorreservierung === true,
   };
 }
 
-function normalizeContent(content: any): CMSStore {
-  if (!content || typeof content !== 'object') {
+/**
+ * Der Store ist `{ c: CMSContent, media: MediaItem[] }` — normalisiert wird der
+ * Inhalt unter `c`.
+ *
+ * Früher wurde hier fälschlich die OBERSTE Ebene geprüft (`content.trips` statt
+ * `content.c.trips`). Dadurch liefen normalizeTrip/normalizeCategory faktisch nie
+ * und es entstand ein toter Top-Level-Key `faq`. Die Seiten funktionierten nur
+ * dank eigener Fallbacks.
+ */
+function normalizeContent(store: any): CMSStore {
+  if (!store || typeof store !== 'object') {
     return defaultContent;
   }
 
-  const normalized = { ...defaultContent, ...content };
+  // Fehlende Top-Level-Bereiche (home, brand, seo, …) aus den Defaults auffüllen.
+  const c: any = { ...defaultContent.c, ...(store.c ?? {}) };
 
-  if (Array.isArray(content.categories)) {
-    normalized.categories = content.categories.map(normalizeCategory);
-  }
+  c.categories = Array.isArray(c.categories) ? c.categories.map(normalizeCategory) : defaultContent.c.categories;
+  c.trips      = Array.isArray(c.trips)      ? c.trips.map(normalizeTrip)          : [];
+  c.faq        = Array.isArray(c.faq)        ? c.faq                               : defaultContent.c.faq;
+  c.guides     = Array.isArray(c.guides)     ? c.guides                            : [];
+  c.gallery    = Array.isArray(c.gallery)    ? c.gallery                           : [];
 
-  if (Array.isArray(content.trips)) {
-    normalized.trips = content.trips.map(normalizeTrip);
-  }
-
-  if (!Array.isArray(normalized.faq)) {
-    normalized.faq = defaultContent.c.faq;
-  }
-
-  return normalized as CMSStore;
+  return { ...defaultContent, ...store, c } as CMSStore;
 }
 
 // ---------------------------------------------------------------------------

@@ -27,7 +27,7 @@ export interface Trip {
   price: number;              // per person, in EUR
   status: string;             // derived from seats/waitlist: "verfügbar", "begrenzte Plätze", "ausgebucht", "ausgebucht (Warteliste)"
   text: string;               // marketing text
-  url?: string;               // slug or ID
+  url?: string;               // Reisebild (Mediathek-URL) — NICHT der Slug!
   startseite: boolean;        // featured on home page
   published: boolean;         // draft/publish toggle (website shows only published !== false)
   seats: number;              // available seats
