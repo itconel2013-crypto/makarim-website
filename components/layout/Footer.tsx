@@ -75,6 +75,8 @@ export default async function Footer() {
               Info
             </h4>
             <ul className="space-y-2 text-sm" style={{ color: '#9DB0AD' }}>
+              <li><Link href="/ratgeber" className="hover:text-white transition-colors">Ratgeber</Link></li>
+              <li><Link href="/galerie" className="hover:text-white transition-colors">Galerie</Link></li>
               <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href="/kontakt" className="hover:text-white transition-colors">Kontakt</Link></li>
             </ul>

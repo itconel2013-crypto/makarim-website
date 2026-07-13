@@ -314,7 +314,11 @@ export const defaultContent: CMSStore = {
         a: 'Hotel (laut Paket), Transfers, Haram-Führungen, Mahlzeiten, Reiseführer und 24/7-Support.',
       },
     ],
-    
+
+    // Ratgeber & Galerie werden im CMS gepflegt (Admin → Ratgeber / Galerie).
+    guides: [],
+    gallery: [],
+
     about: {
       title: 'Über Makarim – Reisen mit Seele',
       body: 'Seit 15 Jahren begleiten wir Pilger auf ihrer spirituellen Reise. Makarim bedeutet "Tugenden" — und diese leiten uns jeden Tag: Authentizität, Sorgfalt, Treue.',

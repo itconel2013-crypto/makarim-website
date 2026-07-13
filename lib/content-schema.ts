@@ -217,11 +217,41 @@ export interface SEOConfig {
   about?: { title: string; desc: string };
 }
 
+/**
+ * Ratgeber-Artikel (Duas/Bittgebete, Packliste, Ablauf …).
+ * Jeder Artikel ist eine eigene URL mit eigenen SEO-Metadaten — das ist der
+ * SEO-Hebel: eine Seite je Suchbegriff statt einer Sammelseite.
+ */
+export interface Guide {
+  id: string;                 // stabile ID (intern)
+  slug: string;               // URL-Pfad, z. B. "umrah-dua"
+  title: string;              // H1
+  excerpt: string;            // Teaser in der Übersicht + Meta-Fallback
+  image?: string;             // optionales Titelbild (Mediathek)
+  intro?: string;             // Einleitungsabsatz
+  sections?: TripSection[];   // Überschrift + Text → als H2 gerendert (SEO)
+  seoTitle?: string;
+  seoDesc?: string;
+  published: boolean;
+}
+
+/** Galerie-Eintrag: Bild aus der Mediathek oder YouTube-Video (per Link). */
+export interface GalleryItem {
+  id: string;
+  type: 'image' | 'video';
+  url: string;                // Bild-URL bzw. YouTube-Link
+  title?: string;
+  caption?: string;
+  published: boolean;
+}
+
 export interface CMSContent {
   home: HomeContent;
   categories: Category[];
   trips: Trip[];
   faq: FAQ[];
+  guides?: Guide[];           // Ratgeber (optional: alte Datenstände haben das Feld nicht)
+  gallery?: GalleryItem[];    // Galerie (optional, s. o.)
   about: AboutContent;
   cta: CTA;
   brand: Brand;

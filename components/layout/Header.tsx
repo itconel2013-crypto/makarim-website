@@ -5,12 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
+// FAQ ist kein eigener Menüpunkt mehr — die Seite bleibt unter /faq erreichbar
+// (URL nicht aufgeben, sonst geht die Google-Position verloren) und wird prominent
+// im Ratgeber verlinkt.
 const navLinks = [
   { href: '/umrah',        label: 'Umrah' },
   { href: '/hajj',         label: 'Hajj' },
   { href: '/kulturreisen', label: 'Kulturreisen' },
+  { href: '/ratgeber',     label: 'Ratgeber' },
+  { href: '/galerie',      label: 'Galerie' },
   { href: '/ueber-uns',    label: 'Über uns' },
-  { href: '/faq',          label: 'FAQ' },
 ];
 
 export default function Header() {

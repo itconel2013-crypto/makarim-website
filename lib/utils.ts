@@ -25,6 +25,16 @@ export function formatDate(date: string): string {
   return date;
 }
 
+/**
+ * Zieht die Video-ID aus gängigen YouTube-Links (watch, youtu.be, shorts, embed).
+ * Gibt null zurück, wenn der Link nicht erkannt wird.
+ */
+export function youtubeId(url: string): string | null {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()
