@@ -12,6 +12,8 @@ interface Props {
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
+  /** Wird gesetzt, wenn Löschen erlaubt ist. Sicherheitsabfrage macht der Aufrufer. */
+  onDelete?: () => void;
 }
 
 /** One collapsible accordion section inside a trip card (replaces the old tabs). */
@@ -94,7 +96,7 @@ function AvailBadge({ trip }: { trip: Trip }) {
   );
 }
 
-export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: Props) {
+export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onDelete }: Props) {
   const { updateTrip } = useCMS();
   const showReorder = !!(onMoveUp || onMoveDown);
   const [open, setOpen] = useState(false);
@@ -179,6 +181,20 @@ export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown
             <span>Veröffentlicht</span>
             <Toggle checked={trip.published !== false} onChange={() => upd({ published: trip.published === false ? true : false })} />
           </label>
+
+          {/* Löschen — nur wo der Aufrufer es erlaubt. Die Sicherheitsabfrage
+              (inkl. Warnung bei vorhandenen Buchungen) macht der Aufrufer. */}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              title="Reise endgültig aus dem CMS löschen"
+              className="text-xs"
+              style={{ color: '#B0563F', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px' }}
+            >
+              🗑 Löschen
+            </button>
+          )}
         </div>
       </div>
 

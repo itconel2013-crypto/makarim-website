@@ -8,6 +8,7 @@ import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { ReisenPreview } from '@/components/cms/previews/ReisenPreview';
 import { Trip } from '@/lib/content-schema';
 import { moveTripInList } from '@/lib/utils';
+import { confirmAndDeleteTrip } from '@/components/cms/useDeleteTrip';
 
 const FILTER_TABS = [
   { key: 'all',          label: 'Alle' },
@@ -118,6 +119,7 @@ export default function ReisenManager() {
                   onMoveDown={() => moveTrip(trip.vg, 'down')}
                   canMoveUp={idx > 0}
                   canMoveDown={idx < trips.length - 1}
+                  onDelete={() => confirmAndDeleteTrip(trip, store.c.trips, updateSection)}
                 />
               ))
             )}
