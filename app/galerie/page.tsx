@@ -18,7 +18,8 @@ export default async function GaleriePage() {
 
   return (
     <main className="min-h-screen bg-page">
-      <section className="py-section" style={{ backgroundColor: '#F4F1EA' }}>
+      {/* Kopfbereich — unten bewusst weniger Luft, damit die Medien näher anschließen */}
+      <section className="py-section" style={{ backgroundColor: '#F4F1EA', paddingBottom: '48px' }}>
         <div className="container-max" style={{ maxWidth: '1000px' }}>
           <p className="font-mono uppercase mb-4" style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#A8542F' }}>
             Galerie
@@ -32,7 +33,7 @@ export default async function GaleriePage() {
         </div>
       </section>
 
-      <section className="py-section">
+      <section className="py-section" style={{ paddingTop: '32px' }}>
         <div className="container-max" style={{ maxWidth: '1000px' }}>
           {items.length === 0 ? (
             <div className="rounded-card bg-white p-10 text-center" style={{ border: '1px solid #EAE3D8' }}>
