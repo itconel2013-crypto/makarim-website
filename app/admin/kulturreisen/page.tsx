@@ -8,7 +8,7 @@ import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { ReisenPreview } from '@/components/cms/previews/ReisenPreview';
 import { Trip } from '@/lib/content-schema';
 import { moveTripInList } from '@/lib/utils';
-import { confirmAndDeleteTrip } from '@/components/cms/useDeleteTrip';
+import { useDeleteTrip } from '@/components/cms/useDeleteTrip';
 
 const FILTER_TABS = [
   { key: 'all',   label: 'Alle' },
@@ -20,6 +20,8 @@ type Filter = typeof FILTER_TABS[number]['key'];
 export default function KulturreisенManager() {
   const { store, updateSection } = useCMS();
   const [filter, setFilter] = useState<Filter>('all');
+  // Hook muss vor dem frühen Return stehen (Regeln der Hooks).
+  const { requestDelete, dialog } = useDeleteTrip(store?.c.trips ?? [], updateSection);
   if (!store) return null;
 
   const kulturreisen = store.c.trips.filter((t: Trip) => t.category === 'kulturreisen');
@@ -122,7 +124,7 @@ export default function KulturreisенManager() {
                   onMoveDown={() => moveTrip(trip.vg, 'down')}
                   canMoveUp={idx > 0}
                   canMoveDown={idx < trips.length - 1}
-                  onDelete={() => confirmAndDeleteTrip(trip, store.c.trips, updateSection)}
+                  onDelete={() => requestDelete(trip)}
                 />
               ))
             )}
@@ -133,6 +135,9 @@ export default function KulturreisенManager() {
           <ReisenPreview />
         </LivePreviewPane>
       </div>
+
+      {/* Bestätigungs-Dialog beim Löschen (eigenes Fenster, keine Browser-Meldung) */}
+      {dialog}
     </>
   );
 }

@@ -8,7 +8,7 @@ import { LivePreviewPane } from '@/components/cms/LivePreviewPane';
 import { ReisenPreview } from '@/components/cms/previews/ReisenPreview';
 import { Trip } from '@/lib/content-schema';
 import { moveTripInList } from '@/lib/utils';
-import { confirmAndDeleteTrip } from '@/components/cms/useDeleteTrip';
+import { useDeleteTrip } from '@/components/cms/useDeleteTrip';
 
 const FILTER_TABS = [
   { key: 'all',          label: 'Alle' },
@@ -41,6 +41,8 @@ function newTrip(category: 'umrah' | 'hajj' | 'kulturreisen'): Trip {
 export default function ReisenManager() {
   const { store, draftCount, updateSection } = useCMS();
   const [filter, setFilter] = useState<Filter>('all');
+  // Hook muss vor dem frühen Return stehen (Regeln der Hooks).
+  const { requestDelete, dialog } = useDeleteTrip(store?.c.trips ?? [], updateSection);
   if (!store) return null;
 
   const trips = filterTrips(store.c.trips, filter);
@@ -119,7 +121,7 @@ export default function ReisenManager() {
                   onMoveDown={() => moveTrip(trip.vg, 'down')}
                   canMoveUp={idx > 0}
                   canMoveDown={idx < trips.length - 1}
-                  onDelete={() => confirmAndDeleteTrip(trip, store.c.trips, updateSection)}
+                  onDelete={() => requestDelete(trip)}
                 />
               ))
             )}
@@ -130,6 +132,9 @@ export default function ReisenManager() {
           <ReisenPreview />
         </LivePreviewPane>
       </div>
+
+      {/* Bestätigungs-Dialog beim Löschen (eigenes Fenster, keine Browser-Meldung) */}
+      {dialog}
     </>
   );
 }
