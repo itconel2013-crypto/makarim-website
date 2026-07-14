@@ -26,6 +26,16 @@ export function formatDate(date: string): string {
 }
 
 /**
+ * Bilder eines Galerie-Eintrags. Früher hielt ein Eintrag genau ein Bild in `url`;
+ * heute ist es die Liste `images`. Alte Einträge werden hier transparent
+ * mitgelesen — keine Datenmigration nötig.
+ */
+export function galleryImages(item: { images?: string[]; url?: string; type?: string }): string[] {
+  if (item.images?.length) return item.images;
+  return item.type !== 'video' && item.url ? [item.url] : [];
+}
+
+/**
  * Zieht die Video-ID aus gängigen YouTube-Links (watch, youtu.be, shorts, embed).
  * Gibt null zurück, wenn der Link nicht erkannt wird.
  */

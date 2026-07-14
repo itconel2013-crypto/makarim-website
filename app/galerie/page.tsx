@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import type { Metadata } from 'next';
 import { loadContent } from '@/lib/db';
 import { GalleryItem } from '@/lib/content-schema';
-import { youtubeId } from '@/lib/utils';
+import { youtubeId, galleryImages } from '@/lib/utils';
+import { GallerySlider } from '@/components/website/GallerySlider';
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await loadContent();
@@ -42,6 +42,7 @@ export default async function GaleriePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {items.map((item) => {
                 const vid = item.type === 'video' ? youtubeId(item.url) : null;
+                const imgs = galleryImages(item);
                 return (
                   <figure
                     key={item.id}
@@ -65,14 +66,11 @@ export default async function GaleriePage() {
                           <span className="text-body-light text-sm">Video-Link nicht erkannt</span>
                         </div>
                       )
+                    ) : imgs.length > 0 ? (
+                      <GallerySlider images={imgs} alt={item.title || 'Eindruck unserer Reise'} />
                     ) : (
-                      <div className="relative w-full" style={{ aspectRatio: '4 / 3' }}>
-                        <Image
-                          src={item.url}
-                          alt={item.title || 'Eindruck unserer Reise'}
-                          fill
-                          className="object-cover"
-                        />
+                      <div className="flex items-center justify-center bg-page" style={{ aspectRatio: '4 / 3' }}>
+                        <span className="text-body-light text-sm">Noch kein Bild</span>
                       </div>
                     )}
 

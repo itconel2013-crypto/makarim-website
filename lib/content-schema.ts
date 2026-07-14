@@ -235,11 +235,15 @@ export interface Guide {
   published: boolean;
 }
 
-/** Galerie-Eintrag: Bild aus der Mediathek oder YouTube-Video (per Link). */
+/**
+ * Galerie-Eintrag: entweder ein Bilder-Album (ein oder mehrere Bilder → Slider)
+ * oder ein YouTube-Video.
+ */
 export interface GalleryItem {
   id: string;
   type: 'image' | 'video';
-  url: string;                // Bild-URL bzw. YouTube-Link
+  url: string;                // Video: YouTube-Link. LEGACY: früher das Einzelbild.
+  images?: string[];          // Bilder-Album — mehrere Bilder werden als Slider gezeigt
   title?: string;
   caption?: string;
   published: boolean;

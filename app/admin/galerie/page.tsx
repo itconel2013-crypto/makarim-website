@@ -6,7 +6,7 @@ import { PublishBar } from '@/components/cms/PublishBar';
 import { Field, TextInput } from '@/components/cms/FormEditor';
 import { MediaPickerModal } from '@/components/cms/MediaPickerModal';
 import { GalleryItem } from '@/lib/content-schema';
-import { youtubeId } from '@/lib/utils';
+import { youtubeId, galleryImages } from '@/lib/utils';
 
 function ItemCard({
   item, upd, remove, onMoveUp, onMoveDown, canMoveUp, canMoveDown,
@@ -29,6 +29,17 @@ function ItemCard({
   const [pickerOpen, setPickerOpen] = useState(false);
   const vid = item.type === 'video' ? youtubeId(item.url) : null;
   const linkOk = item.type !== 'video' || !item.url || !!vid;
+
+  // Bilder-Album: alte Einzelbilder (url) werden transparent mitgelesen.
+  const imgs = galleryImages(item);
+  const setImgs = (list: string[]) => upd({ images: list, url: '' });
+  const moveImg = (i: number, d: number) => {
+    const j = i + d;
+    if (j < 0 || j >= imgs.length) return;
+    const next = imgs.slice();
+    [next[i], next[j]] = [next[j], next[i]];
+    setImgs(next);
+  };
 
   return (
     <div
@@ -69,14 +80,24 @@ function ItemCard({
         </div>
 
         {/* Vorschau */}
-        <div className="flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ width: '120px', height: '80px', borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA' }}>
-          {item.type === 'video'
-            ? (vid
-                ? <img src={`https://img.youtube.com/vi/${vid}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
-                : <span className="text-2xl opacity-30">🎬</span>)
-            : (item.url
-                ? <img src={item.url} alt="" className="w-full h-full object-cover" />
-                : <span className="text-2xl opacity-30">🖼️</span>)}
+        <div className="relative flex-shrink-0" style={{ width: '120px', height: '80px' }}>
+          <div className="w-full h-full overflow-hidden flex items-center justify-center" style={{ borderRadius: '10px', border: '1px solid #E2DBCF', backgroundColor: '#F4F1EA' }}>
+            {item.type === 'video'
+              ? (vid
+                  ? <img src={`https://img.youtube.com/vi/${vid}/mqdefault.jpg`} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-2xl opacity-30">🎬</span>)
+              : (imgs.length > 0
+                  ? <img src={imgs[0]} alt="" className="w-full h-full object-cover" />
+                  : <span className="text-2xl opacity-30">🖼️</span>)}
+          </div>
+          {item.type === 'image' && imgs.length > 1 && (
+            <span
+              className="absolute"
+              style={{ bottom: '5px', right: '5px', backgroundColor: 'rgba(22,36,43,0.8)', color: '#fff', fontSize: '10.5px', fontWeight: 700, borderRadius: '20px', padding: '2px 7px' }}
+            >
+              {imgs.length} Bilder
+            </span>
+          )}
         </div>
 
         {/* Felder */}
@@ -88,7 +109,7 @@ function ItemCard({
                 <button
                   key={t}
                   type="button"
-                  onClick={() => upd({ type: t, url: '' })}
+                  onClick={() => upd({ type: t, url: '', images: [] })}
                   className="px-3 py-1.5 rounded-button text-xs font-medium"
                   style={{
                     backgroundColor: item.type === t ? '#16242B' : 'white',
@@ -114,11 +135,57 @@ function ItemCard({
             </Field>
           ) : (
             <div>
-              <p className="block font-medium text-ink mb-1.5" style={{ fontSize: '13px' }}>Bild</p>
-              <button type="button" onClick={() => setPickerOpen(true)} className="px-4 py-2 text-sm font-medium text-white" style={{ backgroundColor: '#14617A', borderRadius: '9px', border: 'none', cursor: 'pointer' }}>
-                {item.url ? 'Bild ändern' : 'Bild wählen'}
-              </button>
-              {pickerOpen && <MediaPickerModal onSelect={(url) => { upd({ url }); setPickerOpen(false); }} onClose={() => setPickerOpen(false)} />}
+              <p className="block font-medium text-ink mb-1.5" style={{ fontSize: '13px' }}>
+                Bilder <span className="text-body-light font-normal">
+                  ({imgs.length}){imgs.length > 1 ? ' — werden auf der Website als Slider gezeigt' : ''}
+                </span>
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {imgs.map((src, i) => (
+                  <div key={i} className="relative flex-shrink-0" style={{ width: '92px', height: '66px' }}>
+                    <img src={src} alt="" className="w-full h-full object-cover" style={{ borderRadius: '8px', border: '1px solid #E2DBCF' }} />
+
+                    {/* Entfernen */}
+                    <button
+                      type="button"
+                      onClick={() => setImgs(imgs.filter((_, j) => j !== i))}
+                      title="Bild entfernen"
+                      aria-label="Bild entfernen"
+                      className="absolute flex items-center justify-center"
+                      style={{ top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#fff', border: '1px solid #E2DBCF', color: '#9A9082', fontSize: '13px', lineHeight: 1, cursor: 'pointer', padding: 0 }}
+                    >
+                      ×
+                    </button>
+
+                    {/* Reihenfolge im Album */}
+                    <div className="absolute flex" style={{ bottom: '3px', left: '3px', gap: '2px' }}>
+                      <button
+                        type="button" onClick={() => moveImg(i, -1)} disabled={i === 0} title="Nach links"
+                        style={{ width: '18px', height: '18px', borderRadius: '5px', border: 'none', background: 'rgba(255,255,255,0.9)', color: i === 0 ? '#D8D1C4' : '#5A5448', fontSize: '10px', lineHeight: 1, cursor: i === 0 ? 'default' : 'pointer', padding: 0 }}
+                      >◀</button>
+                      <button
+                        type="button" onClick={() => moveImg(i, 1)} disabled={i === imgs.length - 1} title="Nach rechts"
+                        style={{ width: '18px', height: '18px', borderRadius: '5px', border: 'none', background: 'rgba(255,255,255,0.9)', color: i === imgs.length - 1 ? '#D8D1C4' : '#5A5448', fontSize: '10px', lineHeight: 1, cursor: i === imgs.length - 1 ? 'default' : 'pointer', padding: 0 }}
+                      >▶</button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => setPickerOpen(true)}
+                  className="flex-shrink-0 flex items-center justify-center"
+                  style={{ width: '92px', height: '66px', borderRadius: '8px', border: '1px dashed #C9C0B1', background: '#FBF9F4', color: '#7C746A', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
+                >
+                  + Bild
+                </button>
+              </div>
+              {pickerOpen && (
+                <MediaPickerModal
+                  onSelect={(url) => { setImgs([...imgs, url]); setPickerOpen(false); }}
+                  onClose={() => setPickerOpen(false)}
+                />
+              )}
             </div>
           )}
 
@@ -191,14 +258,15 @@ export default function GalerieManager() {
 
       <main className="flex-1 p-7 overflow-auto">
         <div className="mb-5 flex items-center justify-between gap-3 flex-wrap">
-          <p className="text-sm text-body-light" style={{ maxWidth: '640px' }}>
-            Reihenfolge frei änderbar: am Griff <span style={{ color: '#7C746A' }}>⠿</span> ziehen und ablegen (oder ▲▼ nutzen).
-            Bilder kommen aus der Mediathek. Videos werden <strong>nicht hochgeladen</strong> — lade sie bei YouTube hoch
-            und füge hier nur den Link ein (spart Speicher und lädt schneller).
+          <p className="text-sm text-body-light" style={{ maxWidth: '660px' }}>
+            Ein Bild-Eintrag ist ein <strong>Album</strong>: Füge mehrere Bilder zu einem Thema hinzu (z. B. „Umrah Dezember 2025“) —
+            auf der Website erscheinen sie als <strong>Slider</strong> statt als viele Einzelkacheln.
+            Reihenfolge der Einträge: am Griff <span style={{ color: '#7C746A' }}>⠿</span> ziehen (oder ▲▼).
+            Videos werden <strong>nicht hochgeladen</strong> — YouTube-Link genügt.
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={() => addItem('image')} className="px-4 py-2 rounded-button text-sm font-medium" style={{ backgroundColor: '#C2724A', color: 'white', border: 'none', cursor: 'pointer' }}>
-              + Bild
+              + Bild-Album
             </button>
             <button onClick={() => addItem('video')} className="px-4 py-2 rounded-button text-sm font-medium" style={{ backgroundColor: '#16242B', color: 'white', border: 'none', cursor: 'pointer' }}>
               + Video
