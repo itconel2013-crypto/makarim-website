@@ -3,10 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { loadContent } from '@/lib/db';
 import { TripCard } from '@/components/website/TripCard';
-
-type CategoryKey = 'umrah' | 'hajj' | 'kulturreisen';
-
-const validCategories: CategoryKey[] = ['umrah', 'hajj', 'kulturreisen'];
+import { categoryFromSlug, type CategoryKey } from '@/lib/utils';
 
 const typMap: Record<CategoryKey, 'Umrah' | 'Hajj' | 'Kulturreisen'> = {
   umrah: 'Umrah',
@@ -26,8 +23,8 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const cat = category as CategoryKey;
-  if (!validCategories.includes(cat)) return {};
+  const cat = categoryFromSlug(category);   // z. B. "umrah-reisen" → "umrah"
+  if (!cat) return {};
 
   const content = await loadContent();
   const seo = content.c.seo[seoKeyMap[cat]];
@@ -44,11 +41,8 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const cat = category as CategoryKey;
-
-  if (!validCategories.includes(cat)) {
-    notFound();
-  }
+  const cat = categoryFromSlug(category);   // öffentliches Segment → interner Schlüssel
+  if (!cat) notFound();
 
   const content = await loadContent();
   const typ = typMap[cat];

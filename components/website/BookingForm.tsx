@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
+import { hasPrice, PRICE_ON_REQUEST, tripPath } from '@/lib/utils';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -124,7 +124,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
     try {
       const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes, ref: getRef() }) });
       if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Versand fehlgeschlagen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-      router.push(`/${trip.category}/${trip.slug}/confirm`);
+      router.push(`${tripPath(trip)}/confirm`);
     } catch { setFormError('Netzwerkfehler — bitte erneut versuchen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   }
 

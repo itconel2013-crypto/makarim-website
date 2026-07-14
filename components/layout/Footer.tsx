@@ -32,8 +32,8 @@ export default async function Footer() {
               Reisen
             </h4>
             <ul className="space-y-2 text-sm" style={{ color: '#9DB0AD' }}>
-              <li><Link href="/umrah" className="hover:text-white transition-colors">Umrah</Link></li>
-              <li><Link href="/hajj" className="hover:text-white transition-colors">Hajj</Link></li>
+              <li><Link href="/umrah-reisen" className="hover:text-white transition-colors">Umrah</Link></li>
+              <li><Link href="/hajj-reisen" className="hover:text-white transition-colors">Hajj</Link></li>
               <li><Link href="/kulturreisen" className="hover:text-white transition-colors">Kulturreisen</Link></li>
               <li><Link href="/ueber-uns" className="hover:text-white transition-colors">Über uns</Link></li>
             </ul>

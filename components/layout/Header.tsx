@@ -9,8 +9,8 @@ import { usePathname } from 'next/navigation';
 // (URL nicht aufgeben, sonst geht die Google-Position verloren) und wird prominent
 // im Ratgeber verlinkt.
 const navLinks = [
-  { href: '/umrah',        label: 'Umrah' },
-  { href: '/hajj',         label: 'Hajj' },
+  { href: '/umrah-reisen', label: 'Umrah' },
+  { href: '/hajj-reisen',  label: 'Hajj' },
   { href: '/kulturreisen', label: 'Kulturreisen' },
   { href: '/ratgeber',     label: 'Ratgeber' },
   { href: '/galerie',      label: 'Galerie' },

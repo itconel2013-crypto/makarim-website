@@ -26,6 +26,37 @@ export function formatDate(date: string): string {
 }
 
 /**
+ * Rubrik-URLs.
+ *
+ * WICHTIG: Der interne Schlüssel (`umrah`) ist Teil des CRM-Vertrags und darf sich
+ * NICHT ändern — das CRM schickt `category: "umrah"`. Öffentlich sichtbar ist nur
+ * das URL-Segment (`umrah-reisen`). Beides ist hier bewusst entkoppelt.
+ */
+export const CATEGORY_SLUG = {
+  umrah: 'umrah-reisen',
+  hajj: 'hajj-reisen',
+  kulturreisen: 'kulturreisen',
+} as const;
+
+export type CategoryKey = keyof typeof CATEGORY_SLUG;
+
+/** Öffentliches URL-Segment → interner Schlüssel. null, wenn unbekannt (→ 404). */
+export function categoryFromSlug(slug: string): CategoryKey | null {
+  const keys = Object.keys(CATEGORY_SLUG) as CategoryKey[];
+  return keys.find((k) => CATEGORY_SLUG[k] === slug) ?? null;
+}
+
+/** Pfad der Rubrikseite, z. B. "/umrah-reisen". */
+export function categoryPath(key: string): string {
+  return `/${CATEGORY_SLUG[key as CategoryKey] ?? key}`;
+}
+
+/** Pfad einer Reise, z. B. "/umrah-reisen/winter-umrah". */
+export function tripPath(trip: { category: string; slug: string }): string {
+  return `${categoryPath(trip.category)}/${trip.slug}`;
+}
+
+/**
  * Bilder eines Galerie-Eintrags. Früher hielt ein Eintrag genau ein Bild in `url`;
  * heute ist es die Liste `images`. Alte Einträge werden hier transparent
  * mitgelesen — keine Datenmigration nötig.

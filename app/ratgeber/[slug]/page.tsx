@@ -106,7 +106,7 @@ export default async function GuidePage({
                 </p>
               </div>
               <Link
-                href="/umrah"
+                href="/umrah-reisen"
                 className="inline-flex items-center justify-center font-medium text-white flex-shrink-0"
                 style={{ backgroundColor: '#C2724A', height: '48px', borderRadius: '11px', padding: '0 26px', fontSize: '15px' }}
               >

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Category } from '@/lib/content-schema';
+import { categoryPath } from '@/lib/utils';
 
 const fallbackImages: Record<string, string> = {
   umrah: '/assets/examples/cat-umrah.jpg',
@@ -44,7 +45,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
             return (
               <div key={key} className="group flex flex-col overflow-hidden rounded-card" style={{ boxShadow: '0 6px 22px rgba(40,30,20,0.05)' }}>
                 {/* Image — aspect 4/3, clickable */}
-                <Link href={`/${key}`} className="relative overflow-hidden block" style={{ aspectRatio: '4/3' }}>
+                <Link href={categoryPath(key)} className="relative overflow-hidden block" style={{ aspectRatio: '4/3' }}>
                   {imgSrc ? (
                     <img
                       src={imgSrc}
@@ -73,7 +74,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
 
                   {/* Full-width terracotta button — 48px */}
                   <Link
-                    href={`/${key}`}
+                    href={categoryPath(key)}
                     className="block w-full text-center text-white font-medium transition-colors"
                     style={{
                       backgroundColor: '#C2724A',

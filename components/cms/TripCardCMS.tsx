@@ -5,6 +5,7 @@ import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
+import { tripPath } from '@/lib/utils';
 
 interface Props {
   trip: Trip;
@@ -688,7 +689,7 @@ function SEOTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) 
   const previewTitle = trip.seoTitle || trip.title;
   const previewDesc = trip.seoDesc
     || (trip.text ? (trip.text.length > 155 ? trip.text.slice(0, 155).trimEnd() + '…' : trip.text) : '');
-  const previewUrl = `makarim-reisen.de/${trip.category}/${trip.slug}`;
+  const previewUrl = `makarim-reisen.de${tripPath(trip)}`;
 
   return (
     <div className="space-y-4">

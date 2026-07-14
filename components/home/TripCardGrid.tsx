@@ -11,11 +11,22 @@ const DEFAULTS: FeaturedSection = {
   kicker: 'Aktuelle Reisen',
   title: 'Eine Auswahl unserer Reisen',
   linkText: 'Alle Reisen ansehen →',
-  linkUrl: '/umrah',
+  linkUrl: '/umrah-reisen',
+};
+
+/**
+ * Bei der URL-Umstellung (/umrah → /umrah-reisen) blieben alte Pfade in den
+ * CMS-Daten stehen. Sie werden hier abgefangen, damit der Button nicht ins
+ * Leere zeigt — im CMS gepflegte neue Pfade gelten unverändert.
+ */
+const LEGACY_PATHS: Record<string, string> = {
+  '/umrah': '/umrah-reisen',
+  '/hajj': '/hajj-reisen',
 };
 
 export function TripCardGrid({ trips, featured }: TripCardGridProps) {
   const s = { ...DEFAULTS, ...featured };
+  const linkUrl = LEGACY_PATHS[s.linkUrl] ?? s.linkUrl;
 
   return (
     <section id="featured" className="bg-page" style={{ padding: '60px 0 20px' }}>
@@ -31,7 +42,7 @@ export function TripCardGrid({ trips, featured }: TripCardGridProps) {
             </h2>
           </div>
           <Link
-            href={s.linkUrl}
+            href={linkUrl}
             style={{ fontSize: '14px', color: '#8A513A', fontWeight: 600, borderBottom: '1.5px solid #C2724A', paddingBottom: '2px', textDecoration: 'none', flexShrink: 0 }}
           >
             {s.linkText}

@@ -13,7 +13,7 @@ export const defaultContent: CMSStore = {
         kicker: 'Aktuelle Reisen',
         title: 'Eine Auswahl unserer Reisen',
         linkText: 'Alle Reisen ansehen →',
-        linkUrl: '/umrah',
+        linkUrl: '/umrah-reisen',
       },
       stats: [
         { value: '40+', label: 'Jahre Erfahrung' },

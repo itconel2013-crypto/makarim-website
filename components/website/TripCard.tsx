@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Trip, getAvailability } from '@/lib/content-schema';
-import { hasPrice } from '@/lib/utils';
+import { hasPrice, tripPath } from '@/lib/utils';
 
 const PILL_TONE = {
   green: { bg: '#EAF0E8', color: '#3E6B52' },
@@ -24,7 +24,7 @@ interface TripCardProps {
 }
 
 export function TripCard({ trip }: TripCardProps) {
-  const href = `/${trip.category}/${trip.slug}`;
+  const href = tripPath(trip);   // interner Schlüssel → öffentliche URL
 
   // Reiseleiter-Fotos: Liste (altes Einzelfeld als Fallback). Bei mehreren stehen
   // sie leicht überlappend nebeneinander und werden etwas kleiner, damit Balken

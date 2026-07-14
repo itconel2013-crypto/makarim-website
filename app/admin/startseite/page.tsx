@@ -19,7 +19,7 @@ export default function StartseiteEditor() {
     kicker: 'Aktuelle Termine',
     title: 'Unsere Umrah Reisen',
     linkText: 'Alle Reisen ansehen →',
-    linkUrl: '/umrah',
+    linkUrl: '/umrah-reisen',
   };
   const updFs = (patch: Partial<FeaturedSection>) => upd({ featuredSection: { ...fs, ...patch } });
 

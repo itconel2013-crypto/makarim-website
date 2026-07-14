@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { loadContent } from '@/lib/db';
 import { BookingForm } from '@/components/website/BookingForm';
+import { categoryFromSlug } from '@/lib/utils';
 
 export async function generateMetadata({
   params,
@@ -25,8 +26,12 @@ export default async function BookingPage({
   const { category, slug } = await params;
   const content = await loadContent();
 
+  // öffentliches URL-Segment → interner Schlüssel (siehe lib/utils)
+  const catKey = categoryFromSlug(category);
+  if (!catKey) notFound();
+
   const trip = content.c.trips.find(
-    (t) => t.slug === slug && t.category === category && t.published !== false
+    (t) => t.slug === slug && t.category === catKey && t.published !== false
   );
   if (!trip) notFound();
 

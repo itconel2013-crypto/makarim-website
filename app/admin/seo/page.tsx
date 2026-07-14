@@ -7,8 +7,8 @@ import { SEOConfig } from '@/lib/content-schema';
 
 const pageKeys: Array<{ key: keyof SEOConfig; label: string; slug: string }> = [
   { key: 'home',    label: 'Startseite',    slug: 'makarim-reisen.de' },
-  { key: 'umrah',   label: 'Umrah',         slug: '/umrah' },
-  { key: 'hajj',    label: 'Hajj',          slug: '/hajj' },
+  { key: 'umrah',   label: 'Umrah',         slug: '/umrah-reisen' },
+  { key: 'hajj',    label: 'Hajj',          slug: '/hajj-reisen' },
   { key: 'kultur',  label: 'Kulturreisen',  slug: '/kulturreisen' },
   { key: 'about',   label: 'Über uns',      slug: '/ueber-uns' },
 ];

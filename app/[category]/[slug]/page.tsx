@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { loadContent } from '@/lib/db';
 import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { truncateText, hasPrice, PRICE_ON_REQUEST } from '@/lib/utils';
+import { truncateText, hasPrice, PRICE_ON_REQUEST, categoryFromSlug } from '@/lib/utils';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -83,8 +83,13 @@ export default async function TripDetailPage({
   const { category, slug } = await params;
   const content = await loadContent();
 
+  // `category` ist das öffentliche URL-Segment (z. B. "umrah-reisen"),
+  // `trip.category` der interne Schlüssel (z. B. "umrah") — hier auflösen.
+  const catKey = categoryFromSlug(category);
+  if (!catKey) notFound();
+
   const trip = content.c.trips.find(
-    (t) => t.slug === slug && t.category === category && t.published !== false
+    (t) => t.slug === slug && t.category === catKey && t.published !== false
   );
   if (!trip) notFound();
 
