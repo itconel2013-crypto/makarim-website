@@ -112,6 +112,16 @@ export function moveTripInList<T extends { vg: string }>(
   return next;
 }
 
+/**
+ * Entfernt die Fett-Markierungen (*…* / **…**) für Kontexte, die reinen Text
+ * brauchen: SEO-Meta-Beschreibung, JSON-LD, Kartentexte. Das Wort bleibt, nur
+ * die Sternchen fallen weg. Siehe RichText (Anzeige der Fett-Schrift).
+ */
+export function stripInlineMarks(text: string | undefined | null): string {
+  if (!text) return '';
+  return text.replace(/\*\*([^*\n]+)\*\*/g, '$1').replace(/\*([^*\n]+)\*/g, '$1');
+}
+
 export function truncateText(text: string | undefined | null, maxLength: number): string {
   if (!text) return '';
   if (text.length <= maxLength) return text;

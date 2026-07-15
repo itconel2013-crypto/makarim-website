@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Trip, getAvailability } from '@/lib/content-schema';
 import { hasPrice, tripPath } from '@/lib/utils';
+import { RichText } from './RichText';
 
 const PILL_TONE = {
   green: { bg: '#EAF0E8', color: '#3E6B52' },
@@ -165,7 +166,7 @@ export function TripCard({ trip }: TripCardProps) {
 
         {/* Description */}
         <p style={{ fontSize: '14px', lineHeight: 1.55, color: '#6B6457', margin: '0 0 20px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-          {trip.description || trip.text}
+          <RichText text={trip.description || trip.text} />
         </p>
 
         {/* CTA Button — NOT full-width, left-aligned */}

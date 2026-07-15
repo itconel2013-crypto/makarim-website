@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { loadContent } from '@/lib/db';
 import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
-import { truncateText, hasPrice, PRICE_ON_REQUEST, categoryFromSlug } from '@/lib/utils';
+import { truncateText, hasPrice, PRICE_ON_REQUEST, categoryFromSlug, stripInlineMarks } from '@/lib/utils';
+import { RichText } from '@/components/website/RichText';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -68,7 +69,7 @@ export async function generateMetadata({
 
   const siteName = content.c.seo.siteName;
   const title = trip.seoTitle || `${trip.title} | ${siteName}`;
-  const description = trip.seoDesc || truncateText(trip.text || trip.description, 158) || content.c.seo.defaultDesc;
+  const description = trip.seoDesc || truncateText(stripInlineMarks(trip.text || trip.description), 158) || content.c.seo.defaultDesc;
 
   return { title, description };
 }
@@ -105,7 +106,7 @@ export default async function TripDetailPage({
     '@context': 'https://schema.org',
     '@type': 'TouristTrip',
     name: trip.title,
-    description: trip.seoDesc || truncateText(trip.text || trip.description, 200) || content.c.seo.defaultDesc,
+    description: trip.seoDesc || truncateText(stripInlineMarks(trip.text || trip.description), 200) || content.c.seo.defaultDesc,
     touristType: trip.typ,
     offers: {
       '@type': 'Offer',
@@ -213,7 +214,7 @@ export default async function TripDetailPage({
                 directly with an H2 section if the Langtext is left empty. */}
             {trip.text?.trim() && (
               <p className="mb-14 leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
-                {trip.text}
+                <RichText text={trip.text} />
               </p>
             )}
 
@@ -232,7 +233,7 @@ export default async function TripDetailPage({
                   )}
                   {s.body?.trim() && (
                     <p className="leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
-                      {s.body}
+                      <RichText text={s.body} />
                     </p>
                   )}
                 </section>

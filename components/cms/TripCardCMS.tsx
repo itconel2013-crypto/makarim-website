@@ -400,7 +400,9 @@ function InhaltTab({ trip, upd, updBanner }: { trip: Trip; upd: (p: Partial<Trip
           className="w-full px-4 py-3 rounded-card text-sm text-ink bg-white resize-none"
           style={{ border: '1px solid #E2DBCF', outline: 'none' }}
         />
-        <p className="text-xs text-body-light mt-1">Erscheint, wenn die Reise geöffnet wird.</p>
+        <p className="text-xs text-body-light mt-1">
+          Erscheint, wenn die Reise geöffnet wird. Tipp: <strong>*Wort*</strong> macht ein Wort fett.
+        </p>
       </div>
 
       {/* Free heading+text sections (rendered as H2 + paragraph) */}
