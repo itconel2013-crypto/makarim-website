@@ -222,6 +222,13 @@ export interface SEOConfig {
  * Jeder Artikel ist eine eigene URL mit eigenen SEO-Metadaten — das ist der
  * SEO-Hebel: eine Seite je Suchbegriff statt einer Sammelseite.
  */
+/** Herunterladbares Dokument (PDF) zu einem Ratgeber-Artikel. */
+export interface GuideDoc {
+  id: string;
+  url: string;                // /api/uploads/<datei>.pdf
+  title: string;              // Anzeigename, z. B. "Packliste Umrah"
+}
+
 export interface Guide {
   id: string;                 // stabile ID (intern)
   slug: string;               // URL-Pfad, z. B. "umrah-dua"
@@ -230,6 +237,7 @@ export interface Guide {
   image?: string;             // optionales Titelbild (Mediathek)
   intro?: string;             // Einleitungsabsatz
   sections?: TripSection[];   // Überschrift + Text → als H2 gerendert (SEO)
+  documents?: GuideDoc[];     // PDFs zum Download (Mehrwert; Fließtext bleibt der SEO-Träger)
   seoTitle?: string;
   seoDesc?: string;
   published: boolean;

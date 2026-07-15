@@ -92,6 +92,34 @@ export default async function GuidePage({
               </section>
             ))}
 
+            {/* Dokumente zum Download (PDF) */}
+            {(guide.documents ?? []).length > 0 && (
+              <section className="mb-10">
+                <h2 className="font-serif font-normal text-ink mb-4" style={{ fontSize: 'clamp(21px, 3vw, 27px)', lineHeight: 1.25 }}>
+                  Zum Herunterladen
+                </h2>
+                <div className="flex flex-col gap-3">
+                  {guide.documents!.map((d) => (
+                    <a
+                      key={d.id}
+                      href={d.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-3 rounded-card bg-white transition-shadow hover:shadow-card-lg"
+                      style={{ border: '1px solid #EAE3D8', padding: '14px 18px', textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <span style={{ fontSize: '22px', flexShrink: 0 }}>📄</span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block font-medium text-ink" style={{ fontSize: '15px' }}>{d.title}</span>
+                        <span className="block text-body-light" style={{ fontSize: '12.5px' }}>PDF · herunterladen</span>
+                      </span>
+                      <span aria-hidden style={{ color: '#A8542F', fontSize: '18px', flexShrink: 0 }}>↓</span>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Abschluss-CTA */}
             <div
               className="mt-12 rounded-card bg-white p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"

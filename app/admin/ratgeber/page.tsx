@@ -5,7 +5,7 @@ import { useCMS } from '@/components/cms/CMSProvider';
 import { PublishBar } from '@/components/cms/PublishBar';
 import { Field, TextInput } from '@/components/cms/FormEditor';
 import { MediaPickerModal } from '@/components/cms/MediaPickerModal';
-import { Guide, TripSection } from '@/lib/content-schema';
+import { Guide, GuideDoc, TripSection } from '@/lib/content-schema';
 import { slugify } from '@/lib/utils';
 
 /** Ein Ratgeber-Artikel als aufklappbare Karte. */
@@ -28,12 +28,37 @@ function GuideCard({
 }) {
   const [open, setOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [docErr, setDocErr] = useState('');
 
   const sections: TripSection[] = guide.sections ?? [];
   const updSection = (i: number, patch: Partial<TripSection>) =>
     upd({ sections: sections.map((s, j) => (j === i ? { ...s, ...patch } : s)) });
   const addSection = () => upd({ sections: [...sections, { heading: '', body: '' }] });
   const removeSection = (i: number) => upd({ sections: sections.filter((_, j) => j !== i) });
+
+  // Dokumente (PDF) — Datei liegt auf dem Volume, nur die URL wandert in den Artikel.
+  const docs: GuideDoc[] = guide.documents ?? [];
+  const setDocs = (list: GuideDoc[]) => upd({ documents: list });
+  const uploadDoc = async (file: File) => {
+    setDocErr('');
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/documents', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setDocs([...docs, { id: `doc-${Date.now()}`, url: data.url, title: file.name.replace(/\.pdf$/i, '') }]);
+      } else {
+        setDocErr(data.error || 'Upload fehlgeschlagen.');
+      }
+    } catch {
+      setDocErr('Upload fehlgeschlagen.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="rounded-card bg-white overflow-hidden" style={{ border: '1px solid #EAE3D8', boxShadow: '0 2px 6px rgba(40,30,20,0.04)' }}>
@@ -147,6 +172,46 @@ function GuideCard({
             >
               + Abschnitt hinzufügen
             </button>
+          </div>
+
+          {/* Dokumente (PDF) zum Download */}
+          <div>
+            <p className="block font-medium text-ink mb-1.5" style={{ fontSize: '13px' }}>
+              Dokumente zum Download <span className="text-body-light font-normal">(PDF, optional)</span>
+            </p>
+            <div className="space-y-2">
+              {docs.map((d, i) => (
+                <div key={d.id} className="flex items-center gap-2 p-2.5 rounded-card" style={{ border: '1px solid #EFE8DC', backgroundColor: '#FDFCF9' }}>
+                  <span style={{ fontSize: '16px', flexShrink: 0 }}>📄</span>
+                  <input
+                    type="text"
+                    value={d.title}
+                    onChange={(e) => setDocs(docs.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))}
+                    placeholder="Anzeigename, z. B. Packliste Umrah"
+                    className="flex-1 min-w-0 px-3 py-2 rounded-button text-sm text-ink bg-white"
+                    style={{ border: '1px solid #E2DBCF', outline: 'none' }}
+                  />
+                  <a href={d.url} target="_blank" rel="noreferrer" className="text-xs flex-shrink-0" style={{ color: '#14617A' }}>ansehen</a>
+                  <button onClick={() => setDocs(docs.filter((_, j) => j !== i))} className="text-xs flex-shrink-0" style={{ color: '#9A9082', background: 'none', border: 'none', cursor: 'pointer' }}>Entfernen</button>
+                </div>
+              ))}
+            </div>
+
+            <label
+              className="mt-2 inline-flex items-center justify-center"
+              style={{ height: '40px', padding: '0 16px', fontSize: '13px', fontWeight: 500, border: '1px dashed #C9C0B1', borderRadius: '10px', background: '#FBF9F4', color: uploading ? '#B4AB9B' : '#7C746A', cursor: uploading ? 'default' : 'pointer' }}
+            >
+              {uploading ? 'Wird hochgeladen …' : '+ PDF hochladen'}
+              <input
+                type="file"
+                accept="application/pdf"
+                disabled={uploading}
+                style={{ display: 'none' }}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadDoc(f); e.target.value = ''; }}
+              />
+            </label>
+            {docErr && <p className="text-xs mt-1" style={{ color: '#991B1B' }}>{docErr}</p>}
+            <p className="text-xs text-body-light mt-1">Erscheint als Download-Button unter dem Artikel. Der Fließtext oben bleibt das Wichtigste für Google.</p>
           </div>
 
           {/* SEO */}
