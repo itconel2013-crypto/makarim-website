@@ -25,6 +25,9 @@ export function formatDate(date: string): string {
   return date;
 }
 
+/** Kanonische Basis-URL der Live-Seite (für Sitemap, robots, Metadaten). */
+export const SITE_URL = 'https://www.makarim.de';
+
 /**
  * Rubrik-URLs.
  *

@@ -12,6 +12,7 @@ import { RefCapture } from '@/components/layout/RefCapture';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.makarim.de'),
   title: 'Makarim – Pilgerreisen mit Seele',
   description: 'Entdecke spirituelle Pilgerreisen zu den heiligen Stätten und islamische Kulturreisen.',
 };
