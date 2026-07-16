@@ -117,9 +117,15 @@ export interface Category {
   imageUrl?: string;          // base64 or URL for category card image
 }
 
+/**
+ * FAQ-Listeneintrag. Ist `heading` gesetzt, ist der Eintrag eine thematische
+ * Zwischenüberschrift (q/a bleiben leer); sonst eine Frage-Antwort-Zeile.
+ * Alte Datenstände (nur q/a, kein heading) funktionieren unverändert weiter.
+ */
 export interface FAQ {
   q: string;
   a: string;
+  heading?: string;
 }
 
 export interface AboutTile {

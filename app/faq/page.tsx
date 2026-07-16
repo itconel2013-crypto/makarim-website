@@ -18,24 +18,35 @@ export default async function FAQPage() {
           </h1>
 
           <div className="space-y-3">
-            {faq.map((item, i) => (
-              <details
-                key={i}
-                className="group bg-white rounded-card overflow-hidden"
-                style={{ border: '1px solid #EAE3D8' }}
-              >
-                <summary
-                  className="flex items-center justify-between px-7 py-5 cursor-pointer list-none font-serif font-normal text-ink"
-                  style={{ fontSize: '18px' }}
+            {faq.map((item, i) =>
+              item.heading?.trim() ? (
+                // Thematische Zwischenüberschrift (H2 – gut für Struktur & SEO)
+                <h2
+                  key={i}
+                  className="font-serif font-normal text-ink"
+                  style={{ fontSize: 'clamp(20px, 3vw, 26px)', lineHeight: 1.2, marginTop: i === 0 ? 0 : '28px', marginBottom: '4px' }}
                 >
-                  <span>{item.q}</span>
-                  <span className="text-primary text-xl ml-4 flex-shrink-0 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <div className="px-7 pb-6 text-body" style={{ fontSize: '15px', lineHeight: '1.7', borderTop: '1px solid #EAE3D8', paddingTop: '20px' }}>
-                  {item.a}
-                </div>
-              </details>
-            ))}
+                  {item.heading}
+                </h2>
+              ) : (item.q?.trim() || item.a?.trim()) ? (
+                <details
+                  key={i}
+                  className="group bg-white rounded-card overflow-hidden"
+                  style={{ border: '1px solid #EAE3D8' }}
+                >
+                  <summary
+                    className="flex items-center justify-between px-7 py-5 cursor-pointer list-none font-serif font-normal text-ink"
+                    style={{ fontSize: '18px' }}
+                  >
+                    <span>{item.q}</span>
+                    <span className="text-primary text-xl ml-4 flex-shrink-0 transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="px-7 pb-6 text-body" style={{ fontSize: '15px', lineHeight: '1.7', borderTop: '1px solid #EAE3D8', paddingTop: '20px' }}>
+                    {item.a}
+                  </div>
+                </details>
+              ) : null
+            )}
           </div>
         </div>
       </section>

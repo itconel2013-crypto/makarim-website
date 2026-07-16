@@ -16,7 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RatgeberPage() {
   const content = await loadContent();
   const guides: Guide[] = (content.c.guides ?? []).filter((g) => g.published !== false);
-  const faq = content.c.faq ?? [];
+  // Nur echte Fragen zählen (Zwischenüberschriften ausgenommen).
+  const faqCount = (content.c.faq ?? []).filter((f) => !f.heading?.trim() && (f.q?.trim() || f.a?.trim())).length;
 
   return (
     <main className="min-h-screen bg-page">
@@ -78,7 +79,7 @@ export default async function RatgeberPage() {
           )}
 
           {/* ── FAQ: liegt weiter unter /faq (SEO), wird hier prominent verlinkt ── */}
-          {faq.length > 0 && (
+          {faqCount > 0 && (
             <div
               className="mt-12 rounded-card bg-white p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
               style={{ border: '1px solid #EAE3D8' }}
@@ -88,7 +89,7 @@ export default async function RatgeberPage() {
                   Häufige Fragen
                 </h2>
                 <p className="text-body" style={{ fontSize: '15px' }}>
-                  Antworten auf die {faq.length} meistgestellten Fragen zu unseren Reisen.
+                  Antworten auf die {faqCount} meistgestellten Fragen zu unseren Reisen.
                 </p>
               </div>
               <Link
