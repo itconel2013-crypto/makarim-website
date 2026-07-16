@@ -83,8 +83,15 @@ export default async function Footer() {
           </div>
         </div>
 
+        {/* Rechtliches */}
+        <div className="pt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs" style={{ color: '#9DB0AD' }}>
+          <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
+          <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+          <Link href="/agb" className="hover:text-white transition-colors">AGB</Link>
+        </div>
+
         {/* Bottom bar */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ color: '#9DB0AD' }}>
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ color: '#9DB0AD' }}>
           <p>{brand?.footerCopyright ?? `© ${new Date().getFullYear()} Makarim GmbH · Alle Rechte vorbehalten`}</p>
           <p>{brand?.footerTagline ?? 'Pilgerreisen mit Seele'}</p>
         </div>

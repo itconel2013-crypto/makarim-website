@@ -440,7 +440,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
             {/* AGB Checkbox — auf dem Handy steht sie in der fixierten Leiste unten */}
             <label className="hidden lg:flex" style={{ alignItems: 'flex-start', gap: '10px', marginBottom: '16px', cursor: 'pointer' }}>
               <input type="checkbox" checked={agb} onChange={(e) => setAgb(e.target.checked)} style={{ marginTop: '2px', flexShrink: 0, width: '16px', height: '16px' }} />
-              <span style={{ fontSize: '13px', color: '#5A5448', lineHeight: 1.4 }}>Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
+              <span style={{ fontSize: '13px', color: '#5A5448', lineHeight: 1.4 }}>Ich akzeptiere die <a href="/agb" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: '#A8542F', textDecoration: 'underline' }}>Reisebedingungen</a> und <a href="/datenschutz" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: '#A8542F', textDecoration: 'underline' }}>Datenschutzhinweise</a>.</span>
             </label>
 
             {/* Submit — auf dem Handy übernimmt die fixierte Leiste unten */}
@@ -468,7 +468,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
       >
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}>
           <input type="checkbox" checked={agb} onChange={(e) => setAgb(e.target.checked)} style={{ marginTop: '1px', flexShrink: 0, width: '16px', height: '16px' }} />
-          <span style={{ fontSize: '11.5px', color: '#5A5448', lineHeight: 1.3 }}>Ich akzeptiere die Reisebedingungen und Datenschutzhinweise.</span>
+          <span style={{ fontSize: '11.5px', color: '#5A5448', lineHeight: 1.3 }}>Ich akzeptiere die <a href="/agb" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: '#A8542F', textDecoration: 'underline' }}>Reisebedingungen</a> und <a href="/datenschutz" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: '#A8542F', textDecoration: 'underline' }}>Datenschutzhinweise</a>.</span>
         </label>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{ flex: 1, minWidth: 0 }}>

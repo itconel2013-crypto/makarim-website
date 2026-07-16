@@ -257,6 +257,13 @@ export interface GalleryItem {
   published: boolean;
 }
 
+/** Rechtstexte — im CMS gepflegt, Inhalt liefert der Betreiber (nicht generieren!). */
+export interface LegalContent {
+  impressum?: string;
+  agb?: string;               // Reisebedingungen
+  datenschutz?: string;
+}
+
 export interface CMSContent {
   home: HomeContent;
   categories: Category[];
@@ -264,6 +271,7 @@ export interface CMSContent {
   faq: FAQ[];
   guides?: Guide[];           // Ratgeber (optional: alte Datenstände haben das Feld nicht)
   gallery?: GalleryItem[];    // Galerie (optional, s. o.)
+  legal?: LegalContent;       // Impressum / AGB / Datenschutz (optional)
   about: AboutContent;
   cta: CTA;
   brand: Brand;

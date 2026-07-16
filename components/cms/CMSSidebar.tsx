@@ -14,6 +14,7 @@ const navItems = [
   { href: '/admin/galerie',       label: 'Galerie',         icon: '▣' },
   { href: '/admin/faq',           label: 'FAQ',             icon: '?' },
   { href: '/admin/ueber-uns',     label: 'Über uns',        icon: '◉' },
+  { href: '/admin/rechtliches',   label: 'Rechtliches',     icon: '§' },
   { href: '/admin/seo',           label: 'SEO',             icon: '⌕' },
   { href: '/admin/mediathek',     label: 'Mediathek',       icon: '⊞' },
   { href: '/admin/kontakt-footer',label: 'Kontakt & Footer',icon: '✉' },

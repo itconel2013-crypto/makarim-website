@@ -319,6 +319,9 @@ export const defaultContent: CMSStore = {
     guides: [],
     gallery: [],
 
+    // Rechtstexte werden im CMS gepflegt (Admin → Rechtliches). Inhalt vom Betreiber.
+    legal: { impressum: '', agb: '', datenschutz: '' },
+
     about: {
       title: 'Über Makarim – Reisen mit Seele',
       body: 'Seit 15 Jahren begleiten wir Pilger auf ihrer spirituellen Reise. Makarim bedeutet "Tugenden" — und diese leiten uns jeden Tag: Authentizität, Sorgfalt, Treue.',
