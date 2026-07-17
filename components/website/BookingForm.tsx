@@ -140,8 +140,16 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
     babiesCount > 0 ? `${babiesCount} Baby${babiesCount > 1 ? 's' : ''}` : '',
   ].filter(Boolean).join(', ');
 
-  const dominantRoom = travelers[0]?.zimmer ?? 'VZ';
-  const dominantRoomLabel = ROOM_TYPES.find((r) => r.value === dominantRoom)?.label ?? 'Vierbettzimmer';
+  // Zimmer-Zusammenfassung: pro tatsächlich gewählter Kategorie zählen (nicht nur
+  // die von Person 1), damit gemischte Belegungen stimmen (z. B. 1× Vierbett, 1× Dreibett).
+  const roomCounts = travelers.reduce<Record<string, number>>((acc, t) => {
+    acc[t.zimmer] = (acc[t.zimmer] ?? 0) + 1;
+    return acc;
+  }, {});
+  const summaryZimmer = ROOM_TYPES
+    .filter((r) => roomCounts[r.value])
+    .map((r) => `${roomCounts[r.value]}× ${r.label}`)
+    .join(', ');
 
   // Field style
   const inputStyle: React.CSSProperties = { border: '1px solid #E2DBCF', outline: 'none', borderRadius: '9px', padding: '10px 14px', fontSize: '14px', color: '#16242B', backgroundColor: 'white', width: '100%' };
@@ -418,7 +426,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
               {[
                 { label: 'Reise', value: trip.title },
-                { label: 'Zimmer', value: roomsUnknown ? ROOM_LATER : `${travelers.length}× ${dominantRoomLabel}` },
+                { label: 'Zimmer', value: roomsUnknown ? ROOM_LATER : (summaryZimmer || '—') },
                 { label: 'Reisende', value: summaryReisende || '—' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', fontSize: '14px' }}>
