@@ -108,6 +108,9 @@ export async function POST(request: NextRequest) {
     
     // Load current content and merge
     const current = await loadContent();
+    if (Array.isArray(body.c?.trips)) {
+      console.log(`[Content-Write/POST] Voll-Push mit ${body.c.trips.length} Reisen (überschreibt c.trips) — kann gezielte PATCH-Änderungen zurücksetzen`);
+    }
     if (body.c?.trips) warnOnHotelLoss((current as any).c?.trips ?? [], body.c.trips, 'POST');
     const updated = { ...current, ...body };
     
@@ -215,6 +218,19 @@ export async function PATCH(request: NextRequest) {
       const newData = { ...existing, c: { ...existing.c, trips: updated } };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(newData));
       db.close();
+      // Diagnose ("seats bleibt alt"): sofort von der Platte zurücklesen und
+      // beweisen, dass der Schreibvorgang wirklich in /data/makarim.db landet.
+      // So trennen wir "Write kommt nicht an" von "Write wird später überschrieben".
+      try {
+        const verifyDb = getDb();
+        const back = verifyDb.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
+        verifyDb.close();
+        const backTrip = back ? ((JSON.parse(back.data).c?.trips ?? []).find((t: any) => t.vg === trip.vg)) : null;
+        const dbPath = process.env.DATABASE_PATH ?? `${process.cwd()}/makarim.db`;
+        console.log(`[Trip-Sync/verify] ${trip.vg} · db=${dbPath} · seats in=${JSON.stringify(trip.seats)} vorher=${JSON.stringify(trips[idx]?.seats)} nachWrite(Platte)=${JSON.stringify(backTrip?.seats)}`);
+      } catch (e) {
+        console.warn('[Trip-Sync/verify] Rücklesen fehlgeschlagen:', e);
+      }
       bustPublicCache();
       return NextResponse.json({ success: true });
     }
@@ -224,6 +240,7 @@ export async function PATCH(request: NextRequest) {
       const db = getDb();
       const row = db.prepare('SELECT data FROM cms_content WHERE id = 1').get() as any;
       const existing = row ? JSON.parse(row.data) : {};
+      console.log(`[Content-Write/PATCH-c] Voll-Push mit ${(body.c?.trips ?? []).length} Reisen (ersetzt c komplett) — kann gezielte PATCH-Änderungen zurücksetzen`);
       warnOnHotelLoss(existing.c?.trips ?? [], body.c?.trips ?? [], 'PATCH c');
       const updated = { ...existing, c: body.c };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(updated));
