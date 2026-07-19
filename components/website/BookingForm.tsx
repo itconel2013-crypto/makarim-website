@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { hasPrice, PRICE_ON_REQUEST, tripPath } from '@/lib/utils';
+import { orderedCountries } from '@/lib/countries';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -271,8 +272,13 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
                         <input type="date" value={t.geburtstag} onChange={(e) => updTraveler(idx, 'geburtstag', e.target.value)} style={inputStyle} required />
                       </div>
                       <div>
-                        <label style={fieldLabel}>Nationalität</label>
-                        <input type="text" value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} placeholder="z. B. Deutsch" style={inputStyle} />
+                        <label style={fieldLabel}>Staatsangehörigkeit</label>
+                        <select value={t.nationalitaet} onChange={(e) => updTraveler(idx, 'nationalitaet', e.target.value)} style={inputStyle}>
+                          <option value="">Bitte wählen…</option>
+                          {orderedCountries().map((c) => (
+                            <option key={c.code} value={c.de}>{c.de}</option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <label style={fieldLabel}>Zimmerkategorie</label>
