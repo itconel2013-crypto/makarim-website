@@ -108,10 +108,10 @@ html.scroll-smooth {
   box-shadow: none;
 }
 
-/* Auf Buchungsseiten am Handy den WhatsApp-Button ausblenden — die fixierte
-   Buchungsleiste unten hat dort Vorrang (sonst überdeckt der Button den CTA). */
-@media (max-width: 1023px) {
-  .wa-fab.on-booking {
-    display: none !important;
-  }
+/* Auf Buchungsseiten den WhatsApp-Button komplett ausblenden — sonst überdeckt
+   der schwebende Button (fixed unten rechts) den Buchungs-CTA: am Handy die
+   fixierte Buchungsleiste unten, auf dem Desktop den "Jetzt buchen"-Button in
+   der rechten Zusammenfassung. Auf einer Buchungsseite hat der CTA Vorrang. */
+.wa-fab.on-booking {
+  display: none !important;
 }

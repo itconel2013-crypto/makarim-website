@@ -3,10 +3,11 @@
 import { usePathname } from 'next/navigation';
 
 /**
- * Schwebender WhatsApp-Button. Auf der Buchungsseite gibt es unten eine fixierte
- * Buchungsleiste — dort würde der Button (fixed bottom-right) den CTA überdecken.
- * Deshalb wird er auf Buchungsseiten am Handy ausgeblendet (Klasse `on-booking`,
- * Regel in globals.css); auf dem Desktop bleibt er sichtbar.
+ * Schwebender WhatsApp-Button. Auf Buchungsseiten würde er (fixed bottom-right)
+ * den Buchungs-CTA überdecken — am Handy die fixierte Buchungsleiste unten, auf
+ * dem Desktop den "Jetzt buchen"-Button in der rechten Zusammenfassung. Deshalb
+ * wird er auf Buchungsseiten komplett ausgeblendet (Klasse `on-booking`, Regel
+ * in globals.css).
  */
 export function WhatsAppFab({ number }: { number: string }) {
   const pathname = usePathname();
