@@ -271,16 +271,16 @@ export default async function TripDetailPage({
             )}
 
             {/* ── Deine Hotels ──────────────────────────────────────── */}
-            {/* Nur Hotels MIT Namen zeigen — leere/nicht festgelegte Platzhalter (z. B. aus
-                duplizierten Reisen) erzeugen sonst leere Kärtchen. Ohne echtes Hotel: Sektion aus. */}
-            {trip.hotels && trip.hotels.some((h) => h.name && h.name.trim()) && (
-              <section className="mb-14">
-                <h2
-                  className="font-serif font-normal text-ink mb-8"
-                  style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
-                >
-                  Deine Hotels
-                </h2>
+            {/* Immer anzeigen: echte Hotels (mit Namen) als Karten, sonst ein freundlicher
+                Hinweis — so entstehen nie leere Kärtchen (noch offene / duplizierte Reisen). */}
+            <section className="mb-14">
+              <h2
+                className="font-serif font-normal text-ink mb-8"
+                style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
+              >
+                Deine Hotels
+              </h2>
+              {trip.hotels && trip.hotels.some((h) => h.name && h.name.trim()) ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {trip.hotels.filter((h) => h.name && h.name.trim()).map((hotel, i) => (
                     <div
@@ -343,8 +343,14 @@ export default async function TripDetailPage({
                     </div>
                   ))}
                 </div>
-              </section>
-            )}
+              ) : (
+                <p
+                  style={{ background: '#F7F3EC', border: '1px solid #EAE3D8', borderRadius: '14px', padding: '18px 20px', color: '#6B6357', fontSize: '15px', lineHeight: 1.6 }}
+                >
+                  Die Unterkünfte werden in Kürze bekannt gegeben.
+                </p>
+              )}
+            </section>
 
             {/* ── Dein Programm ─────────────────────────────────────── */}
             {trip.program && trip.program.length > 0 && (
