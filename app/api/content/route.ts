@@ -171,8 +171,9 @@ export async function PATCH(request: NextRequest) {
         const merged = { ...prev, ...incoming };
         if (prev.url) merged.url = prev.url;
         if (incoming.banner == null && prev.banner) merged.banner = prev.banner;
-        // "Warteliste erlaubt" wird im CMS gesetzt → CMS-Wert gewinnt beim Sync.
-        if (typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
+        // "Warteliste erlauben" steuert jetzt das CRM (Quelle der Wahrheit): schickt es einen
+        // Boolean, gewinnt der CRM-Wert; nur wenn das CRM nichts schickt, bleibt der CMS-Wert.
+        if (typeof incoming.waitlist !== 'boolean' && typeof prev.waitlist === 'boolean') merged.waitlist = prev.waitlist;
         // CMS-eigene Inhaltsfelder: der CMS-Wert gewinnt bei Re-Syncs (bei der
         // Erst-Anlage einer Reise – ohne prev – kommen die CRM-Werte durch).
         // slug gehört dazu: URLs bleiben stabil, egal was im CRM passiert.
