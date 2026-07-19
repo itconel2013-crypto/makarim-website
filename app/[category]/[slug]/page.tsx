@@ -271,7 +271,9 @@ export default async function TripDetailPage({
             )}
 
             {/* ── Deine Hotels ──────────────────────────────────────── */}
-            {trip.hotels && trip.hotels.length > 0 && (
+            {/* Nur Hotels MIT Namen zeigen — leere/nicht festgelegte Platzhalter (z. B. aus
+                duplizierten Reisen) erzeugen sonst leere Kärtchen. Ohne echtes Hotel: Sektion aus. */}
+            {trip.hotels && trip.hotels.some((h) => h.name && h.name.trim()) && (
               <section className="mb-14">
                 <h2
                   className="font-serif font-normal text-ink mb-8"
@@ -280,7 +282,7 @@ export default async function TripDetailPage({
                   Deine Hotels
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {trip.hotels.map((hotel, i) => (
+                  {trip.hotels.filter((h) => h.name && h.name.trim()).map((hotel, i) => (
                     <div
                       key={i}
                       className="overflow-hidden rounded-card bg-white"
