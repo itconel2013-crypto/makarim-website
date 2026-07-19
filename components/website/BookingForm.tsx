@@ -90,6 +90,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
       if (!t.vorname.trim()) return `Person ${i + 1}: Vorname fehlt`;
       if (!t.nachname.trim()) return `Person ${i + 1}: Nachname fehlt`;
       if (!t.geburtstag) return `Person ${i + 1}: Geburtsdatum fehlt`;
+      if (!t.nationalitaet.trim()) return `Person ${i + 1}: Staatsangehörigkeit fehlt`;
       // Adresse ist nur bei Person 1 Pflicht (dient auch als Kofferkarten-Adresse).
       // Weitere Reisende dürfen optional eine eigene Adresse angeben; bleibt sie
       // leer, wird beim Absenden die Adresse von Person 1 übernommen.
