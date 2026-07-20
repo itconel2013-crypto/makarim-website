@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED, orderedTripSections, TRIP_SECTION_LABELS } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { MediaPickerModal } from './MediaPickerModal';
@@ -233,6 +233,10 @@ export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown
 
             <AccordionSection label="Programm" summary={programLen ? `${programLen} ${programLen === 1 ? 'Tag' : 'Tage'}` : 'Kein Programm'} open={isOpen('programm')} onToggle={() => toggleSection('programm')}>
               <ProgrammContent trip={trip} upd={upd} />
+            </AccordionSection>
+
+            <AccordionSection label="Reihenfolge der Abschnitte" summary={orderedTripSections(trip.sectionOrder).map((k) => TRIP_SECTION_LABELS[k]).join(' · ')} open={isOpen('reihenfolge')} onToggle={() => toggleSection('reihenfolge')}>
+              <SectionOrderEditor trip={trip} upd={upd} />
             </AccordionSection>
 
             <AccordionSection label="SEO" chip={<ChipOptional />} open={isOpen('seo')} onToggle={() => toggleSection('seo')}>
@@ -528,6 +532,40 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
           onClose={() => setPickerFor(null)}
         />
       )}
+    </div>
+  );
+}
+
+/** Reihenfolge der Detailseiten-Blöcke (Inhalt/Leistungen/Hotels/Programm) per ↑↓. */
+function SectionOrderEditor({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const order = orderedTripSections(trip.sectionOrder);
+  const move = (i: number, dir: -1 | 1) => {
+    const a = [...order];
+    [a[i], a[i + dir]] = [a[i + dir], a[i]];
+    upd({ sectionOrder: a });
+  };
+  const sortBtn = (disabled: boolean): React.CSSProperties => ({
+    padding: '2px 8px', fontSize: '13px', border: '1px solid #E2DBCF', borderRadius: '6px',
+    backgroundColor: 'white', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.35 : 1,
+  });
+
+  return (
+    <div>
+      <p className="text-xs text-body-light mb-3">So erscheinen die Abschnitte auf der Reise-Detailseite – ändere die Reihenfolge mit den Pfeilen.</p>
+      <div className="space-y-2">
+        {order.map((k, i) => (
+          <div key={k} className="flex items-center justify-between rounded-button px-4 py-2.5" style={{ border: '1px solid #EAE3D8', backgroundColor: '#FDFCF9' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+              <span className="font-mono text-xs" style={{ color: '#9A9082' }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{ fontSize: '14px', fontWeight: 500, color: '#16242B' }}>{TRIP_SECTION_LABELS[k]}</span>
+            </span>
+            <div className="flex gap-1">
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={sortBtn(i === 0)}>↑</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === order.length - 1} style={sortBtn(i === order.length - 1)}>↓</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

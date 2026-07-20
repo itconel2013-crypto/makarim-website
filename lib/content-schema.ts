@@ -50,6 +50,31 @@ export interface Trip {
   sections?: TripSection[];   // free heading+text blocks (H2) on the detail page
   program?: ProgramDay[];     // day-by-day itinerary
   prices?: TripPrices;        // explicit per-room prices from CRM (authoritative when present)
+  sectionOrder?: TripSectionKey[]; // CMS-only: Reihenfolge der Detailseiten-Blöcke (Inhalt/Leistungen/Hotels/Programm)
+}
+
+/** Sortierbare Blöcke der Reise-Detailseite (CMS-only). */
+export const TRIP_SECTION_KEYS = ['content', 'services', 'hotels', 'program'] as const;
+export type TripSectionKey = (typeof TRIP_SECTION_KEYS)[number];
+export const TRIP_SECTION_LABELS: Record<TripSectionKey, string> = {
+  content: 'Inhalt',
+  services: 'Leistungen',
+  hotels: 'Hotels',
+  program: 'Programm',
+};
+
+/**
+ * Liefert die effektive Reihenfolge der Detailseiten-Blöcke: gespeicherte, gültige
+ * Keys zuerst (in ihrer Reihenfolge), fehlende Keys in Standardreihenfolge hinten
+ * angehängt. So erscheint jeder Block immer, auch wenn `sectionOrder` unvollständig ist.
+ */
+export function orderedTripSections(order?: string[]): TripSectionKey[] {
+  const valid = (order ?? []).filter(
+    (k, i, arr): k is TripSectionKey =>
+      (TRIP_SECTION_KEYS as readonly string[]).includes(k) && arr.indexOf(k) === i,
+  );
+  const seen = new Set<string>(valid);
+  return [...valid, ...TRIP_SECTION_KEYS.filter((k) => !seen.has(k))];
 }
 
 export interface ProgramDay {

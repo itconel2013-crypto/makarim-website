@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadContent } from '@/lib/db';
-import { getAvailability, Trip, DEFAULT_INCLUDED } from '@/lib/content-schema';
+import { getAvailability, Trip, DEFAULT_INCLUDED, orderedTripSections, TripSectionKey } from '@/lib/content-schema';
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { truncateText, hasPrice, PRICE_ON_REQUEST, categoryFromSlug, stripInlineMarks } from '@/lib/utils';
 import { RichText } from '@/components/website/RichText';
@@ -141,6 +141,12 @@ export default async function TripDetailPage({
   const abPrice = roomList.length ? Math.min(...roomList.map((r) => r.price)) : (trip.price ?? 0);
   const abRoomLabel = roomList.find((r) => r.price === abPrice)?.type ?? 'Vierbettzimmer';
 
+  // Reihenfolge der Detailseiten-Blöcke (im CMS über trip.sectionOrder sortierbar).
+  // Umgesetzt per CSS `order` auf den Flex-Kindern der Inhaltsspalte — der Abstand
+  // zwischen den Blöcken kommt aus `gap`, nicht mehr aus mb-14 (kompakter).
+  const sectionOrder = orderedTripSections(trip.sectionOrder);
+  const orderOf = (k: TripSectionKey) => sectionOrder.indexOf(k);
+
   return (
     <>
       <script
@@ -207,43 +213,47 @@ export default async function TripDetailPage({
 
           {/* ── Main content ──────────────────────────────────────────── */}
           {/* w-full ist wichtig: im Spalten-Flex (Handy) verhindert items-start das
-              Strecken — ohne w-full schrumpfen Grids (z. B. die Hotel-Karten). */}
-          <div className="flex-1 min-w-0 w-full">
+              Strecken — ohne w-full schrumpfen Grids (z. B. die Hotel-Karten).
+              Flex-Spalte mit gap: kompakte, gleichmäßige Abstände; die Reihenfolge
+              der Blöcke steuert CSS `order` (aus trip.sectionOrder). */}
+          <div className="flex-1 min-w-0 w-full" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
 
-            {/* Intro paragraph — only when filled, so the page can start
-                directly with an H2 section if the Langtext is left empty. */}
-            {trip.text?.trim() && (
-              <p className="mb-14 leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
-                <RichText text={trip.text} />
-              </p>
+            {/* ── Inhalt: Intro-Text + freie Abschnitte (ein Block) ─────── */}
+            {(trip.text?.trim() || (trip.sections ?? []).some((s) => s.heading?.trim() || s.body?.trim())) && (
+              <div style={{ order: orderOf('content'), display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                {trip.text?.trim() && (
+                  <p className="leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
+                    <RichText text={trip.text} />
+                  </p>
+                )}
+
+                {(trip.sections ?? [])
+                  .filter((s) => s.heading?.trim() || s.body?.trim())
+                  .map((s, i) => (
+                    <section key={i}>
+                      {s.heading?.trim() && (
+                        <h2
+                          className="font-serif font-normal text-ink mb-4"
+                          style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
+                        >
+                          {s.heading}
+                        </h2>
+                      )}
+                      {s.body?.trim() && (
+                        <p className="leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
+                          <RichText text={s.body} />
+                        </p>
+                      )}
+                    </section>
+                  ))}
+              </div>
             )}
-
-            {/* ── Freie Abschnitte (Überschrift + Text) ─────────────── */}
-            {(trip.sections ?? [])
-              .filter((s) => s.heading?.trim() || s.body?.trim())
-              .map((s, i) => (
-                <section key={i} className="mb-14">
-                  {s.heading?.trim() && (
-                    <h2
-                      className="font-serif font-normal text-ink mb-4"
-                      style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
-                    >
-                      {s.heading}
-                    </h2>
-                  )}
-                  {s.body?.trim() && (
-                    <p className="leading-relaxed" style={{ fontSize: '16.5px', color: '#5A5448', whiteSpace: 'pre-line' }}>
-                      <RichText text={s.body} />
-                    </p>
-                  )}
-                </section>
-              ))}
 
             {/* ── Enthaltene Leistungen ─────────────────────────────── */}
             {/* Read from trip data; trips never customized fall back to the
                 standard list (same one the CMS pre-fills with). */}
             {(trip.services === undefined ? DEFAULT_INCLUDED : trip.services).length > 0 && (
-              <section className="mb-14">
+              <section style={{ order: orderOf('services') }}>
                 <h2
                   className="font-serif font-normal text-ink mb-8"
                   style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
@@ -273,7 +283,7 @@ export default async function TripDetailPage({
             {/* ── Deine Hotels ──────────────────────────────────────── */}
             {/* Immer anzeigen: echte Hotels (mit Namen) als Karten, sonst ein freundlicher
                 Hinweis — so entstehen nie leere Kärtchen (noch offene / duplizierte Reisen). */}
-            <section className="mb-14">
+            <section style={{ order: orderOf('hotels') }}>
               <h2
                 className="font-serif font-normal text-ink mb-8"
                 style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}
@@ -354,7 +364,7 @@ export default async function TripDetailPage({
 
             {/* ── Dein Programm ─────────────────────────────────────── */}
             {trip.program && trip.program.length > 0 && (
-              <section className="mb-14">
+              <section style={{ order: orderOf('program') }}>
                 <h2
                   className="font-serif font-normal text-ink mb-8"
                   style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}

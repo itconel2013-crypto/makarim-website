@@ -174,7 +174,7 @@ export async function PATCH(request: NextRequest) {
         // CMS-eigene Inhaltsfelder: der CMS-Wert gewinnt bei Re-Syncs (bei der
         // Erst-Anlage einer Reise – ohne prev – kommen die CRM-Werte durch).
         // slug gehört dazu: URLs bleiben stabil, egal was im CRM passiert.
-        for (const f of ['slug', 'leaderPhoto', 'leaderPhotos', 'services', 'badge', 'startseite', 'seoTitle', 'seoDesc'] as const) {
+        for (const f of ['slug', 'leaderPhoto', 'leaderPhotos', 'services', 'badge', 'startseite', 'seoTitle', 'seoDesc', 'sectionOrder'] as const) {
           merged[f] = prev[f];
         }
         // Überschrift (title): CRM führt, CMS darf übersteuern.
