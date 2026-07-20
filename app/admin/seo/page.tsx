@@ -6,7 +6,7 @@ import { Field, TextInput, FormSection } from '@/components/cms/FormEditor';
 import { SEOConfig } from '@/lib/content-schema';
 
 const pageKeys: Array<{ key: keyof SEOConfig; label: string; slug: string }> = [
-  { key: 'home',    label: 'Startseite',    slug: 'makarim-reisen.de' },
+  { key: 'home',    label: 'Startseite',    slug: 'makarim.de' },
   { key: 'umrah',   label: 'Umrah',         slug: '/umrah-reisen' },
   { key: 'hajj',    label: 'Hajj',          slug: '/hajj-reisen' },
   { key: 'kultur',  label: 'Kulturreisen',  slug: '/kulturreisen' },

@@ -691,7 +691,7 @@ function SEOTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) 
   const previewTitle = trip.seoTitle || trip.title;
   const previewDesc = trip.seoDesc
     || (trip.text ? (trip.text.length > 155 ? trip.text.slice(0, 155).trimEnd() + '…' : trip.text) : '');
-  const previewUrl = `makarim-reisen.de${tripPath(trip)}`;
+  const previewUrl = `makarim.de${tripPath(trip)}`;
 
   return (
     <div className="space-y-4">

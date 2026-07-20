@@ -12,7 +12,7 @@ interface LivePreviewPaneProps {
 
 const INNER_W = 1852;
 
-export function LivePreviewPane({ url = 'makarim-reisen.de', children, outerWidth = 360, fill = false, noScale = false }: LivePreviewPaneProps) {
+export function LivePreviewPane({ url = 'makarim.de', children, outerWidth = 360, fill = false, noScale = false }: LivePreviewPaneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [effectiveW, setEffectiveW] = useState(outerWidth);
 

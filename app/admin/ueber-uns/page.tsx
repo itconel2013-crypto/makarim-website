@@ -79,7 +79,7 @@ export default function UeberUnsEditor() {
 
         </div>
       </main>
-      <LivePreviewPane url="makarim-reisen.de/ueber-uns" fill noScale>
+      <LivePreviewPane url="makarim.de/ueber-uns" fill noScale>
         <UeberUnsPreview />
       </LivePreviewPane>
       </div>

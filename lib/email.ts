@@ -162,7 +162,7 @@ export async function sendCustomerConfirmation(data: BookingEmailData) {
 
   const transporter = createTransporter();
   await transporter.sendMail({
-    from:    process.env.SMTP_FROM ?? 'Makarim Reisen <info@makarim-reisen.de>',
+    from:    process.env.SMTP_FROM ?? 'Makarim Reisen <info@makarim.de>',
     to:      data.contact.email,
     subject: `Buchungsanfrage eingegangen — ${data.tripTitle} (${data.tripVg})`,
     html:    baseTemplate('Buchungsbestätigung — Makarim Reisen', body),
@@ -204,7 +204,7 @@ export async function sendInternalNotification(data: BookingEmailData) {
 
   const transporter = createTransporter();
   await transporter.sendMail({
-    from:    process.env.SMTP_FROM ?? 'Makarim Reisen <info@makarim-reisen.de>',
+    from:    process.env.SMTP_FROM ?? 'Makarim Reisen <info@makarim.de>',
     to:      process.env.BOOKING_NOTIFY_EMAIL ?? process.env.SMTP_USER ?? '',
     subject: `[Neue Anfrage] ${data.tripTitle} — ${data.contact.vorname} ${data.contact.nachname} (${data.travelers.length} Person${data.travelers.length > 1 ? 'en' : ''})`,
     html:    baseTemplate('Neue Buchungsanfrage', body),

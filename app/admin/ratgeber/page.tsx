@@ -84,7 +84,7 @@ function GuideCard({
               ? <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#EAF0E8', color: '#3E6B52' }}>● Veröffentlicht</span>
               : <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: '#F6ECD9', color: '#956214' }}>Entwurf</span>}
           </div>
-          <div className="font-mono text-xs text-body-light mt-0.5">makarim-reisen.de/ratgeber/{guide.slug || '…'}</div>
+          <div className="font-mono text-xs text-body-light mt-0.5">makarim.de/ratgeber/{guide.slug || '…'}</div>
         </div>
 
         <div className="flex items-center gap-4 flex-shrink-0" onClick={(e) => e.stopPropagation()}>

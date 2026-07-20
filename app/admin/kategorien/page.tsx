@@ -81,7 +81,7 @@ export default function KategorienEditor() {
             ))}
           </div>
         </main>
-        <LivePreviewPane url="makarim-reisen.de/#kategorien" fill noScale>
+        <LivePreviewPane url="makarim.de/#kategorien" fill noScale>
           <KategorienPreview />
         </LivePreviewPane>
       </div>

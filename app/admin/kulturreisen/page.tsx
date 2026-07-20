@@ -131,7 +131,7 @@ export default function KulturreisенManager() {
           </main>
         </div>
 
-        <LivePreviewPane url="makarim-reisen.de/kulturreisen" fill noScale>
+        <LivePreviewPane url="makarim.de/kulturreisen" fill noScale>
           <ReisenPreview />
         </LivePreviewPane>
       </div>

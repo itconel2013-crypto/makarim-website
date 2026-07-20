@@ -101,7 +101,7 @@ export default function StartseiteEditor() {
 
         </div>
       </main>
-      <LivePreviewPane url="makarim-reisen.de" fill noScale>
+      <LivePreviewPane url="makarim.de" fill noScale>
         <StartseitePreview />
       </LivePreviewPane>
       </div>

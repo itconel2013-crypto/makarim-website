@@ -100,7 +100,7 @@ export default function KontaktFooterEditor() {
 
         </div>
       </main>
-      <LivePreviewPane url="makarim-reisen.de/#footer" fill noScale>
+      <LivePreviewPane url="makarim.de/#footer" fill noScale>
         <KontaktPreview />
       </LivePreviewPane>
       </div>
