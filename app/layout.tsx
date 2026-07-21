@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import '@/styles/globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
 import { RefCapture } from '@/components/layout/RefCapture';
+
+// Umami-Webanalyse (self-hosted auf Railway) — cookielos & DSGVO-freundlich:
+// keine Cookies, keine personenbezogenen Daten → kein Consent-Banner nötig.
+const UMAMI_SRC = 'https://umami-production-d03c.up.railway.app/script.js';
+const UMAMI_WEBSITE_ID = 'af405f8b-c139-490e-a5a4-710706cb7d9c';
 
 // Render public pages per-request (always reflect live CMS content, and avoid
 // baking stale build-time data — the SQLite volume isn't mounted at build).
@@ -29,6 +35,11 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="min-h-screen flex flex-col">
+        <Script
+          src={UMAMI_SRC}
+          data-website-id={UMAMI_WEBSITE_ID}
+          strategy="afterInteractive"
+        />
         <RefCapture />
         <Header />
         <main className="flex-1">{children}</main>
