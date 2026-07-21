@@ -6,9 +6,11 @@ import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
 import { RefCapture } from '@/components/layout/RefCapture';
 
-// Umami-Webanalyse (self-hosted auf Railway) — cookielos & DSGVO-freundlich:
-// keine Cookies, keine personenbezogenen Daten → kein Consent-Banner nötig.
-const UMAMI_SRC = 'https://umami-production-d03c.up.railway.app/script.js';
+// Umami-Webanalyse (self-hosted auf Railway, EU-Region) — cookielos & DSGVO-
+// freundlich: keine Cookies, keine personenbezogenen Daten → kein Consent-Banner.
+// Ausgeliefert über die eigene Subdomain analytics.makarim.de (First-Party →
+// wird von Adblockern seltener geblockt als die *.up.railway.app-Adresse).
+const UMAMI_SRC = 'https://analytics.makarim.de/script.js';
 const UMAMI_WEBSITE_ID = 'af405f8b-c139-490e-a5a4-710706cb7d9c';
 
 // Render public pages per-request (always reflect live CMS content, and avoid
