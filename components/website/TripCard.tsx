@@ -36,6 +36,10 @@ export function TripCard({ trip }: TripCardProps) {
   ).slice(0, 3);
   const multi = leaders.length > 1;
 
+  // Ausgebucht = keine Plätze mehr. Ist die Warteliste erlaubt, bleibt die Reise „handlungsfähig".
+  const soldOut = (trip.seats ?? 0) <= 0;
+  const waitlistOpen = soldOut && !!trip.waitlist;
+
   return (
     <Link
       href={href}
@@ -55,48 +59,59 @@ export function TripCard({ trip }: TripCardProps) {
     >
       {/* Image area */}
       <div style={{ position: 'relative', height: '188px', background: '#F4F1EA', overflow: 'hidden' }}>
-        {trip.url ? (
-          <Image
-            src={trip.url}
-            alt={`${trip.title} – Reisebild`}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2D4A3E 0%, #16242B 100%)' }}>
-            <span style={{ fontSize: '64px', opacity: 0.3 }}>{trip.heroIcon ?? '🕋'}</span>
-          </div>
-        )}
+        {/* Bild + Reiseleiter — bei ausgebuchten Reisen abgedunkelt & entsättigt (Signal „nicht verfügbar") */}
+        <div style={{ position: 'absolute', inset: 0, filter: soldOut ? 'brightness(0.66) saturate(0.5)' : undefined }}>
+          {trip.url ? (
+            <Image
+              src={trip.url}
+              alt={`${trip.title} – Reisebild`}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2D4A3E 0%, #16242B 100%)' }}>
+              <span style={{ fontSize: '64px', opacity: 0.3 }}>{trip.heroIcon ?? '🕋'}</span>
+            </div>
+          )}
 
-        {/* Reiseleiter-Fotos (freigestellt) — unten rechts, angeschnitten, leicht überlappend */}
-        {leaders.length > 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'flex-end',
-              pointerEvents: 'none',
-            }}
-          >
-            {leaders.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt="Reiseleiter"
-                style={{
-                  height: multi ? '62%' : '68%',
-                  width: 'auto',
-                  maxWidth: multi ? '36%' : '50%',
-                  objectFit: 'contain',
-                  objectPosition: 'bottom',
-                  marginLeft: i > 0 ? '-14px' : 0,   // leichte Überlappung
-                  position: 'relative',
-                  zIndex: i,                          // spätere Person steht vorn
-                }}
-              />
-            ))}
+          {/* Reiseleiter-Fotos (freigestellt) — unten rechts, angeschnitten, leicht überlappend */}
+          {leaders.length > 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                pointerEvents: 'none',
+              }}
+            >
+              {leaders.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt="Reiseleiter"
+                  style={{
+                    height: multi ? '62%' : '68%',
+                    width: 'auto',
+                    maxWidth: multi ? '36%' : '50%',
+                    objectFit: 'contain',
+                    objectPosition: 'bottom',
+                    marginLeft: i > 0 ? '-14px' : 0,   // leichte Überlappung
+                    position: 'relative',
+                    zIndex: i,                          // spätere Person steht vorn
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Ausgebucht: dezenter dunkler Schleier + ruhiges Band. Verdeckt weder Titel noch Motiv. */}
+        {soldOut && <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(15,22,26,0.22)', pointerEvents: 'none' }} />}
+        {soldOut && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2, background: '#16242B', borderBottom: '2px solid #C2724A', color: '#fff', textAlign: 'center', padding: '9px 12px', fontWeight: 700, fontSize: '15px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+            Ausgebucht
           </div>
         )}
 
@@ -123,29 +138,38 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
-        {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €". */}
-        <div style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          background: '#F4F1EA',
-          color: '#A8542F',
-          fontWeight: 700,
-          fontSize: '13px',
-          borderRadius: '20px',
-          padding: '6px 14px',
-          boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
-          whiteSpace: 'nowrap',
-        }}>
-          {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : 'wird in Kürze veröffentlicht'}
-        </div>
+        {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €".
+            Bei ausgebucht ausgeblendet — dort sitzt oben das Band. */}
+        {!soldOut && (
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            background: '#F4F1EA',
+            color: '#A8542F',
+            fontWeight: 700,
+            fontSize: '13px',
+            borderRadius: '20px',
+            padding: '6px 14px',
+            boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
+            whiteSpace: 'nowrap',
+          }}>
+            {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : 'wird in Kürze veröffentlicht'}
+          </div>
+        )}
       </div>
 
       {/* Card body */}
       <div style={{ padding: '20px 20px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {/* Status pill + Hinweis auf Vorreservierung (Reise noch nicht bestätigt) */}
         <div style={{ marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          <StatusPill trip={trip} />
+          {soldOut ? (
+            <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: waitlistOpen ? '#EAF0E8' : '#FEE2E2', color: waitlistOpen ? '#3E6B52' : '#991B1B' }}>
+              {waitlistOpen ? 'Warteliste offen' : 'Ausgebucht'}
+            </span>
+          ) : (
+            <StatusPill trip={trip} />
+          )}
           {trip.vorreservierung && (
             <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#FEF3C7', color: '#92400E' }}>
               Vorreservierung
@@ -169,13 +193,36 @@ export function TripCard({ trip }: TripCardProps) {
           <RichText text={trip.description || trip.text} />
         </p>
 
-        {/* CTA Button — NOT full-width, left-aligned */}
-        <button
-          style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#C2724A', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
-          className="group-hover:opacity-90 transition-opacity"
-        >
-          Jetzt entdecken
-        </button>
+        {/* CTA Button — NOT full-width, left-aligned. Zustandsabhängig: buchbar / Warteliste / ausgebucht.
+            Die ganze Karte ist ein Link zur Detailseite; der Button ist die sichtbare Handlungsaufforderung. */}
+        {waitlistOpen ? (
+          <>
+            <button
+              style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#2D5A42', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+              className="group-hover:opacity-90 transition-opacity"
+            >
+              Auf die Warteliste
+            </button>
+            <p style={{ fontSize: '12px', color: '#9A9082', margin: '9px 0 0' }}>Wir melden uns, sobald ein Platz frei wird.</p>
+          </>
+        ) : soldOut ? (
+          <>
+            <button
+              disabled
+              style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#EDE7DC', border: 'none', borderRadius: '11px', color: '#A79E90', fontSize: '14px', fontWeight: 600, cursor: 'not-allowed' }}
+            >
+              Ausgebucht
+            </button>
+            <p style={{ fontSize: '12px', color: '#9A9082', margin: '9px 0 0' }}>Diese Reise ist leider voll belegt.</p>
+          </>
+        ) : (
+          <button
+            style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#C2724A', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+            className="group-hover:opacity-90 transition-opacity"
+          >
+            Jetzt entdecken
+          </button>
+        )}
       </div>
     </Link>
   );
