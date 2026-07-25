@@ -185,15 +185,12 @@ export function TripCard({ trip }: TripCardProps) {
         {/* CTA Button — NOT full-width, left-aligned. Zustandsabhängig: buchbar / Warteliste / ausgebucht.
             Die ganze Karte ist ein Link zur Detailseite; der Button ist die sichtbare Handlungsaufforderung. */}
         {waitlistOpen ? (
-          <>
-            <button
-              style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#2D5A42', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
-              className="group-hover:opacity-90 transition-opacity"
-            >
-              Auf die Warteliste
-            </button>
-            <p style={{ fontSize: '12px', color: '#9A9082', margin: '9px 0 0' }}>Wir melden uns, sobald ein Platz frei wird.</p>
-          </>
+          <button
+            style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#2D5A42', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+            className="group-hover:opacity-90 transition-opacity"
+          >
+            Auf die Warteliste
+          </button>
         ) : (
           <button
             style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#C2724A', border: 'none', borderRadius: '11px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
