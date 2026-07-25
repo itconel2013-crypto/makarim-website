@@ -59,8 +59,9 @@ export function TripCard({ trip }: TripCardProps) {
     >
       {/* Image area */}
       <div style={{ position: 'relative', height: '188px', background: '#F4F1EA', overflow: 'hidden' }}>
-        {/* Bild + Reiseleiter — bei ausgebuchten Reisen abgedunkelt & entsättigt (Signal „nicht verfügbar") */}
-        <div style={{ position: 'absolute', inset: 0, filter: soldOut ? 'brightness(0.66) saturate(0.5)' : undefined }}>
+        {/* Bild + Reiseleiter — nur bei offener Warteliste abgedunkelt & entsättigt (Signal „voll, aber Warteliste").
+            Komplett ausgebuchte Reisen (ohne Warteliste) bleiben bewusst unmarkiert. */}
+        <div style={{ position: 'absolute', inset: 0, filter: waitlistOpen ? 'brightness(0.66) saturate(0.5)' : undefined }}>
           {trip.url ? (
             <Image
               src={trip.url}
@@ -107,9 +108,9 @@ export function TripCard({ trip }: TripCardProps) {
           )}
         </div>
 
-        {/* Ausgebucht: dezenter dunkler Schleier + ruhiges Band. Verdeckt weder Titel noch Motiv. */}
-        {soldOut && <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(15,22,26,0.22)', pointerEvents: 'none' }} />}
-        {soldOut && (
+        {/* Nur bei offener Warteliste: dezenter dunkler Schleier + ruhiges Band. Verdeckt weder Titel noch Motiv. */}
+        {waitlistOpen && <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(15,22,26,0.22)', pointerEvents: 'none' }} />}
+        {waitlistOpen && (
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2, background: '#16242B', borderBottom: '2px solid #C2724A', color: '#fff', textAlign: 'center', padding: '9px 12px', fontWeight: 700, fontSize: '15px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
             Ausgebucht
           </div>
@@ -139,8 +140,8 @@ export function TripCard({ trip }: TripCardProps) {
         )}
 
         {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €".
-            Bei ausgebucht ausgeblendet — dort sitzt oben das Band. */}
-        {!soldOut && (
+            Nur bei offener Warteliste ausgeblendet — dort sitzt oben das Band. */}
+        {!waitlistOpen && (
           <div style={{
             position: 'absolute',
             top: '12px',
@@ -163,9 +164,9 @@ export function TripCard({ trip }: TripCardProps) {
       <div style={{ padding: '20px 20px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {/* Status pill + Hinweis auf Vorreservierung (Reise noch nicht bestätigt) */}
         <div style={{ marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {soldOut ? (
-            <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: waitlistOpen ? '#EAF0E8' : '#FEE2E2', color: waitlistOpen ? '#3E6B52' : '#991B1B' }}>
-              {waitlistOpen ? 'Warteliste offen' : 'Ausgebucht'}
+          {waitlistOpen ? (
+            <span style={{ fontSize: '11px', fontWeight: 600, borderRadius: '6px', padding: '4px 10px', backgroundColor: '#EAF0E8', color: '#3E6B52' }}>
+              Warteliste offen
             </span>
           ) : (
             <StatusPill trip={trip} />
@@ -204,16 +205,6 @@ export function TripCard({ trip }: TripCardProps) {
               Auf die Warteliste
             </button>
             <p style={{ fontSize: '12px', color: '#9A9082', margin: '9px 0 0' }}>Wir melden uns, sobald ein Platz frei wird.</p>
-          </>
-        ) : soldOut ? (
-          <>
-            <button
-              disabled
-              style={{ marginTop: 'auto', alignSelf: 'flex-start', height: '44px', padding: '0 22px', background: '#EDE7DC', border: 'none', borderRadius: '11px', color: '#A79E90', fontSize: '14px', fontWeight: 600, cursor: 'not-allowed' }}
-            >
-              Ausgebucht
-            </button>
-            <p style={{ fontSize: '12px', color: '#9A9082', margin: '9px 0 0' }}>Diese Reise ist leider voll belegt.</p>
           </>
         ) : (
           <button
