@@ -59,9 +59,8 @@ export function TripCard({ trip }: TripCardProps) {
     >
       {/* Image area */}
       <div style={{ position: 'relative', height: '188px', background: '#F4F1EA', overflow: 'hidden' }}>
-        {/* Bild + Reiseleiter — nur bei offener Warteliste abgedunkelt & entsättigt (Signal „voll, aber Warteliste").
-            Komplett ausgebuchte Reisen (ohne Warteliste) bleiben bewusst unmarkiert. */}
-        <div style={{ position: 'absolute', inset: 0, filter: waitlistOpen ? 'brightness(0.66) saturate(0.5)' : undefined }}>
+        {/* Bild + Reiseleiter */}
+        <div style={{ position: 'absolute', inset: 0 }}>
           {trip.url ? (
             <Image
               src={trip.url}
@@ -108,14 +107,6 @@ export function TripCard({ trip }: TripCardProps) {
           )}
         </div>
 
-        {/* Nur bei offener Warteliste: dezenter dunkler Schleier + ruhiges Band. Verdeckt weder Titel noch Motiv. */}
-        {waitlistOpen && <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(15,22,26,0.22)', pointerEvents: 'none' }} />}
-        {waitlistOpen && (
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2, background: '#16242B', borderBottom: '2px solid #C2724A', color: '#fff', textAlign: 'center', padding: '9px 12px', fontWeight: 700, fontSize: '15px', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-            Ausgebucht
-          </div>
-        )}
-
         {/* Banner — left:0, top:42px, no border-radius, Quicksand font */}
         {trip.banner?.enabled && (trip.banner.line1 || trip.banner.line2) && (
           <div style={{
@@ -139,25 +130,22 @@ export function TripCard({ trip }: TripCardProps) {
           </div>
         )}
 
-        {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €".
-            Nur bei offener Warteliste ausgeblendet — dort sitzt oben das Band. */}
-        {!waitlistOpen && (
-          <div style={{
-            position: 'absolute',
-            top: '12px',
-            right: '12px',
-            background: '#F4F1EA',
-            color: '#A8542F',
-            fontWeight: 700,
-            fontSize: '13px',
-            borderRadius: '20px',
-            padding: '6px 14px',
-            boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
-            whiteSpace: 'nowrap',
-          }}>
-            {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : 'wird in Kürze veröffentlicht'}
-          </div>
-        )}
+        {/* Price badge — top-right. Ohne Preis (z. B. Hajj → Nusuk) niemals „0 €". */}
+        <div style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          background: '#F4F1EA',
+          color: '#A8542F',
+          fontWeight: 700,
+          fontSize: '13px',
+          borderRadius: '20px',
+          padding: '6px 14px',
+          boxShadow: '0 3px 10px rgba(0,0,0,0.14)',
+          whiteSpace: 'nowrap',
+        }}>
+          {hasPrice(trip.price) ? `ab ${trip.price.toLocaleString('de-DE')} €` : 'wird in Kürze veröffentlicht'}
+        </div>
       </div>
 
       {/* Card body */}
