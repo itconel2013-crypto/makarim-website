@@ -59,6 +59,20 @@ export const defaultContent: CMSStore = {
       },
     ],
     
+    // ─────────────────────────────────────────────────────────────────────────
+    // ACHTUNG: Diese vier Reisen sind ATTRAPPEN, keine echten Angebote.
+    //
+    // Sie werden nur eingespielt, wenn `cms_content` komplett leer ist (siehe
+    // loadContent/initializeDb in lib/db.ts) — im Normalbetrieb also nie, weil
+    // dort die echten Daten aus dem CRM liegen. Der Fall tritt nur ein, wenn
+    // eine Datenbank frisch angelegt wird: lokal beim ersten Start, auf dem
+    // Server nur, wenn das Volume verlorenginge oder leer neu eingehängt würde.
+    //
+    // Deshalb stehen sie ALLE auf `published: false`. Sonst wäre die Website in
+    // genau diesem Moment mit erfundenen Reisen und Fantasiepreisen öffentlich
+    // online. Lieber eine leere Rubrik als ein falsches Angebot.
+    // Bitte NICHT auf true zurückdrehen.
+    // ─────────────────────────────────────────────────────────────────────────
     trips: [
       {
         vg: '2026-0912',
@@ -75,7 +89,7 @@ export const defaultContent: CMSStore = {
         text: 'Genießen Sie Luxus hautnah: Direkter Blick auf die Kaaba, erstklassige Betriebsamkeit und kulinarische Höhepunkte.',
         url: 'umrah-fruehjahr-luxus',
         startseite: true,
-        published: true,
+        published: false,
         seats: 24,
         waitlist: false,
         badge: 'Bestseller',
@@ -143,7 +157,7 @@ export const defaultContent: CMSStore = {
         text: 'Erleben Sie die tiefe Spiritualität der Heiligen Stätten ohne großen Preis. Einfach, authentisch, erfüllend.',
         url: 'umrah-budget-authentisch',
         startseite: true,
-        published: true,
+        published: false,
         seats: 8,
         waitlist: false,
         badge: 'Nur noch 8 Plätze',
@@ -206,7 +220,7 @@ export const defaultContent: CMSStore = {
         text: 'Vollständiges Hajj-Paket mit Führung, Unterkunft in gehobener Klasse und spiritueller Begleitung.',
         url: 'hajj-2026-vollstaendig',
         startseite: true,
-        published: true,
+        published: false,
         seats: 0,
         waitlist: true,
         badge: 'Warteliste verfügbar',
@@ -278,7 +292,7 @@ export const defaultContent: CMSStore = {
         text: 'Folgen Sie den Spuren der Al-Andalus-Ära: Alhambra, Große Moschee von Córdoba, versteckte Paläste.',
         url: 'granada-cordoba-al-andalus',
         startseite: false,
-        published: true,
+        published: false,
         seats: 18,
         waitlist: false,
         heroIcon: '🕌',
