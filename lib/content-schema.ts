@@ -22,7 +22,13 @@ export interface Trip {
   category: 'umrah' | 'hajj' | 'kulturreisen';  // Category key for routing
   description: string;        // Short marketing text for cards
   typ: 'Umrah' | 'Hajj' | 'Kulturreisen';
-  date: string;               // e.g., "15.–25. Juni 2026"
+  date: string;               // e.g., "15.–25. Juni 2026" — reiner ANZEIGETEXT, kein Datum
+  // Optional und heute (noch) nicht vom CRM geliefert: maschinenlesbares Abreisedatum
+  // (ISO, "2027-03-01"). Sobald das CRM es mitschickt, nutzt tripYear() es automatisch
+  // statt das Jahr aus `date` zu lesen — ohne Änderung an den Seiten. Erst damit werden
+  // startDate/endDate im JSON-LD, automatisches Sortieren und das Ausblenden abgelaufener
+  // Reisen möglich. Beim Sync wäre es ein CRM-eigenes Feld (überschreibt).
+  dateStart?: string;
   nights: number;             // Number of nights
   price: number;              // per person, in EUR
   status: string;             // derived from seats/waitlist: "verfügbar", "begrenzte Plätze", "ausgebucht", "ausgebucht (Warteliste)"

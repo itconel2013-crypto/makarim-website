@@ -25,6 +25,65 @@ export function formatDate(date: string): string {
   return date;
 }
 
+/**
+ * Jahrgang einer Reise — Grundlage der Gruppierung auf den Rubrikseiten
+ * („2026" … „2027" als Zwischenüberschrift).
+ *
+ * Bewusst ZWEISTUFIG, damit ein späteres CRM-Datumsfeld ohne Änderung an den
+ * Seiten greift:
+ *   1. `dateStart` (ISO, z. B. "2027-03-01") — sobald das CRM es liefert.
+ *   2. Sonst das erste vierstellige Jahr aus dem Anzeigetext `date`
+ *      ("15.–25. Mai 2026" → 2026). Heute greift immer dieser Zweig, weil
+ *      `Trip.date` reiner Anzeigetext ohne maschinenlesbares Datum ist.
+ *
+ * Reise über den Jahreswechsel ("28. Dez. 2026 – 5. Jan. 2027"): es gewinnt das
+ * ERSTE Jahr. Kunden planen nach dem Abflug, nicht nach der Rückkehr.
+ *
+ * Kein erkennbares Jahr → null. Solche Reisen verschwinden nicht, sie landen
+ * ohne Überschrift am Ende der Liste (siehe groupTripsByYear).
+ */
+export function tripYear(trip: { dateStart?: string; date?: string }): number | null {
+  const iso = trip.dateStart?.match(/^(\d{4})-\d{2}-\d{2}/);
+  if (iso) return Number(iso[1]);
+  const fromText = trip.date?.match(/\b(20\d{2})\b/);
+  return fromText ? Number(fromText[1]) : null;
+}
+
+export interface TripYearGroup<T> {
+  year: number | null;   // null = Jahr nicht erkennbar → Auffanggruppe ohne Überschrift
+  trips: T[];
+}
+
+/**
+ * Gruppiert Reisen nach Jahrgang, Gruppen aufsteigend (2026 vor 2027).
+ *
+ * Innerhalb einer Gruppe bleibt die im CMS gepflegte Reihenfolge unangetastet —
+ * es wird NICHT nach Datum sortiert. Die Reihenfolge gehört dem Büro (Pfeiltasten
+ * in /admin/reisen, siehe moveTripInList); die Gruppierung schiebt nur die
+ * Jahrgänge auseinander.
+ */
+export function groupTripsByYear<T extends { dateStart?: string; date?: string }>(
+  trips: T[],
+): TripYearGroup<T>[] {
+  const byYear = new Map<number, T[]>();
+  const unknown: T[] = [];
+
+  for (const trip of trips) {
+    const year = tripYear(trip);
+    if (year === null) { unknown.push(trip); continue; }
+    const bucket = byYear.get(year);
+    if (bucket) bucket.push(trip);
+    else byYear.set(year, [trip]);
+  }
+
+  const groups: TripYearGroup<T>[] = [...byYear.keys()]
+    .sort((a, b) => a - b)
+    .map((year) => ({ year, trips: byYear.get(year)! }));
+
+  if (unknown.length > 0) groups.push({ year: null, trips: unknown });
+  return groups;
+}
+
 /** Kanonische Basis-URL der Live-Seite (für Sitemap, robots, Metadaten). */
 export const SITE_URL = 'https://www.makarim.de';
 

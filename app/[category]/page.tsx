@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { loadContent } from '@/lib/db';
-import { TripCard } from '@/components/website/TripCard';
+import { TripYearSections } from '@/components/website/TripYearSections';
 import { categoryFromSlug, type CategoryKey } from '@/lib/utils';
 
 const typMap: Record<CategoryKey, 'Umrah' | 'Hajj' | 'Kulturreisen'> = {
@@ -106,11 +106,7 @@ export default async function CategoryPage({
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {trips.map((trip) => (
-                <TripCard key={trip.vg} trip={trip} />
-              ))}
-            </div>
+            <TripYearSections trips={trips} />
           )}
         </div>
       </section>
