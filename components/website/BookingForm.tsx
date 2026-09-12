@@ -6,6 +6,7 @@ import { Trip, Brand } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { hasPrice, PRICE_ON_REQUEST, tripPath } from '@/lib/utils';
 import { orderedCountries } from '@/lib/countries';
+import { LEAD_SOURCES, LEAD_SOURCE_OTHER } from '@/lib/lead-source';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -63,6 +64,8 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const [contact, setContact] = useState({ vorname: '', nachname: '', email: '', telefon: '', strasse: '', plz: '', ort: '' });
   const [contactSameAsTraveler, setContactSameAsTraveler] = useState(false);
   const [notes, setNotes] = useState('');
+  const [leadSource, setLeadSource] = useState('');
+  const [leadSourceText, setLeadSourceText] = useState('');
   const [agb, setAgb] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
@@ -124,7 +127,7 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
         ? { ...t, strasse: travelers[0].strasse, plz: travelers[0].plz, ort: travelers[0].ort }
         : t);
     try {
-      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes, ref: getRef() }) });
+      const res = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tripVg: trip.vg, travelers: travelersToSend, contact: { ...contact, ...contactMirror }, notes, ref: getRef(), leadSource, leadSourceText }) });
       if (!res.ok) { const d = await res.json(); setFormError(d.error ?? 'Versand fehlgeschlagen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
       router.push(`${tripPath(trip)}/confirm`);
     } catch { setFormError('Netzwerkfehler — bitte erneut versuchen.'); setSubmitting(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -412,7 +415,7 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
           </section>
 
           {/* Anmerkungen */}
-          <section>
+          <section style={{ marginBottom: '40px' }}>
             <SectionHeader icon="📝" title="Anmerkungen" hint="(optional)" />
             <textarea
               value={notes}
@@ -421,6 +424,33 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
               placeholder="Besondere Wünsche, Fragen oder Hinweise…"
               style={{ ...inputStyle, resize: 'none', padding: '12px 14px' }}
             />
+          </section>
+
+          {/* Wie bist du auf uns aufmerksam geworden? — freiwillig und bewusst als
+              Letztes: Das Formular ist lang, und eine reine Marketing-Angabe darf
+              den Weg zum Absenden nicht verstellen. */}
+          <section>
+            <SectionHeader icon="💬" title="Wie bist du auf uns aufmerksam geworden?" hint="(optional)" />
+            <select
+              value={leadSource}
+              onChange={(e) => setLeadSource(e.target.value)}
+              style={{ ...inputStyle, padding: '12px 14px' }}
+            >
+              <option value="">Bitte auswählen …</option>
+              {LEAD_SOURCES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+            {leadSource === LEAD_SOURCE_OTHER && (
+              <input
+                type="text"
+                value={leadSourceText}
+                onChange={(e) => setLeadSourceText(e.target.value)}
+                maxLength={200}
+                placeholder="Erzähl uns gerne, wie du uns gefunden hast"
+                style={{ ...inputStyle, marginTop: '10px' }}
+              />
+            )}
           </section>
         </div>
 

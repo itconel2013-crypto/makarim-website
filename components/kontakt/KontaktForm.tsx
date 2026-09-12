@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { LEAD_SOURCES, LEAD_SOURCE_OTHER } from '@/lib/lead-source';
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
@@ -25,7 +26,7 @@ const labelStyle: React.CSSProperties = {
 
 export function KontaktForm() {
   const [status, setStatus] = useState<Status>('idle');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', interesse: 'Allgemeine Anfrage', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', interesse: 'Allgemeine Anfrage', message: '', leadSource: '', leadSourceText: '' });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -123,6 +124,29 @@ export function KontaktForm() {
           placeholder="Wie können wir dir helfen?"
           style={{ ...inputStyle, resize: 'vertical' }}
         />
+      </div>
+
+      {/* Wie bist du auf uns aufmerksam geworden? — freiwillig, steht bewusst
+          ganz unten, damit es den Weg zur Nachricht nicht ausbremst. */}
+      <div>
+        <label style={labelStyle}>
+          Wie bist du auf uns aufmerksam geworden? <span style={{ color: '#9A9082', fontWeight: 400 }}>(optional)</span>
+        </label>
+        <select value={form.leadSource} onChange={set('leadSource')} style={inputStyle}>
+          <option value="">Bitte auswählen …</option>
+          {LEAD_SOURCES.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
+        </select>
+        {form.leadSource === LEAD_SOURCE_OTHER && (
+          <input
+            value={form.leadSourceText}
+            onChange={set('leadSourceText')}
+            maxLength={200}
+            placeholder="Erzähl uns gerne, wie du uns gefunden hast"
+            style={{ ...inputStyle, marginTop: '8px' }}
+          />
+        )}
       </div>
 
       {status === 'error' && (

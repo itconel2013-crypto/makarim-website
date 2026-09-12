@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { leadSourceLabel } from '@/lib/lead-source';
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   neu:        { bg: '#EAF0E8', color: '#3E6B52' },
@@ -102,6 +103,17 @@ export default function BuchungenPage() {
                     </div>
                   )}
                   {payload.notes && <p style={{ marginTop: '8px', fontSize: '13px', color: '#9A9082', fontStyle: 'italic' }}>{payload.notes}</p>}
+
+                  {/* Woher der Gast kommt — die eigentliche Auswertung passiert im CRM,
+                      hier steht sie zur Kontrolle direkt an der Buchung. */}
+                  {payload.leadSource && (
+                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#6B6457' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#F2E8DF', color: '#A8542F', borderRadius: '20px', padding: '3px 10px', fontWeight: 600 }}>
+                        💬 {leadSourceLabel(payload.leadSource)}
+                      </span>
+                      {payload.leadSourceText && <span style={{ marginLeft: '8px', fontStyle: 'italic', color: '#9A9082' }}>„{payload.leadSourceText}"</span>}
+                    </div>
+                  )}
                 </div>
               );
             })}

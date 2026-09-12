@@ -4,13 +4,19 @@ import { loadContent, saveBooking, markBookingSynced, decrementSeats } from '@/l
 import { sendInternalNotification, BookingEmailData } from '@/lib/email';
 import { bookingPrices } from '@/lib/pricing';
 import { getAvailability } from '@/lib/content-schema';
+import { cleanLeadSource, cleanLeadSourceText } from '@/lib/lead-source';
 
 const WEBHOOK_TIMEOUT_MS = 8_000;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { tripVg, travelers, contact, notes, ref } = body;
+    const { tripVg, travelers, contact, notes, ref, leadSource, leadSourceText } = body;
+
+    // „Wie bist du auf uns aufmerksam geworden?" — freiwillig. Ungültige Werte
+    // werden still verworfen; eine Buchung darf daran niemals scheitern.
+    const leadSourceClean = cleanLeadSource(leadSource);
+    const leadSourceTextClean = leadSourceClean === 'sonstiges' ? cleanLeadSourceText(leadSourceText) : undefined;
 
     // Partner-Kennung (optional). Kommt vom Client → Datenvertrag hier nochmal
     // erzwingen: klein, nur [a-z0-9_-], max. 40 Zeichen. Leer/ungültig → kein Partner.
@@ -51,7 +57,9 @@ export async function POST(request: NextRequest) {
 
     // 3) Persist booking in DB first (never lost even if webhook fails).
     //    Price fields live in the payload so the retry job re-sends them too.
-    const payload = { tripVg, travelers: travelersWithGeschlecht, contact, notes, createdAt, gesamt, preisProPerson, ref: refClean };
+    // leadSource reist über den Webhook automatisch ans CRM mit (payload wird dort
+    // unverändert gesendet) — das CRM muss das Feld nur speichern und auswerten.
+    const payload = { tripVg, travelers: travelersWithGeschlecht, contact, notes, createdAt, gesamt, preisProPerson, ref: refClean, leadSource: leadSourceClean, leadSourceText: leadSourceTextClean };
     const bookingId = saveBooking(tripVg, payload);
 
     // 4) Decrement seats + refresh cached public pages (seat counts changed)
