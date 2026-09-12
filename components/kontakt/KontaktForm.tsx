@@ -27,6 +27,10 @@ const labelStyle: React.CSSProperties = {
 export function KontaktForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [form, setForm] = useState({ name: '', email: '', phone: '', interesse: 'Allgemeine Anfrage', message: '', leadSource: '', leadSourceText: '' });
+  const [errorText, setErrorText] = useState('');
+  // Honeypot: für Menschen unsichtbar, Bots füllen so ein Feld reflexhaft aus.
+  // Ist es befüllt, verwirft der Server die Anfrage stillschweigend.
+  const [honeypot, setHoneypot] = useState('');
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -34,13 +38,19 @@ export function KontaktForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
+    setErrorText('');
     try {
       const res = await fetch('/api/kontakt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, website: honeypot }),
       });
-      setStatus(res.ok ? 'success' : 'error');
+      if (res.ok) { setStatus('success'); return; }
+      // Bei der Bremse (429) und bei Prüffehlern sagt der Server, was los ist —
+      // das ist hilfreicher als ein pauschales „etwas ist schiefgelaufen".
+      const data = await res.json().catch(() => ({}));
+      setErrorText(data.error ?? '');
+      setStatus('error');
     } catch {
       setStatus('error');
     }
@@ -149,9 +159,24 @@ export function KontaktForm() {
         )}
       </div>
 
+      {/* Honeypot — per aria-hidden und tabIndex auch für Screenreader und
+          Tastatur unerreichbar, damit er nur Bots und niemanden sonst betrifft. */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
+        <label>
+          Webseite (bitte frei lassen)
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </label>
+      </div>
+
       {status === 'error' && (
         <p style={{ fontSize: '14px', color: '#C0392B' }}>
-          Etwas ist schiefgelaufen. Bitte versuche es erneut.
+          {errorText || 'Etwas ist schiefgelaufen. Bitte versuche es erneut.'}
         </p>
       )}
 
