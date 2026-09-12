@@ -60,6 +60,20 @@ const COLORS = {
   light:    '#9A9082',
 };
 
+/**
+ * Maskiert Text, der aus einem öffentlichen Formular stammt, bevor er in eine
+ * HTML-Mail eingesetzt wird. Ohne das könnte ein Absender Markup oder Links in
+ * eine Mail schmuggeln, die im Büro geöffnet wird.
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function baseTemplate(title: string, body: string): string {
   return `<!DOCTYPE html>
 <html lang="de">
@@ -199,7 +213,7 @@ export async function sendInternalNotification(data: BookingEmailData) {
 
     ${data.notes ? `
     <p style="font-size:13px;font-weight:600;color:${COLORS.ink};margin:0 0 8px;text-transform:uppercase;letter-spacing:0.08em;">Anmerkungen</p>
-    <p style="margin:0;font-size:14px;color:#5A5448;background:${COLORS.bg};padding:16px;border-radius:8px;border:1px solid ${COLORS.border};">${data.notes}</p>
+    <p style="margin:0;font-size:14px;color:#5A5448;background:${COLORS.bg};padding:16px;border-radius:8px;border:1px solid ${COLORS.border};white-space:pre-wrap;">${escapeHtml(data.notes)}</p>
     ` : ''}`;
 
   const transporter = createTransporter();
@@ -208,5 +222,65 @@ export async function sendInternalNotification(data: BookingEmailData) {
     to:      process.env.BOOKING_NOTIFY_EMAIL ?? process.env.SMTP_USER ?? '',
     subject: `[Neue Anfrage] ${data.tripTitle} — ${data.contact.vorname} ${data.contact.nachname} (${data.travelers.length} Person${data.travelers.length > 1 ? 'en' : ''})`,
     html:    baseTemplate('Neue Buchungsanfrage', body),
+  });
+}
+
+// ── Contact form notification to team ─────────────────────────────────────────
+
+export interface ContactEmailData {
+  name: string;
+  email: string;
+  phone?: string;
+  interesse?: string;
+  message: string;
+  leadSourceLabel?: string;   // bereits aufgelöstes Label, nicht der Schlüssel
+  leadSourceText?: string;
+}
+
+/**
+ * Leitet eine Kontaktanfrage ans Büro weiter.
+ *
+ * Hintergrund: Kontaktanfragen landeten bisher ausschließlich in der Tabelle
+ * `contact_requests` — ohne Benachrichtigung und ohne Ansicht im Admin. Sie
+ * konnten dort also unbemerkt liegen bleiben.
+ *
+ * `replyTo` zeigt bewusst auf den Absender der Anfrage: Ein Druck auf
+ * „Antworten" im Postfach schreibt direkt an den Interessenten, nicht an uns.
+ */
+export async function sendContactNotification(data: ContactEmailData) {
+  const row = (label: string, value: string) => `
+    <tr style="border-bottom:1px solid ${COLORS.border};">
+      <td style="padding:10px 0;color:${COLORS.light};font-size:13px;width:130px;vertical-align:top;">${label}</td>
+      <td style="padding:10px 0;color:${COLORS.ink};font-size:14px;">${value}</td>
+    </tr>`;
+
+  const herkunft = data.leadSourceLabel
+    ? data.leadSourceLabel + (data.leadSourceText ? ` — „${escapeHtml(data.leadSourceText)}"` : '')
+    : '';
+
+  const body = `
+    <h1 style="margin:0 0 8px;font-size:22px;color:${COLORS.ink};font-weight:600;">Neue Kontaktanfrage</h1>
+    <p style="margin:0 0 24px;font-size:14px;color:${COLORS.light};">Eingegangen über das Kontaktformular auf makarim.de</p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      ${row('Name', escapeHtml(data.name))}
+      ${row('E-Mail', `<a href="mailto:${escapeHtml(data.email)}" style="color:${COLORS.primary};">${escapeHtml(data.email)}</a>`)}
+      ${data.phone ? row('Telefon', escapeHtml(data.phone)) : ''}
+      ${data.interesse ? row('Betreff', escapeHtml(data.interesse)) : ''}
+      ${herkunft ? row('Aufmerksam durch', herkunft) : ''}
+    </table>
+
+    <p style="margin:0 0 8px;font-size:13px;color:${COLORS.light};">Nachricht</p>
+    <div style="font-size:14px;color:#5A5448;background:${COLORS.bg};padding:16px;border-radius:8px;border:1px solid ${COLORS.border};white-space:pre-wrap;">${escapeHtml(data.message)}</div>
+
+    <p style="margin:24px 0 0;font-size:13px;color:${COLORS.light};">Auf diese E-Mail zu antworten schreibt direkt an ${escapeHtml(data.name)}.</p>`;
+
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from:    process.env.SMTP_FROM ?? 'Makarim Reisen <info@makarim.de>',
+    to:      process.env.CONTACT_NOTIFY_EMAIL ?? process.env.BOOKING_NOTIFY_EMAIL ?? process.env.SMTP_USER ?? '',
+    replyTo: data.email,
+    subject: `[Kontakt] ${data.interesse || 'Anfrage'} — ${data.name}`,
+    html:    baseTemplate('Neue Kontaktanfrage', body),
   });
 }
