@@ -17,7 +17,7 @@ export const LEAD_SOURCES = [
   { value: 'google',            label: 'Google' },
   { value: 'whatsapp_facebook', label: 'WhatsApp oder Facebook' },
   { value: 'moschee',           label: 'Moschee oder Gemeinde' },
-  { value: 'wiederkehrer',      label: 'Ich war schon einmal mit euch unterwegs' },
+  { value: 'wiederkehrer',      label: 'Ich war schon einmal mit euch gereist' },
   { value: 'sonstiges',         label: 'Sonstiges' },
 ] as const;
 
