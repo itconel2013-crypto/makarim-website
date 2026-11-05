@@ -35,7 +35,6 @@ export default async function ConfirmPage({
   );
   if (!trip) notFound();
 
-  const bank = content.c.brand.bank;
   const cfg = { ...defaultBookingPage, ...(content.c.brand.bookingPage ?? {}) };
 
   // Vorreservierung: eigene Überschrift/Text, und KEINE Bankdaten/Schritte —
@@ -114,26 +113,24 @@ export default async function ConfirmPage({
             ))}
           </ol>
 
-          {/* Bank details */}
+          {/* Bankverbindung & persönliche Vorgangsnummer kommen per E-Mail. Hier bewusst KEINE
+              eigene Nummer/IBAN: die Seite zeigte früher den (nicht eindeutigen) Reise-Code als
+              Verwendungszweck, die Kundenmail dagegen die eindeutige Vorgangsnummer — das verwirrte.
+              Jetzt gibt es nur eine verbindliche Referenz: die aus der E-Mail. */}
           <div
             className="mt-8 p-5 rounded-card"
             style={{ backgroundColor: '#F4F1EA' }}
           >
-            <p className="font-mono uppercase text-body-light mb-4" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>
-              Bankverbindung
+            <p className="font-mono uppercase text-body-light mb-3" style={{ fontSize: '11px', letterSpacing: '0.15em' }}>
+              Bankverbindung &amp; Verwendungszweck
             </p>
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-              <dt className="text-body">Kontoinhaber</dt>
-              <dd className="font-medium text-ink">{bank.inhaber}</dd>
-              <dt className="text-body">Bank</dt>
-              <dd className="font-medium text-ink">{bank.name}</dd>
-              <dt className="text-body">IBAN</dt>
-              <dd className="font-mono font-medium text-ink tracking-wide">{bank.iban}</dd>
-              <dt className="text-body">BIC</dt>
-              <dd className="font-mono font-medium text-ink">{bank.bic}</dd>
-              <dt className="text-body">Verwendungszweck</dt>
-              <dd className="font-mono font-semibold" style={{ color: '#A8542F' }}>VG {trip.vg}</dd>
-            </dl>
+            <p className="text-body-sm text-body" style={{ lineHeight: '1.7' }}>
+              Deine persönliche <strong className="text-ink">Vorgangsnummer</strong> und unsere{' '}
+              <strong className="text-ink">Bankverbindung</strong> bekommst du gleich per{' '}
+              <strong className="text-ink">E-Mail</strong>. Bitte überweise erst nach Erhalt dieser E-Mail und
+              gib den <strong className="text-ink">dort genannten Verwendungszweck</strong> an — so können wir
+              deine Zahlung eindeutig zuordnen.
+            </p>
           </div>
         </div>
         )}

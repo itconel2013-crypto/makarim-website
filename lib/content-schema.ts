@@ -221,9 +221,9 @@ export const defaultBookingPage: Required<BookingPageConfig> = {
   intro: 'Wir haben deine Buchung für {reise} erhalten. Die nächsten Schritte findest du unten.',
   stepsTitle: 'So schließt du deine Buchung ab',
   step1Title: 'Warte auf unsere Bestätigung',
-  step1Text: 'Wir senden dir innerhalb von 24 Stunden eine Bestätigungs-E-Mail mit dem verbindlichen Reisepreis.',
+  step1Text: 'Wir senden dir in Kürze eine Bestätigungs-E-Mail mit dem verbindlichen Reisepreis.',
   step2Title: 'Anzahlung überweisen',
-  step2Text: 'Überweise die Anzahlung per Banküberweisung. Gib als Verwendungszweck die Vorgangsnummer {vg} an.',
+  step2Text: 'Überweise die Anzahlung erst nach unserer Bestätigungs-E-Mail und gib die dort genannte persönliche Vorgangsnummer als Verwendungszweck an.',
   step3Title: 'Reiseunterlagen erhalten',
   step3Text: 'Nach Zahlungseingang erhältst du alle Reisedokumente per E-Mail.',
 };
