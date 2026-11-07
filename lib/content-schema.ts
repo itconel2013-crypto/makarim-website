@@ -57,6 +57,9 @@ export interface Trip {
   program?: ProgramDay[];     // day-by-day itinerary
   prices?: TripPrices;        // explicit per-room prices from CRM (authoritative when present)
   sectionOrder?: TripSectionKey[]; // CMS-only: Reihenfolge der Detailseiten-Blöcke (Inhalt/Leistungen/Hotels/Programm)
+  // CMS-only: abweichende Zahlungs-/Stornobedingungen dieser Reise. Leer = global
+  // (brand.bookingTerms) gilt. Muss den CRM-Sync überleben → in mergeTrip bewahrt.
+  bookingTerms?: BookingTermsConfig;
 }
 
 /** Sortierbare Blöcke der Reise-Detailseite (CMS-only). */
@@ -188,6 +191,71 @@ export interface BankDetails {
   name: string;
 }
 
+/** Eine Stufe der Stornostaffel, z. B. „bis 60 Tage vor Abreise" → „20 %". */
+export interface CancellationTier {
+  when: string;
+  fee: string;
+}
+
+/**
+ * Zahlungs- und Stornobedingungen für die Buchungsseite.
+ *
+ * Diese Angaben müssen bei Pauschalreisen VOR der verbindlichen Buchung
+ * vorliegen — deshalb stehen sie auf dem Formular und nicht nur in der AGB.
+ *
+ * Gepflegt wird global unter /admin/zahlungsbedingungen; je Reise kann einzeln
+ * übersteuert werden (CMS-Feld, überlebt den CRM-Sync — siehe mergeTrip in
+ * app/api/content/route.ts).
+ *
+ * BEWUSST OHNE VORGABEWERTE: Ein erfundener Stornosatz wäre schlimmer als gar
+ * keiner. Ist nichts gepflegt, bleibt der Block auf der Website unsichtbar
+ * (siehe hasBookingTerms).
+ */
+export interface BookingTermsConfig {
+  depositPerPerson?: number;        // Anzahlung je Person in Euro
+  depositDue?: string;              // z. B. „fällig nach unserer Buchungsbestätigung"
+  balanceDue?: string;              // z. B. „spätestens 30 Tage vor Abreise"
+  cancellation?: CancellationTier[];
+  note?: string;                    // optionaler Zusatz unter der Staffel
+}
+
+/**
+ * Effektive Bedingungen einer Reise: Reise-Werte übersteuern die globalen,
+ * aber nur dort, wo wirklich etwas gepflegt ist. So kann eine Reise z. B. nur
+ * die Anzahlung abweichend setzen und erbt den Rest.
+ */
+export function resolveBookingTerms(
+  global?: BookingTermsConfig,
+  trip?: BookingTermsConfig,
+): BookingTermsConfig {
+  const g = global ?? {};
+  const t = trip ?? {};
+  return {
+    depositPerPerson: typeof t.depositPerPerson === 'number' && t.depositPerPerson > 0
+      ? t.depositPerPerson
+      : g.depositPerPerson,
+    depositDue:  t.depositDue?.trim()  || g.depositDue,
+    balanceDue:  t.balanceDue?.trim()  || g.balanceDue,
+    cancellation: (t.cancellation?.length ? t.cancellation : g.cancellation)
+      ?.filter((c) => c.when?.trim() && c.fee?.trim()),
+    note: t.note?.trim() || g.note,
+  };
+}
+
+/**
+ * Ist überhaupt etwas Verwertbares gepflegt? Nur dann zeigt die Buchungsseite
+ * den Block — lieber gar keine Angabe als eine ausgedachte.
+ */
+export function hasBookingTerms(terms?: BookingTermsConfig): boolean {
+  if (!terms) return false;
+  return (
+    (typeof terms.depositPerPerson === 'number' && terms.depositPerPerson > 0) ||
+    !!terms.depositDue?.trim() ||
+    !!terms.balanceDue?.trim() ||
+    !!terms.cancellation?.length
+  );
+}
+
 export interface BookingEmailConfig {
   intro?: string;
   step1Title?: string;
@@ -242,6 +310,8 @@ export interface Brand {
   kontaktIntro?: string;
   bookingEmail?: BookingEmailConfig;
   bookingPage?: BookingPageConfig;
+  /** Zahlungs- und Stornobedingungen (global; je Reise übersteuerbar). */
+  bookingTerms?: BookingTermsConfig;
 }
 
 export interface SEOConfig {

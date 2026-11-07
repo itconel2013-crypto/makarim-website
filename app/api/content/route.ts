@@ -180,7 +180,11 @@ export async function PATCH(request: NextRequest) {
         // im CMS gepflegt (CMS-Editor „Langtext – Reise-Detailseite"). Das CRM hat dafür kein
         // Eingabefeld und schickt bei Duplikaten nur Altwerte mit → ohne Bewahrung würde jeder
         // CRM-Sync den gepflegten Website-Inhalt überschreiben.
-        for (const f of ['slug', 'leaderPhoto', 'leaderPhotos', 'services', 'program', 'text', 'badge', 'startseite', 'seoTitle', 'seoDesc', 'sectionOrder'] as const) {
+        // bookingTerms: abweichende Zahlungs-/Stornobedingungen dieser Reise werden
+        // ausschließlich im CMS gepflegt (das CRM hat dafür kein Feld). Ohne
+        // Bewahrung würde jeder Sync sie löschen — und die Buchungsseite zeigte
+        // wieder keine Bedingungen an.
+        for (const f of ['slug', 'leaderPhoto', 'leaderPhotos', 'services', 'program', 'text', 'badge', 'startseite', 'seoTitle', 'seoDesc', 'sectionOrder', 'bookingTerms'] as const) {
           merged[f] = prev[f];
         }
         // Überschrift (title): CRM führt, CMS darf übersteuern.

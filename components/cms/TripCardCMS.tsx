@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED, orderedTripSections, TRIP_SECTION_LABELS } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED, orderedTripSections, TRIP_SECTION_LABELS, hasBookingTerms, BookingTermsConfig } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
+import { BookingTermsEditor } from './BookingTermsEditor';
 import { MediaPickerModal } from './MediaPickerModal';
 import { tripPath } from '@/lib/utils';
 
@@ -237,6 +238,16 @@ export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown
 
             <AccordionSection label="Reihenfolge der Abschnitte" summary={orderedTripSections(trip.sectionOrder).map((k) => TRIP_SECTION_LABELS[k]).join(' · ')} open={isOpen('reihenfolge')} onToggle={() => toggleSection('reihenfolge')}>
               <SectionOrderEditor trip={trip} upd={upd} />
+            </AccordionSection>
+
+            <AccordionSection
+              label="Zahlung & Storno"
+              chip={<ChipOptional />}
+              summary={hasBookingTerms(trip.bookingTerms) ? 'eigene Bedingungen' : 'wie global'}
+              open={isOpen('zahlung')}
+              onToggle={() => toggleSection('zahlung')}
+            >
+              <BookingTermsTab trip={trip} upd={upd} />
             </AccordionSection>
 
             <AccordionSection label="SEO" chip={<ChipOptional />} open={isOpen('seo')} onToggle={() => toggleSection('seo')}>
@@ -537,6 +548,49 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
 }
 
 /** Reihenfolge der Detailseiten-Blöcke (Inhalt/Leistungen/Hotels/Programm) per ↑↓. */
+/**
+ * Abweichende Zahlungs-/Stornobedingungen dieser Reise.
+ *
+ * Leere Felder erben die globalen Werte (/admin/zahlungsbedingungen) — die
+ * Platzhalter zeigen, was dann gilt. „Wieder global" leert alles auf einmal.
+ */
+function BookingTermsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
+  const { store } = useCMS();
+  const global: BookingTermsConfig = store?.c.brand.bookingTerms ?? {};
+  const eigen = hasBookingTerms(trip.bookingTerms);
+
+  return (
+    <div>
+      <div
+        className="mb-4 text-body-sm"
+        style={{ background: '#F4F1EA', borderRadius: '8px', padding: '10px 14px', color: '#6B6457', lineHeight: 1.6 }}
+      >
+        {eigen
+          ? 'Diese Reise hat eigene Bedingungen. Leere Felder erben weiterhin den globalen Wert.'
+          : 'Diese Reise folgt den globalen Bedingungen. Nur ausfüllen, was abweichen soll.'}
+        {!hasBookingTerms(global) && ' Global ist bisher nichts gepflegt.'}
+      </div>
+
+      <BookingTermsEditor
+        terms={trip.bookingTerms ?? {}}
+        onChange={(next) => upd({ bookingTerms: next })}
+        inherited={global}
+      />
+
+      {eigen && (
+        <button
+          type="button"
+          onClick={() => upd({ bookingTerms: undefined })}
+          className="mt-4 text-sm"
+          style={{ color: '#9A9082', textDecoration: 'underline' }}
+        >
+          Abweichung entfernen — wieder global
+        </button>
+      )}
+    </div>
+  );
+}
+
 function SectionOrderEditor({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   const order = orderedTripSections(trip.sectionOrder);
   const move = (i: number, dir: -1 | 1) => {

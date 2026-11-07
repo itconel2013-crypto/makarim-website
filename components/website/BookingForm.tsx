@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trip, Brand } from '@/lib/content-schema';
+import { Trip, Brand, resolveBookingTerms, hasBookingTerms } from '@/lib/content-schema';
 import { ROOM_TYPES, ageCategory, personPrice, availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { hasPrice, PRICE_ON_REQUEST, tripPath } from '@/lib/utils';
 import { orderedCountries } from '@/lib/countries';
 import { LEAD_SOURCES, LEAD_SOURCE_OTHER } from '@/lib/lead-source';
+import { BookingTerms } from './BookingTerms';
 
 interface Traveler {
   anrede: string; vorname: string; nachname: string; geburtstag: string;
@@ -54,6 +55,9 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   // noch nicht fest, statt fälschlich „Vierbettzimmer" zu zeigen.
   const roomsUnknown = rooms.length === 0;
   const ROOM_LATER = 'wird später festgelegt';
+  // Zahlungs-/Stornobedingungen: Reise-Werte übersteuern die globalen.
+  const terms = resolveBookingTerms(brand.bookingTerms, trip.bookingTerms);
+  const termsConfigured = hasBookingTerms(terms);
   const makeTraveler = (): Traveler => ({
     anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',
     email: '', telefon: '',
@@ -452,6 +456,23 @@ Sichere dir jetzt <strong>unverbindlich</strong> deinen Platz, ganz ohne Zahlung
               />
             )}
           </section>
+
+          {/* Zahlung & Stornierung — bewusst als letzter Block vor dem Absenden:
+              die Angaben müssen VOR der verbindlichen Buchung vorliegen, und es
+              ist die letzte offene Frage des Kunden.
+              Erscheint NUR, wenn im CMS etwas gepflegt ist (oder bei einer
+              Vorreservierung, deren Hinweis ohne Zahlen auskommt). */}
+          {(termsConfigured || isVorres) && (
+            <section style={{ marginTop: '40px' }}>
+              <SectionHeader icon="💳" title="Zahlung & Stornierung" />
+              <BookingTerms
+                terms={terms}
+                travelerCount={travelers.length}
+                priceAvailable={priceAvailable}
+                isVorreservierung={isVorres}
+              />
+            </section>
+          )}
         </div>
 
         {/* ── RIGHT: sticky summary ──────────────────────────────── */}
