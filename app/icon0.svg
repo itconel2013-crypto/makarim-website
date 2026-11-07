@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Makarim">
+  <!--
+    Browser-Symbol (Favicon). Next.js verlinkt diese Datei automatisch, weil sie
+    app/icon.svg heißt. Daneben liegen favicon.ico (16/32/48) und apple-icon.png
+    (180) als Rückfall für alles, was kein SVG kann.
+
+    Die Pfade stammen unverändert aus dem Markenpaket des Gestalters:
+    Logo_NEU\Final Files\Icon\SVG\SVG_Colored 1.svg, Gruppe des Würfels.
+    Nicht nachgezeichnet — bei Änderungen am Logo von dort neu übernehmen.
+
+    Die Ringe („Reisen für die Seele") sind bewusst NICHT dabei: Es sind
+    Haarlinien, die bei 16 px zu grauem Nebel zerfallen und dabei die halbe
+    Fläche kosten würden. Der Würfel wäre auf halbe Höhe gestaucht und das orange
+    Band — das einzige Farbsignal — kaum noch zu sehen. Mit und ohne wurde
+    verglichen.
+
+    Die Transformation setzt den Würfel (Originalmaße x 858,32–2141,68,
+    y 52,36–1220,33) mittig auf die Kachel und lässt ringsum 12 % frei.
+    Gelesen wird von rechts nach links: erst Nullpunkt auf die linke obere Ecke
+    des Würfels, dann verkleinern, dann an seinen Platz schieben.
+
+    Heller Grund statt transparent: Ein durchsichtiges dunkles Symbol verschwindet
+    in dunklen Browser-Themes. Die Kachel in Seitencreme trägt in beiden.
+  -->
+  <rect width="64" height="64" rx="13" fill="#F4F1EA"/>
+  <g transform="translate(7.68 9.87) scale(0.0379) translate(-858.32 -52.36)">
+    <g fill="#010101">
+      <path d="M1492.5,384.62v809c0,21.94-23.02,36.34-42.79,26.71L875,939.28c-10.22-4.96-16.68-15.39-16.68-26.71V230.55
+        c0-19.56,18.56-33.75,37.44-28.69l574.7,153.98C1483.47,359.31,1492.5,371.12,1492.5,384.62"/>
+      <path d="M2141.68,230.55v682.03c0,11.32-5.66,21.74-14.49,26.71l-497.18,281.05c-17.09,9.63-37.04-4.77-37.04-26.71
+        v-809c0-13.5,7.85-25.32,19.06-28.79l497.18-153.98C2125.59,196.79,2141.68,210.99,2141.68,230.55"/>
+      <path d="M905.41,141.09l560.37,131.27c45.35,10.94,92.71,10.31,137.75-1.85l500.64-128.66l-601.98-88.73
+        L905.41,141.09z"/>
+    </g>
+    <g fill="#F26722">
+      <polygon points="1492.5,578.6 1492.5,651.87 858.32,444.54 858.32,368.34"/>
+      <polygon points="2141.68,374.99 2141.68,448.36 1592.97,635.1 1592.97,561.83"/>
+    </g>
+  </g>
+</svg>
