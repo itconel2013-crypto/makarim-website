@@ -56,7 +56,8 @@ export function BookingForm({ trip, brand }: BookingFormProps) {
   const roomsUnknown = rooms.length === 0;
   const ROOM_LATER = 'wird später festgelegt';
   // Zahlungs-/Stornobedingungen: Reise-Werte übersteuern die globalen.
-  const terms = resolveBookingTerms(brand.bookingTerms, trip.bookingTerms);
+  // Reihenfolge: CMS je Reise → CRM → CMS global (siehe resolveBookingTerms).
+  const terms = resolveBookingTerms(brand.bookingTerms, trip.bookingTerms, trip.terms);
   const termsConfigured = hasBookingTerms(terms);
   const makeTraveler = (): Traveler => ({
     anrede: 'Herr', vorname: '', nachname: '', geburtstag: '',

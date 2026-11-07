@@ -29,11 +29,20 @@ export default function ZahlungsbedingungenEditor() {
 
           <div
             className="mb-6 text-body-sm"
+            style={{ background: '#EFF4F6', border: '1px solid #CBDCE3', borderRadius: '10px', padding: '14px 16px', color: '#2C4E5A', lineHeight: 1.6 }}
+          >
+            <strong>Normalerweise ist hier nichts zu tun.</strong> Die Zahlungs- und Stornobedingungen
+            pflegt ihr im CRM; sie kommen mit jeder Reise automatisch auf die Buchungsseite. Diese Seite
+            ist nur das Auffangnetz: Was hier steht, gilt für Reisen, zu denen das CRM nichts schickt.
+          </div>
+
+          <div
+            className="mb-6 text-body-sm"
             style={{ background: '#FFFBEA', border: '1px solid #F0E0B0', borderRadius: '10px', padding: '14px 16px', color: '#6B5620', lineHeight: 1.6 }}
           >
-            <strong>Bitte sorgfältig ausfüllen.</strong> Diese Angaben sieht der Kunde, bevor er verbindlich
-            bucht — sie müssen mit euren Reisebedingungen übereinstimmen. Im Zweifel vom Anwalt oder Verband
-            bestätigen lassen.
+            <strong>Falls ihr doch etwas eintragt:</strong> Diese Angaben sieht der Kunde, bevor er
+            verbindlich bucht — sie müssen mit euren Reisebedingungen übereinstimmen. Im Zweifel vom Anwalt
+            oder Verband bestätigen lassen.
           </div>
 
           <div
@@ -46,10 +55,11 @@ export default function ZahlungsbedingungenEditor() {
             }}
           >
             {aktiv ? (
-              <>● Der Block <strong>erscheint</strong> auf allen Buchungsseiten.</>
+              <>● Hier ist etwas gepflegt. Diese Werte greifen <strong>nur bei Reisen, zu denen das CRM
+              nichts schickt</strong> — überall sonst gilt das CRM.</>
             ) : (
-              <>● Noch nichts gepflegt — der Block ist auf der Website <strong>unsichtbar</strong>. Sobald hier
-              etwas steht, erscheint er automatisch.</>
+              <>● Hier ist nichts gepflegt — das ist der Normalfall. Es gilt, was das CRM zu jeder Reise
+              schickt. Schickt das CRM zu einer Reise nichts, bleibt der Block dort <strong>unsichtbar</strong>.</>
             )}
           </div>
 

@@ -187,6 +187,12 @@ export async function PATCH(request: NextRequest) {
         for (const f of ['slug', 'leaderPhoto', 'leaderPhotos', 'services', 'program', 'text', 'badge', 'startseite', 'seoTitle', 'seoDesc', 'sectionOrder', 'bookingTerms'] as const) {
           merged[f] = prev[f];
         }
+        // terms (Zahlungs-/Stornobedingungen aus dem CRM): gehört dem CRM, nicht dem CMS.
+        // Bewusst NICHT in der Liste oben — und beim Fehlen aktiv entfernt: Das CRM lässt
+        // terms weg, wenn dort nichts (mehr) gepflegt ist. Ohne das Löschen bliebe ein
+        // alter Stand auf der Buchungsseite stehen, den im CRM niemand mehr sieht.
+        // (Nicht zu verwechseln mit bookingTerms — das ist die CMS-Übersteuerung.)
+        if (incoming.terms === undefined) delete merged.terms;
         // Überschrift (title): CRM führt, CMS darf übersteuern.
         //  • Ohne Override folgt sie dem CRM-NAMEN (nicht incoming.title: das CRM-eigene
         //    title-Feld kann bei alten Duplikaten veraltet sein und hat dort keine Pflege-UI).

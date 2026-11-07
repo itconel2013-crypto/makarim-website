@@ -29,7 +29,7 @@ export function BookingTermsEditor({
 
   return (
     <div className="space-y-5">
-      <Field label="Anzahlung je Person (€)" hint={inherited?.depositPerPerson ? `global: ${inherited.depositPerPerson} €` : 'nur Zahl, ohne €'}>
+      <Field label="Anzahlung je Person (€)" hint={inherited?.depositPerPerson ? `derzeit gilt: ${inherited.depositPerPerson} €` : 'nur Zahl, ohne €'}>
         <input
           type="number"
           min={0}
@@ -73,8 +73,10 @@ export function BookingTermsEditor({
         {tiers.length === 0 && (
           <p className="text-body-sm text-body-light mb-3">
             {inherited?.cancellation?.length
-              ? `Keine eigene Staffel — es gilt die globale mit ${inherited.cancellation.length} Stufen.`
-              : 'Noch keine Stufe angelegt.'}
+              ? `Keine eigene Staffel — es gilt die hinterlegte mit ${inherited.cancellation.length} Stufen.`
+              : inherited?.cancellationText
+                ? 'Keine eigene Staffel — es gilt die hinterlegte Stornobedingung (Freitext).'
+                : 'Noch keine Stufe angelegt.'}
           </p>
         )}
 

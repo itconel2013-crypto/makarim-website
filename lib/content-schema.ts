@@ -57,9 +57,14 @@ export interface Trip {
   program?: ProgramDay[];     // day-by-day itinerary
   prices?: TripPrices;        // explicit per-room prices from CRM (authoritative when present)
   sectionOrder?: TripSectionKey[]; // CMS-only: Reihenfolge der Detailseiten-Blöcke (Inhalt/Leistungen/Hotels/Programm)
-  // CMS-only: abweichende Zahlungs-/Stornobedingungen dieser Reise. Leer = global
-  // (brand.bookingTerms) gilt. Muss den CRM-Sync überleben → in mergeTrip bewahrt.
+  // CMS-only: abweichende Zahlungs-/Stornobedingungen dieser Reise. Leer = es gilt,
+  // was das CRM schickt (terms), sonst global (brand.bookingTerms). Muss den
+  // CRM-Sync überleben → in mergeTrip bewahrt.
   bookingTerms?: BookingTermsConfig;
+  // CRM-eigen: die wirksamen Zahlungs-/Stornobedingungen dieser Reise, mit jedem
+  // Reise-Push aktualisiert. NICHT in mergeTrip bewahren — fehlt es im Push, ist
+  // es im CRM nicht (mehr) gepflegt und muss auch hier verschwinden.
+  terms?: CrmBookingTerms;
 }
 
 /** Sortierbare Blöcke der Reise-Detailseite (CMS-only). */
@@ -216,28 +221,112 @@ export interface BookingTermsConfig {
   depositDue?: string;              // z. B. „fällig nach unserer Buchungsbestätigung"
   balanceDue?: string;              // z. B. „spätestens 30 Tage vor Abreise"
   cancellation?: CancellationTier[];
+  cancellationText?: string;        // Freitext STATT der Staffel (CRM: stornoMode „Abweichend")
   note?: string;                    // optionaler Zusatz unter der Staffel
 }
 
 /**
- * Effektive Bedingungen einer Reise: Reise-Werte übersteuern die globalen,
- * aber nur dort, wo wirklich etwas gepflegt ist. So kann eine Reise z. B. nur
- * die Anzahlung abweichend setzen und erbt den Rest.
+ * Dieselben Bedingungen, wie das CRM sie mit dem Reise-Push schickt
+ * (Datenvertrag: CRM-Auftrag-Zahlungsbedingungen.md).
+ *
+ * Das CRM ist die Quelle der Wahrheit: Es löst Standard/Abweichend bereits auf
+ * und sendet nur die für diese Reise WIRKSAMEN Werte. Nicht Gepflegtes fehlt
+ * ganz — es kommt weder 0 noch "" noch null an.
+ *
+ * Unterschied zur CMS-Fassung oben: Fristen sind Tageszahlen statt Sätze, und
+ * die Stornostaffel kommt entweder als Stufenliste ODER als Freitext, nie als
+ * beides. Die Sätze daraus baut crmTermsToConfig — so bleibt die Sprache der
+ * Website an einer Stelle.
+ */
+export interface CrmCancellationTier {
+  deadline: string;   // Frist, z. B. „bis 60 Tage vor Abreise"
+  feePct: number;     // Gebühr in Prozent
+}
+
+export interface CrmBookingTerms {
+  depositPerPerson?: number;   // Anzahlung je Person in Euro
+  depositDays?: number;        // Tage NACH der Buchungsbestätigung
+  finalDays?: number;          // Tage VOR Abreise
+  cancellation?: CrmCancellationTier[];
+  cancellationText?: string;   // alternativ zur Staffel
+}
+
+/** „7" → „fällig innerhalb von 7 Tagen nach unserer Buchungsbestätigung". */
+function depositDueText(days?: number): string | undefined {
+  if (typeof days !== 'number' || !Number.isFinite(days) || days < 0) return undefined;
+  if (days === 0) return 'sofort nach unserer Buchungsbestätigung fällig';
+  if (days === 1) return 'fällig innerhalb eines Tages nach unserer Buchungsbestätigung';
+  return `fällig innerhalb von ${days} Tagen nach unserer Buchungsbestätigung`;
+}
+
+/** „30" → „spätestens 30 Tage vor Abreise". */
+function balanceDueText(days?: number): string | undefined {
+  if (typeof days !== 'number' || !Number.isFinite(days) || days < 0) return undefined;
+  if (days === 0) return 'spätestens am Tag der Abreise';
+  if (days === 1) return 'spätestens einen Tag vor Abreise';
+  return `spätestens ${days} Tage vor Abreise`;
+}
+
+/**
+ * CRM-Fassung in die Darstellungsfassung übersetzen. Erzeugt nur Text für das,
+ * was tatsächlich ankommt — eine fehlende Frist bleibt eine fehlende Frist.
+ */
+export function crmTermsToConfig(crm?: CrmBookingTerms): BookingTermsConfig {
+  if (!crm) return {};
+  const tiers = crm.cancellation
+    ?.filter((c) => c?.deadline?.trim() && typeof c.feePct === 'number')
+    .map((c) => ({ when: c.deadline.trim(), fee: `${c.feePct} %` }));
+  return {
+    depositPerPerson:
+      typeof crm.depositPerPerson === 'number' && crm.depositPerPerson > 0
+        ? crm.depositPerPerson
+        : undefined,
+    depositDue: depositDueText(crm.depositDays),
+    balanceDue: balanceDueText(crm.finalDays),
+    // Staffel und Freitext schließen einander aus; die Staffel hat Vorrang,
+    // falls wider Erwarten doch beides ankommt.
+    cancellation: tiers?.length ? tiers : undefined,
+    cancellationText: tiers?.length ? undefined : crm.cancellationText?.trim() || undefined,
+  };
+}
+
+/**
+ * Effektive Bedingungen einer Reise. Drei Ebenen, von stark nach schwach:
+ *
+ *   1. CMS je Reise   — bewusste Abweichung, die jemand im Admin eingetragen hat
+ *   2. CRM            — die gepflegte Wahrheit des Veranstalters (Regelfall)
+ *   3. CMS global     — Auffangwerte aus /admin/zahlungsbedingungen
+ *
+ * Feldweise, nicht blockweise: Eine Reise kann im CMS nur die Anzahlung
+ * übersteuern und Fristen wie Staffel weiter aus dem CRM beziehen.
+ *
+ * Die Stornoangabe bildet eine Einheit — Staffel, Freitext und Fußnote kommen
+ * immer aus derselben Ebene. Sonst stünde eine Fußnote unter einer Staffel, zu
+ * der sie nie gehört hat.
  */
 export function resolveBookingTerms(
   global?: BookingTermsConfig,
   trip?: BookingTermsConfig,
+  crm?: CrmBookingTerms,
 ): BookingTermsConfig {
   const g = global ?? {};
+  const c = crmTermsToConfig(crm);
   const t = trip ?? {};
+
+  const hatStorno = (x: BookingTermsConfig) => !!x.cancellation?.length || !!x.cancellationText?.trim();
+  const storno = [t, c, g].find(hatStorno) ?? {};
+
+  const zahl = (x: BookingTermsConfig) =>
+    typeof x.depositPerPerson === 'number' && x.depositPerPerson > 0 ? x.depositPerPerson : undefined;
+
   return {
-    depositPerPerson: typeof t.depositPerPerson === 'number' && t.depositPerPerson > 0
-      ? t.depositPerPerson
-      : g.depositPerPerson,
-    depositDue:  t.depositDue?.trim()  || g.depositDue,
-    balanceDue:  t.balanceDue?.trim()  || g.balanceDue,
-    cancellation: (t.cancellation?.length ? t.cancellation : g.cancellation)
-      ?.filter((c) => c.when?.trim() && c.fee?.trim()),
+    depositPerPerson: zahl(t) ?? zahl(c) ?? zahl(g),
+    depositDue: t.depositDue?.trim() || c.depositDue || g.depositDue,
+    balanceDue: t.balanceDue?.trim() || c.balanceDue || g.balanceDue,
+    cancellation: storno.cancellation?.filter((x) => x.when?.trim() && x.fee?.trim()),
+    cancellationText: storno.cancellationText?.trim() || undefined,
+    // Die Fußnote ist CMS-eigen (das CRM hat dafür kein Feld) und gehört zur
+    // Stornoangabe: Steht die aus dem CRM, passt eine globale Fußnote dazu.
     note: t.note?.trim() || g.note,
   };
 }
@@ -252,7 +341,8 @@ export function hasBookingTerms(terms?: BookingTermsConfig): boolean {
     (typeof terms.depositPerPerson === 'number' && terms.depositPerPerson > 0) ||
     !!terms.depositDue?.trim() ||
     !!terms.balanceDue?.trim() ||
-    !!terms.cancellation?.length
+    !!terms.cancellation?.length ||
+    !!terms.cancellationText?.trim()
   );
 }
 

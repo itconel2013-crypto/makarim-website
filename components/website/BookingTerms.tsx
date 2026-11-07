@@ -10,10 +10,10 @@ import { BookingTermsConfig } from '@/lib/content-schema';
  * Die AGB bleibt die verbindliche Langfassung, dies ist die Kurzfassung an der
  * Stelle, wo die Entscheidung fällt.
  *
- * KEINE VORGABEWERTE: Alle Angaben kommen aus dem CMS
- * (/admin/zahlungsbedingungen, je Reise übersteuerbar). Ist nichts gepflegt,
- * rendert die Buchungsseite diesen Block gar nicht erst — ein ausgedachter
- * Stornosatz wäre schlimmer als gar keine Angabe.
+ * KEINE VORGABEWERTE: Alle Angaben kommen aus dem CRM (mit dem Reise-Push) oder
+ * aus dem CMS (/admin/zahlungsbedingungen, je Reise übersteuerbar). Ist nichts
+ * gepflegt, rendert die Buchungsseite diesen Block gar nicht erst — ein
+ * ausgedachter Stornosatz wäre schlimmer als gar keine Angabe.
  */
 
 interface BookingTermsProps {
@@ -87,6 +87,20 @@ export function BookingTerms({ terms, travelerCount, priceAvailable, isVorreserv
             <div style={{ marginBottom: '18px' }}>
               <p style={rowLabel}>Restzahlung</p>
               <p style={{ fontSize: '15px', color: '#16242B', margin: 0, fontWeight: 500 }}>{terms.balanceDue}</p>
+            </div>
+          )}
+
+          {/* Stornobedingung als Freitext — im CRM als „Abweichend" gepflegt.
+              Dann gibt es keine Staffel, sondern einen Absatz. */}
+          {tiers.length === 0 && terms.cancellationText && (
+            <div style={{ marginBottom: '18px' }}>
+              <p style={rowLabel}>Wenn du stornieren musst</p>
+              <p style={{ fontSize: '14px', color: '#5A5448', margin: 0, lineHeight: 1.65, whiteSpace: 'pre-line' }}>
+                {terms.cancellationText}
+              </p>
+              {terms.note && (
+                <p style={{ fontSize: '12.5px', color: '#9A9082', margin: '8px 0 0', lineHeight: 1.55 }}>{terms.note}</p>
+              )}
             </div>
           )}
 

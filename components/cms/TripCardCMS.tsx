@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED, orderedTripSections, TRIP_SECTION_LABELS, hasBookingTerms, BookingTermsConfig } from '@/lib/content-schema';
+import { Trip, Hotel, ProgramDay, TripSection, getAvailability, DEFAULT_INCLUDED, orderedTripSections, TRIP_SECTION_LABELS, hasBookingTerms, BookingTermsConfig, resolveBookingTerms, crmTermsToConfig } from '@/lib/content-schema';
 import { useCMS } from './CMSProvider';
 import { Field, TextInput } from './FormEditor';
 import { BookingTermsEditor } from './BookingTermsEditor';
@@ -243,7 +243,13 @@ export function TripCardCMS({ trip, onMoveUp, onMoveDown, canMoveUp, canMoveDown
             <AccordionSection
               label="Zahlung & Storno"
               chip={<ChipOptional />}
-              summary={hasBookingTerms(trip.bookingTerms) ? 'eigene Bedingungen' : 'wie global'}
+              summary={
+            hasBookingTerms(trip.bookingTerms)
+              ? 'eigene Bedingungen'
+              : hasBookingTerms(crmTermsToConfig(trip.terms))
+                ? 'aus dem CRM'
+                : 'wie global'
+          }
               open={isOpen('zahlung')}
               onToggle={() => toggleSection('zahlung')}
             >
@@ -551,13 +557,18 @@ function HotelsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void 
 /**
  * Abweichende Zahlungs-/Stornobedingungen dieser Reise.
  *
- * Leere Felder erben die globalen Werte (/admin/zahlungsbedingungen) — die
- * Platzhalter zeigen, was dann gilt. „Wieder global" leert alles auf einmal.
+ * Normalfall ist, dass hier nichts steht: Die wirksamen Bedingungen kommen aus
+ * dem CRM (trip.terms). Was hier eingetragen wird, übersteuert sie bewusst für
+ * diese eine Reise auf der Website. Leere Felder zeigen als Platzhalter, was
+ * sonst gilt — CRM, sonst global.
  */
 function BookingTermsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) => void }) {
   const { store } = useCMS();
   const global: BookingTermsConfig = store?.c.brand.bookingTerms ?? {};
   const eigen = hasBookingTerms(trip.bookingTerms);
+  // Was ohne Übersteuerung gelten würde: CRM über global.
+  const geerbt = resolveBookingTerms(global, undefined, trip.terms);
+  const ausCrm = hasBookingTerms(crmTermsToConfig(trip.terms));
 
   return (
     <div>
@@ -566,15 +577,17 @@ function BookingTermsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) =>
         style={{ background: '#F4F1EA', borderRadius: '8px', padding: '10px 14px', color: '#6B6457', lineHeight: 1.6 }}
       >
         {eigen
-          ? 'Diese Reise hat eigene Bedingungen. Leere Felder erben weiterhin den globalen Wert.'
-          : 'Diese Reise folgt den globalen Bedingungen. Nur ausfüllen, was abweichen soll.'}
-        {!hasBookingTerms(global) && ' Global ist bisher nichts gepflegt.'}
+          ? 'Diese Reise hat eigene Bedingungen — sie übersteuern das CRM. Leere Felder erben weiterhin.'
+          : ausCrm
+            ? 'Die Bedingungen dieser Reise kommen aus dem CRM. Hier nur ausfüllen, was auf der Website bewusst abweichen soll.'
+            : 'Das CRM schickt für diese Reise keine Bedingungen. Es gelten die globalen Werte.'}
+        {!ausCrm && !hasBookingTerms(global) && ' Global ist bisher nichts gepflegt — der Block bleibt auf der Buchungsseite unsichtbar.'}
       </div>
 
       <BookingTermsEditor
         terms={trip.bookingTerms ?? {}}
         onChange={(next) => upd({ bookingTerms: next })}
-        inherited={global}
+        inherited={geerbt}
       />
 
       {eigen && (
@@ -584,7 +597,7 @@ function BookingTermsTab({ trip, upd }: { trip: Trip; upd: (p: Partial<Trip>) =>
           className="mt-4 text-sm"
           style={{ color: '#9A9082', textDecoration: 'underline' }}
         >
-          Abweichung entfernen — wieder global
+          Abweichung entfernen — wieder {ausCrm ? 'aus dem CRM' : 'global'}
         </button>
       )}
     </div>
