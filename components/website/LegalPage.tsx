@@ -15,10 +15,14 @@
 type Block =
   | { art: 'ueberschrift'; text: string }
   | { art: 'absatz'; nummer?: string; text: string }
+  | { art: 'liste'; punkte: string[] }
   | { art: 'tabelle'; zeilen: { links: string; rechts: string }[] };
 
 /** Trennzeichen der Tabellenzeilen („Über 60 Tage vor Abreise — 20 %"). */
 const SPALTE = ' — ';
+
+/** Zeilenanfänge, die einen Aufzählungspunkt einleiten. */
+const AUFZAEHLUNG = /^[–—•*-]\s+/;
 
 /**
  * „5. Rücktritt und Kündigung durch Makarim" ist eine Überschrift,
@@ -52,13 +56,30 @@ function unterziffer(zeile: string): { nummer: string; rest: string } | null {
   return m ? { nummer: m[1], rest: m[2] } : null;
 }
 
-export function gliedere(text: string): Block[] {
+export function gliedere(text: string, titel?: string): Block[] {
   const zeilen = text.split('\n').map((z) => z.trim());
   const blocks: Block[] = [];
 
   for (let i = 0; i < zeilen.length; i++) {
     const z = zeilen[i];
     if (!z) continue;
+
+    // Steht die Seitenüberschrift noch einmal als erste Textzeile (passiert beim
+    // Einfügen aus Word), nicht doppelt anzeigen.
+    if (blocks.length === 0 && titel && z.toLowerCase() === titel.toLowerCase()) continue;
+
+    // Aufzählung: aufeinanderfolgende Zeilen mit –, •, * oder - am Anfang.
+    if (AUFZAEHLUNG.test(z)) {
+      const punkte: string[] = [];
+      let j = i;
+      while (j < zeilen.length && AUFZAEHLUNG.test(zeilen[j])) {
+        punkte.push(zeilen[j].replace(AUFZAEHLUNG, '').trim());
+        j++;
+      }
+      blocks.push({ art: 'liste', punkte });
+      i = j - 1;
+      continue;
+    }
 
     // Tabelle: mindestens zwei aufeinanderfolgende Zeilen mit Trennzeichen.
     if (z.includes(SPALTE)) {
@@ -78,9 +99,12 @@ export function gliedere(text: string): Block[] {
       }
     }
 
-    // Die allererste Zeile ist in der Praxis der Firmenname direkt unter der
-    // Seitenüberschrift — die soll keine Abschnittsüberschrift werden.
-    if (istUeberschrift(z) || (blocks.length > 0 && istUeberschriftOhneNummer(z))) {
+    // Unnummerierte Überschriften nur dort, wo wirklich ein Abschnitt beginnt:
+    // nicht als allererste Zeile (dort steht in der Praxis der Firmenname) und
+    // nicht direkt hinter einer Überschrift (dort folgt die Anschrift, nicht der
+    // nächste Abschnitt).
+    const vorigeWarUeberschrift = blocks[blocks.length - 1]?.art === 'ueberschrift';
+    if (istUeberschrift(z) || (blocks.length > 0 && !vorigeWarUeberschrift && istUeberschriftOhneNummer(z))) {
       blocks.push({ art: 'ueberschrift', text: z });
       continue;
     }
@@ -94,7 +118,7 @@ export function gliedere(text: string): Block[] {
 
 export function LegalPage({ title, text }: { title: string; text?: string }) {
   const body = (text ?? '').trim();
-  const blocks = body ? gliedere(body) : [];
+  const blocks = body ? gliedere(body, title) : [];
 
   return (
     <main className="min-h-screen bg-page">
@@ -122,6 +146,28 @@ export function LegalPage({ title, text }: { title: string; text?: string }) {
                     >
                       {b.text}
                     </h2>
+                  );
+                }
+
+                if (b.art === 'liste') {
+                  return (
+                    <ul key={i} style={{ margin: '0 0 16px', padding: 0, listStyle: 'none' }}>
+                      {b.punkte.map((p, k) => (
+                        <li
+                          key={k}
+                          style={{
+                            position: 'relative',
+                            paddingLeft: '18px',
+                            marginBottom: '6px',
+                          }}
+                        >
+                          <span aria-hidden="true" style={{ position: 'absolute', left: 0, color: '#A8542F' }}>
+                            •
+                          </span>
+                          {p}
+                        </li>
+                      ))}
+                    </ul>
                   );
                 }
 
