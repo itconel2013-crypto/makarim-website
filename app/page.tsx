@@ -45,7 +45,8 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     <main>
-      {/* Hero Section */}
+      {/* Hero Section — 60 % der Bildschirmhöhe (.hero-section in globals.css),
+          damit die Zahlenleiste direkt darunter ohne Scrollen im Blick steht. */}
       <HeroSection
         kicker={content.c.home.kicker}
         headline={content.c.home.headline}

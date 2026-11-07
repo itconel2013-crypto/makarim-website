@@ -108,6 +108,40 @@ html.scroll-smooth {
   box-shadow: none;
 }
 
+/* Startseite, Titelbild — Variante „Mittel" (Entscheidung 2026-11-07):
+   Das Bild nimmt 60 % der Bildschirmhöhe ein. Die Zahlen darunter (40+, 10.000+ …)
+   stehen damit ohne Scrollen klar im Blick, und der Anfang des nächsten Abschnitts
+   ist schon zu sehen. Früher füllte das Bild 88vh, die Zahlen lagen unter der Kante;
+   ein Zwischenstand, bei dem Bild + Zahlen den Bildschirm genau füllten, ließ die
+   Zahlen am Rand kleben und war sichtbar nur „minimal besser".
+   svh statt vh: Auf dem Handy zählt vh die Browserleisten nicht ab. Ältere Browser
+   ohne svh nehmen die vh-Zeile.
+   min-height (nicht height): Ist der Text höher als 60 %, wächst das Bild mit,
+   statt ihn abzuschneiden.
+   Alle Regeln stehen bewusst NACH den Tailwind-Layern: gleiche Spezifität, die
+   spätere Regel gewinnt (überschreibt z. B. py-8 der Komponente). */
+.hero-section {
+  min-height: 60vh;
+  min-height: 60svh;
+}
+
+/* Niedrige Desktop-Fenster: Laptops mit Windows-Skalierung (125–150 %) und
+   Browserleisten zeigen oft nur ~600 px. 60 % wären dort kleiner als der Text, das
+   Bild richtet sich also nach ihm — knappere Polsterung hält die Zahlen im Blick. */
+@media (min-width: 640px) and (max-height: 660px) {
+  .hero-section { padding-top: 16px; padding-bottom: 16px; }
+}
+
+/* Kleine UND niedrige Handys (z. B. iPhone SE mit Safari-Leisten, sichtbar nur
+   ~548 px): Das Bild wird nur so hoch wie sein Text, Abstände und Zahlenzellen
+   rücken zusammen — sonst fehlten bis zu den Zahlen einige Pixel. Größere Handys,
+   Tablets und Desktop bleiben unberührt. */
+@media (max-width: 639px) and (max-height: 620px) {
+  .hero-section { min-height: 0; padding-top: 20px; padding-bottom: 20px; }
+  .hero-sub     { margin-bottom: 20px; }
+  .stats-cell   { padding-top: 12px; padding-bottom: 12px; }
+}
+
 /* Auf Buchungsseiten den WhatsApp-Button komplett ausblenden — sonst überdeckt
    der schwebende Button (fixed unten rechts) den Buchungs-CTA: am Handy die
    fixierte Buchungsleiste unten, auf dem Desktop den "Jetzt buchen"-Button in

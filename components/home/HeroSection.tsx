@@ -13,7 +13,11 @@ interface HeroSectionProps {
 
 export function HeroSection({ kicker, headline, sub, heroImage, btnSecondary }: HeroSectionProps) {
   return (
-    <section className="relative w-full flex items-center justify-center overflow-hidden" style={{ minHeight: '88vh' }}>
+    // Höhe kommt aus globals.css (.hero-section): 60 % der Bildschirmhöhe, damit die
+    // Zahlenleiste darunter ohne Scrollen im Blick steht (früher 88vh). Dort liegen
+    // auch die Sonderregeln für niedrige Laptops und kleine Handys.
+    // `hero-section` / `hero-sub` sind die Ansatzpunkte dafür.
+    <section className="hero-section relative w-full flex items-center justify-center overflow-hidden py-8">
       {/* Background image */}
       {heroImage ? (
         <div
@@ -32,44 +36,53 @@ export function HeroSection({ kicker, headline, sub, heroImage, btnSecondary }: 
         aria-hidden="true"
       />
 
-      {/* Content — max 760px */}
-      <div className="relative z-10 text-center text-white px-gutter w-full" style={{ maxWidth: '760px', margin: '0 auto' }}>
+      {/* Content — max 760px.
+          Auf dem Handy bewusst verdichtet (knappere Abstände, schmalerer Rand,
+          Buttons nebeneinander), damit Bild und zweizeilige Zahlenleiste zusammen in
+          den ersten Bildschirm passen. Ab sm: gelten wieder die Desktop-Maße. */}
+      <div
+        // data-fab-ceiling: Unterkante dieses Blocks (= Buttons) begrenzt nach oben,
+        // wohin der WhatsApp-Button ausweichen darf (siehe WhatsAppFab).
+        data-fab-ceiling
+        className="relative z-10 text-center text-white px-5 sm:px-gutter w-full"
+        style={{ maxWidth: '760px', margin: '0 auto' }}
+      >
         {/* Kicker — mono, 13px, letter-spacing .2em, #F0CDA8 */}
         <p
-          className="font-mono uppercase mb-6"
+          className="font-mono uppercase mb-4 sm:mb-6"
           style={{ fontSize: '13px', letterSpacing: '0.2em', color: '#F0CDA8' }}
         >
           {kicker}
         </p>
 
-        {/* H1 — Newsreader 62px / 1.05 */}
+        {/* H1 — Newsreader 62px / 1.05.
+            text-balance verteilt die Zeilen gleichmäßig — sonst bleibt je nach
+            Breite ein einzelnes Wort („Stätten") allein in der zweiten Zeile. */}
         <h1
-          className="font-serif font-normal text-white mb-6"
-          style={{ fontSize: 'clamp(36px, 6vw, 62px)', lineHeight: '1.05' }}
+          className="font-serif font-normal text-white mb-4 sm:mb-6 text-balance"
+          style={{ fontSize: 'clamp(32px, 6vw, 62px)', lineHeight: '1.05' }}
         >
           {headline}
         </h1>
 
-        {/* Sub — 18px, rgba(255,255,255,.92) */}
+        {/* Sub — 18px, rgba(255,255,255,.92); auf dem Handy 16px */}
         <p
-          className="mb-12 leading-relaxed"
-          style={{ fontSize: '18px', color: 'rgba(255,255,255,0.92)' }}
+          className="hero-sub mb-8 sm:mb-12 leading-relaxed"
+          style={{ fontSize: 'clamp(16px, 2.2vw, 18px)', color: 'rgba(255,255,255,0.92)' }}
         >
           {sub}
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        {/* CTA Buttons — nebeneinander; flex-wrap bricht nur um, wenn ein langer
+            Button-Text aus dem CMS nicht mehr in eine Zeile passt. */}
+        <div className="flex flex-row flex-wrap gap-3 sm:gap-4 justify-center">
           {/* Primary — terracotta, 54px tall, radius 13px */}
           <a
             href="#kategorien"
-            className="inline-flex items-center justify-center font-sans font-medium text-white transition-colors"
+            className="inline-flex items-center justify-center font-sans font-medium text-white transition-colors h-12 sm:h-[54px] px-5 sm:px-8 text-[15px] sm:text-base"
             style={{
               backgroundColor: '#C2724A',
-              height: '54px',
               borderRadius: '13px',
-              padding: '0 32px',
-              fontSize: '16px',
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -82,12 +95,9 @@ export function HeroSection({ kicker, headline, sub, heroImage, btnSecondary }: 
           {/* Secondary — translucent white border */}
           <Link
             href="/ueber-uns"
-            className="inline-flex items-center justify-center font-sans font-medium text-white transition-colors"
+            className="inline-flex items-center justify-center font-sans font-medium text-white transition-colors h-12 sm:h-[54px] px-5 sm:px-8 text-[15px] sm:text-base"
             style={{
-              height: '54px',
               borderRadius: '13px',
-              padding: '0 32px',
-              fontSize: '16px',
               border: '1.5px solid rgba(255,255,255,0.55)',
               backgroundColor: 'rgba(255,255,255,0.12)',
             }}

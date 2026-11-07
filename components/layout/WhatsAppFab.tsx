@@ -1,17 +1,129 @@
 'use client';
 
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
+/** Ruheposition des Buttons: Abstand zu unterem und rechtem Rand, Größe. */
+const EDGE = 24;
+const SIZE = 60;
+/** Luft zwischen angehobenem Button und der Oberkante der freizuhaltenden Leiste. */
+const GAP = 16;
+/** Bis zu dieser Scrolltiefe gilt „ganz oben" — danach zurück in die Ecke. */
+const TOP_ZONE = 40;
+/** Erst nach dieser Zeit gleitet der Button bei Positionswechseln (siehe `smooth`). */
+const SMOOTH_AFTER_MS = 300;
+
+// useLayoutEffect rechnet vor dem ersten Zeichnen (kein sichtbares Springen), gibt
+// beim Server-Rendering aber eine Warnung aus — dort genügt useEffect.
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
 /**
- * Schwebender WhatsApp-Button. Auf Buchungsseiten würde er (fixed bottom-right)
- * den Buchungs-CTA überdecken — am Handy die fixierte Buchungsleiste unten, auf
- * dem Desktop den "Jetzt buchen"-Button in der rechten Zusammenfassung. Deshalb
- * wird er auf Buchungsseiten komplett ausgeblendet (Klasse `on-booking`, Regel
- * in globals.css).
+ * Schwebender WhatsApp-Button.
+ *
+ * Buchungsseiten: komplett ausgeblendet. Er würde (fixed bottom-right) den
+ * Buchungs-CTA überdecken — am Handy die fixierte Buchungsleiste unten, auf dem
+ * Desktop den "Jetzt buchen"-Button in der rechten Zusammenfassung (Klasse
+ * `on-booking`, Regel in globals.css).
+ *
+ * Startseite: Die Zahlenleiste steht dort ohne Scrollen im Blick — auf manchen
+ * Bildschirmen (vor allem kleinen Handys) direkt am unteren Rand, und dann läge der
+ * Button genau auf „100 % aus einer Hand". Solange man ganz oben steht, weicht er
+ * deshalb aus und gleitet beim Scrollen zurück in die Ecke:
+ *   1. Verdeckt er in der Ecke keinen Text der Leiste → bleibt er dort (Desktop,
+ *      Tablet, größere Handys).
+ *   2. Sonst hebt er sich über die Leiste (`[data-fab-avoid]`) — mit GAP Abstand,
+ *      oder mittig in der Lücke zu den Buttons im Bild (`[data-fab-ceiling]`), wenn
+ *      der Abstand dort sonst auf „Über uns" läge.
+ *   3. Ist die Lücke selbst für den Button zu klein (sehr kleine Handys mit
+ *      eingeblendeten Browserleisten), gibt es keine freie Stelle: Er bliebe auf
+ *      „Über uns" liegen, und ein Tipp dort öffnete WhatsApp. Dann wartet er
+ *      unsichtbar, bis man ein Stück scrollt. WhatsApp ist ein Hauptkontaktweg —
+ *      dieser Fall betrifft deshalb bewusst nur Bildschirme ohne jede Alternative.
  */
 export function WhatsAppFab({ number }: { number: string }) {
   const pathname = usePathname();
   const onBooking = !!pathname && pathname.endsWith('/booking');
+  const onHome = pathname === '/';
+
+  const [lift, setLift] = useState(0);
+  // Startseite: Der Server kennt die Bildschirmgröße nicht und würde den Button in
+  // der Ecke ausliefern — also auf der Zahl. Bis seine Position im Browser feststeht,
+  // bleibt er dort unsichtbar und blendet dann ein, statt sichtbar hochzurutschen.
+  // Andere Seiten: sofort sichtbar wie immer. (Server und Browser starten mit
+  // demselben Wert, weil usePathname auf beiden Seiten gleich antwortet.)
+  const [placed, setPlaced] = useState(!onHome);
+  // Fall 3 oben: keine freie Stelle → unsichtbar, bis gescrollt wird.
+  const [noSpot, setNoSpot] = useState(false);
+  // Die erste Platzierung soll springen, nicht gleiten — sonst sähe man trotz
+  // Einblenden eine Bewegung. Gleiten erst danach (Scrollen, Drehen).
+  const [smooth, setSmooth] = useState(false);
+
+  useIsoLayoutEffect(() => {
+    setSmooth(false);
+    const smoothTimer = window.setTimeout(() => setSmooth(true), SMOOTH_AFTER_MS);
+
+    if (!onHome) {
+      setLift(0);
+      setNoSpot(false);
+      setPlaced(true);
+      return () => window.clearTimeout(smoothTimer);
+    }
+
+    /** Anhebung in px — oder null, wenn es keine freie Stelle gibt (Fall 3). */
+    const compute = (): number | null => {
+      // Weiter unten auf der Seite (der Normalfall beim Scrollen) nichts messen.
+      if (window.scrollY > TOP_ZONE) return 0;
+      const avoid = document.querySelector<HTMLElement>('[data-fab-avoid]');
+      if (!avoid) return 0;
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      // Wo der Button in Ruheposition säße:
+      const fab = { left: w - EDGE - SIZE, right: w - EDGE, top: h - EDGE - SIZE, bottom: h - EDGE };
+
+      // Gemessen wird gegen die TEXTE der Leiste, nicht gegen ihren Kasten — sonst
+      // würde er auch dort ausweichen, wo nur weiße Fläche unter ihm liegt.
+      const coversText = Array.from(avoid.querySelectorAll('span')).some((el) => {
+        const r = el.getBoundingClientRect();
+        return r.left < fab.right && r.right > fab.left && r.top < fab.bottom && r.bottom > fab.top;
+      });
+      if (!coversText) return 0;                                   // Fall 1
+
+      const statsTop = avoid.getBoundingClientRect().top;
+      let fabBottomY = statsTop - GAP;                              // Fall 2, Normalfall
+      const ceiling = document.querySelector<HTMLElement>('[data-fab-ceiling]');
+      if (ceiling) {
+        const ceilingBottom = ceiling.getBoundingClientRect().bottom;
+        const gap = statsTop - ceilingBottom;
+        if (gap < SIZE) return null;                                // Fall 3
+        if (gap < SIZE + 2 * GAP) {
+          fabBottomY = ceilingBottom + (gap + SIZE) / 2;            // Fall 2, mittig
+        }
+      }
+      return Math.max(0, Math.round(h - EDGE - fabBottomY));
+    };
+
+    // Bewusst direkt im Ereignis statt über requestAnimationFrame: Unten auf der
+    // Seite kostet ein Aufruf nur das Lesen von scrollY, und React verwirft
+    // unveränderte Werte ohne neues Rendern.
+    const update = () => {
+      const next = compute();
+      setNoSpot(next === null);
+      if (next !== null) setLift(next);
+    };
+
+    update();
+    setPlaced(true);
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.clearTimeout(smoothTimer);
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [onHome]);
+
+  const visible = placed && !noSpot;
 
   return (
     <a
@@ -22,10 +134,10 @@ export function WhatsAppFab({ number }: { number: string }) {
       className={`wa-fab${onBooking ? ' on-booking' : ''}`}
       style={{
         position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        width: '60px',
-        height: '60px',
+        bottom: `${EDGE + lift}px`,
+        right: `${EDGE}px`,
+        width: `${SIZE}px`,
+        height: `${SIZE}px`,
         borderRadius: '50%',
         backgroundColor: '#25D366',
         boxShadow: '0 8px 24px rgba(37,211,102,0.45)',
@@ -33,6 +145,11 @@ export function WhatsAppFab({ number }: { number: string }) {
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 50,
+        // visibility zusätzlich zu opacity: ein unsichtbarer Button darf auch per
+        // Tastatur nicht erreichbar sein.
+        opacity: visible ? 1 : 0,
+        visibility: visible ? 'visible' : 'hidden',
+        transition: smooth ? 'bottom 0.25s ease, opacity 0.2s ease' : 'opacity 0.2s ease',
       }}
     >
       <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
