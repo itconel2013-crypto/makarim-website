@@ -1,0 +1,22 @@
+Schriften dieser Website
+========================
+
+Die hier abgelegten Schriftdateien stammen von Google Fonts und stehen unter der
+SIL Open Font License 1.1 (OFL). Sie duerfen damit frei verwendet, weitergegeben
+und auf eigenen Servern ausgeliefert werden.
+
+  Newsreader          https://fonts.google.com/specimen/Newsreader
+  Schibsted Grotesk   https://fonts.google.com/specimen/Schibsted+Grotesk
+  JetBrains Mono      https://fonts.google.com/specimen/JetBrains+Mono
+
+Lizenztext: https://openfontlicense.org/
+
+Warum die Dateien hier liegen statt von Google geladen zu werden:
+Beim Laden von fonts.googleapis.com wird die IP-Adresse jedes Besuchers an Google
+uebertragen, bevor dieser irgendetwas angeklickt hat. Seit dem Urteil des
+LG Muenchen I vom 20.01.2022 (Az. 3 O 17493/20) ist das ein Datenschutzverstoss.
+Selbst ausgeliefert entfaellt die Uebertragung vollstaendig.
+
+Aktualisieren: scripts/fonts-holen.ps1 ausfuehren. Das Skript laedt die Variable
+Fonts neu (Zeichensaetze latin und latin-ext) und schreibt die passenden
+@font-face-Regeln nach styles/fonts.css.

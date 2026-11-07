@@ -1,14 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,8..72,400;0,8..72,500;0,8..72,600;1,8..72,400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Schriften kommen aus dem eigenen Haus (public/fonts), nicht mehr von Google.
+   Vorher luden Newsreader, Schibsted Grotesk und JetBrains Mono bei jedem
+   Seitenaufruf von fonts.googleapis.com — damit ging die IP-Adresse jedes
+   Besuchers an Google, bevor irgendetwas angeklickt war. Genau dafür gab es das
+   Urteil des LG München von 2022 und die anschließende Abmahnwelle.
+
+   Die Schriftnamen bleiben bewusst erhalten ('Newsreader' usw.): Dutzende
+   Komponenten setzen die Schrift namentlich im style-Attribut. Der sonst übliche
+   next/font-Weg vergibt generierte Namen — alle diese Stellen würden auf
+   Systemschriften zurückfallen.
+
+   Aktualisieren: scripts/fonts-holen.ps1 erneut laufen lassen (lädt Variable
+   Fonts, Zeichensätze latin + latin-ext) und styles/fonts.css ersetzen. */
+@import './fonts.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* Schibsted Grotesk is the default sans-serif from Google Fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap');
-  
+  /* Schibsted Grotesk ist die Grundschrift — geladen über styles/fonts.css. */
+
   html {
     @apply scroll-smooth;
   }
