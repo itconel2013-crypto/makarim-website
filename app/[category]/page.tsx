@@ -5,6 +5,7 @@ import { loadContent } from '@/lib/db';
 import { TripYearSections } from '@/components/website/TripYearSections';
 import { categoryFromSlug, type CategoryKey } from '@/lib/utils';
 import { pageMetadata, istBildpfad } from '@/lib/seo';
+import { kategorieStrukturdaten } from '@/lib/structured-data';
 
 const typMap: Record<CategoryKey, 'Umrah' | 'Hajj' | 'Kulturreisen'> = {
   umrah: 'Umrah',
@@ -59,8 +60,23 @@ export default async function CategoryPage({
     (t) => t.published !== false && t.typ === typ
   );
 
+  // Strukturierte Daten: Brotkrumenpfad, Liste der Reisen, Veranstalter.
+  // Erzeugt aus denselben Daten, die unten auf der Seite stehen — siehe
+  // lib/structured-data.ts.
+  const strukturdaten = kategorieStrukturdaten({
+    content: content.c,
+    kategorieTitel: categoryData.title,
+    kategoriePfad: `/${category}`,
+    trips,
+  });
+
   return (
     <main className="min-h-screen bg-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(strukturdaten) }}
+      />
+
       {/* Category header */}
       <section className="bg-white border-b border-border-light">
         <div className="container-max py-14">

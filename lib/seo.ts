@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
 
 /**
+ * Die vollständige Adresse der Website. Wird für strukturierte Daten gebraucht,
+ * die immer absolute Adressen verlangen — anders als die Metadaten, die über
+ * metadataBase in app/layout.tsx aufgelöst werden.
+ */
+export const SITE_URL = 'https://www.makarim.de';
+
+/**
  * Baut die Metadaten einer öffentlichen Seite: Titel, Beschreibung, Kanonische
  * Adresse und die Vorschau fürs Teilen (Open Graph + Twitter Cards).
  *
