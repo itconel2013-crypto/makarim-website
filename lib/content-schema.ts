@@ -65,6 +65,13 @@ export interface Trip {
   // Reise-Push aktualisiert. NICHT in mergeTrip bewahren — fehlt es im Push, ist
   // es im CRM nicht (mehr) gepflegt und muss auch hier verschwinden.
   terms?: CrmBookingTerms;
+  /**
+   * Wann sich an dieser Reise zuletzt etwas geändert hat (ISO-Zeit).
+   * Gesetzt in mergeTrip, und zwar nur bei echten Änderungen — der Wert landet
+   * als `lastmod` in der Sitemap und sagt Suchmaschinen, wo sich ein erneuter
+   * Besuch lohnt. Fehlt er (Altbestand), bleibt der Eintrag ohne Datum.
+   */
+  lastModified?: string;
 }
 
 /** Sortierbare Blöcke der Reise-Detailseite (CMS-only). */

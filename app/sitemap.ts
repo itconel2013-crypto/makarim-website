@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { loadContent } from '@/lib/db';
+import { loadContent, contentUpdatedAt } from '@/lib/db';
 import { Trip, Guide } from '@/lib/content-schema';
 import { SITE_URL, categoryPath, tripPath } from '@/lib/utils';
 
@@ -38,17 +38,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/datenschutz',
   ];
 
+  // lastmod sagt Suchmaschinen, wo sich ein erneuter Besuch lohnt. Es muss
+  // stimmen: Wer ständig „alles neu" meldet, dessen Angabe wird ignoriert.
+  //
+  // Deshalb nur dort, wo wir es wirklich wissen:
+  //   Reisen           → eigener Stempel, gesetzt bei echten Änderungen
+  //   Übersichtsseiten → Zeitpunkt der letzten CMS-Speicherung; diese Seiten
+  //                      listen Reisen und ändern sich mit jeder Pflege mit
+  //   Rechtstexte, FAQ, Kontakt → ohne Angabe. Sie ändern sich selten, und der
+  //                      allgemeine CMS-Stempel wäre dort schlicht falsch.
+  const cmsStand = contentUpdatedAt();
+  const mitStand = new Set(['', categoryPath('umrah'), categoryPath('hajj'), categoryPath('kulturreisen'), '/ratgeber', '/galerie']);
+
   const staticEntries: MetadataRoute.Sitemap = staticPaths.map((p) => ({
     url: `${SITE_URL}${p}`,
+    ...(cmsStand && mitStand.has(p) ? { lastModified: cmsStand } : {}),
     changeFrequency: 'weekly',
     priority: p === '' ? 1 : 0.8,
   }));
 
-  const tripEntries: MetadataRoute.Sitemap = trips.map((t) => ({
-    url: `${SITE_URL}${tripPath(t)}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  const tripEntries: MetadataRoute.Sitemap = trips.map((t) => {
+    const stand = t.lastModified ? new Date(t.lastModified) : undefined;
+    return {
+      url: `${SITE_URL}${tripPath(t)}`,
+      ...(stand && !isNaN(stand.getTime()) ? { lastModified: stand } : {}),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    };
+  });
 
   const guideEntries: MetadataRoute.Sitemap = guides.map((g) => ({
     url: `${SITE_URL}/ratgeber/${g.slug}`,

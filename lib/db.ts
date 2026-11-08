@@ -180,6 +180,28 @@ export async function loadContent(): Promise<CMSStore> {
 /**
  * Save content to database (sync, wrapped in transaction)
  */
+/**
+ * Wann der CMS-Inhalt zuletzt gespeichert wurde.
+ *
+ * Es gibt nur DIESEN einen Zeitstempel für den gesamten Inhalt — kein Feld je
+ * Seite. Für die Sitemap taugt er deshalb nur bei Seiten, die sich tatsächlich
+ * mit jeder Inhaltsänderung mitändern (Startseite, Kategorieübersichten). Reisen
+ * tragen ihren eigenen Stempel (Trip.lastModified).
+ */
+export function contentUpdatedAt(): Date | undefined {
+  try {
+    const db = getDb();
+    const row = db.prepare('SELECT updated_at FROM cms_content WHERE id = 1').get() as any;
+    db.close();
+    if (!row?.updated_at) return undefined;
+    // SQLite liefert "YYYY-MM-DD HH:MM:SS" in UTC.
+    const d = new Date(String(row.updated_at).replace(' ', 'T') + 'Z');
+    return isNaN(d.getTime()) ? undefined : d;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function saveContent(content: any): Promise<void> {
   const db = getDb();
   const run = db.transaction(() => {

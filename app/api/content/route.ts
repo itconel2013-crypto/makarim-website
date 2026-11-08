@@ -222,13 +222,27 @@ export async function PATCH(request: NextRequest) {
         } else {
           merged.hotels = prevHotels;               // CRM sendet keine Hotels → CMS-Stand behalten
         }
+
+        // Zeitstempel für die Sitemap (lastmod) — ganz zum Schluss, wenn alle
+        // Felder zusammengeführt sind. Bewusst NUR erneuern, wenn sich wirklich
+        // etwas geändert hat: Das CRM pusht auch bei Sammelaktionen (etwa einer
+        // geänderten Stornostaffel) alle Reisen neu. Würde jeder Push den Stempel
+        // setzen, meldete die Sitemap lauter Änderungen, die keine sind — und
+        // unzuverlässige lastmod-Angaben ignoriert Google.
+        const ohneStempel = (x: any) => {
+          const { lastModified, ...rest } = x ?? {};
+          return JSON.stringify(rest);
+        };
+        merged.lastModified =
+          ohneStempel(merged) === ohneStempel(prev) ? prev.lastModified : new Date().toISOString();
+
         return merged;
       };
       const updated = idx >= 0
         ? trips.map((t: any, i: number) => i === idx ? mergeTrip(t, trip) : t)
         // Erst-Anlage: Überschrift startet als CRM-Name (das CRM-title-Feld kann bei alten
         // Duplikaten veraltet sein) — ab dann gilt die Merge-Regel oben.
-        : [...trips, { ...trip, title: trip.name ?? trip.title, titleOverride: false }];
+        : [...trips, { ...trip, title: trip.name ?? trip.title, titleOverride: false, lastModified: new Date().toISOString() }];
       const newData = { ...existing, c: { ...existing.c, trips: updated } };
       db.prepare('UPDATE cms_content SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(JSON.stringify(newData));
       db.close();
