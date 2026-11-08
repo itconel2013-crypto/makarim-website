@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { loadContent } from '@/lib/db';
 import { Guide } from '@/lib/content-schema';
 import { truncateText } from '@/lib/utils';
+import { pageMetadata } from '@/lib/seo';
 
 async function findGuide(slug: string): Promise<Guide | undefined> {
   const content = await loadContent();
@@ -23,7 +24,16 @@ export async function generateMetadata({
 
   const title = guide.seoTitle || `${guide.title} | ${content.c.seo.siteName}`;
   const description = guide.seoDesc || truncateText(guide.excerpt || guide.intro, 158) || content.c.seo.defaultDesc;
-  return { title, description };
+  return pageMetadata({
+    title,
+    description,
+    path: `/ratgeber/${slug}`,
+    // Ratgeber-Beiträge haben kein eigenes Bild — das Titelbild der Startseite
+    // ist allemal besser als eine Vorschau ohne Bild.
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+    type: 'article',
+  });
 }
 
 export default async function GuidePage({

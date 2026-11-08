@@ -1,7 +1,17 @@
 import { loadContent } from '@/lib/db';
 import { KontaktForm } from '@/components/kontakt/KontaktForm';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = { title: 'Kontakt — Makarim Reisen' };
+export async function generateMetadata() {
+  const content = await loadContent();
+  return pageMetadata({
+    title: `Kontakt | ${content.c.seo.siteName}`,
+    description: 'Sprich uns an — telefonisch, per E-Mail oder über WhatsApp. Wir beraten dich zu deiner Pilgerreise.',
+    path: '/kontakt',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
+}
 
 const iconBox = (bg: string) => ({
   width: '46px', height: '46px', borderRadius: '13px', flexShrink: 0,

@@ -3,13 +3,17 @@ import { loadContent } from '@/lib/db';
 import { GalleryItem } from '@/lib/content-schema';
 import { youtubeId, galleryImages } from '@/lib/utils';
 import { GallerySlider } from '@/components/website/GallerySlider';
+import { pageMetadata } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await loadContent();
-  return {
+  return pageMetadata({
     title: `Galerie — Eindrücke unserer Reisen | ${content.c.seo.siteName}`,
     description: 'Bilder und Videos von unseren Umrah- und Hajj-Reisen — echte Eindrücke unserer Pilgergruppen.',
-  };
+    path: '/galerie',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
 }
 
 export default async function GaleriePage() {

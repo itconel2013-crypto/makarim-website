@@ -3,14 +3,18 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { loadContent } from '@/lib/db';
 import { Guide } from '@/lib/content-schema';
+import { pageMetadata } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await loadContent();
-  return {
+  return pageMetadata({
     title: `Ratgeber — Duas, Packliste & Vorbereitung | ${content.c.seo.siteName}`,
     description:
       'Bittgebete (Duas), Packliste und praktische Tipps zur Vorbereitung deiner Umrah- oder Hajj-Reise — verständlich erklärt.',
-  };
+    path: '/ratgeber',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
 }
 
 export default async function RatgeberPage() {

@@ -2,14 +2,18 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadContent } from '@/lib/db';
+import { pageMetadata } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await loadContent();
   const seo = content.c.seo.about;
-  return {
+  return pageMetadata({
     title: seo?.title ?? content.c.seo.siteName,
     description: seo?.desc ?? content.c.seo.defaultDesc,
-  };
+    path: '/ueber-uns',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
 }
 
 export default async function AboutPage() {

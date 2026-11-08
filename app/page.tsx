@@ -8,14 +8,18 @@ import { TrustCards } from '@/components/home/TrustCards';
 import { CategoryGrid } from '@/components/home/CategoryGrid';
 import { TripCardGrid } from '@/components/home/TripCardGrid';
 import { CTABand } from '@/components/home/CTABand';
+import { pageMetadata } from '@/lib/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await loadContent();
   const seo = content.c.seo.home;
-  return {
+  return pageMetadata({
     title: seo?.title ?? content.c.seo.siteName,
     description: seo?.desc ?? content.c.seo.defaultDesc,
-  };
+    path: '/',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
 }
 
 export default async function Home() {

@@ -1,6 +1,16 @@
 import { loadContent } from '@/lib/db';
+import { pageMetadata } from '@/lib/seo';
 
-export const metadata = { title: 'FAQ — Makarim Reisen' };
+export async function generateMetadata() {
+  const content = await loadContent();
+  return pageMetadata({
+    title: `Häufige Fragen zu Umrah & Hajj | ${content.c.seo.siteName}`,
+    description: 'Antworten auf die häufigsten Fragen zu Visum, Gepäck, Unterkunft und Ablauf einer Pilgerreise.',
+    path: '/faq',
+    image: content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
+}
 
 export default async function FAQPage() {
   const content = await loadContent();

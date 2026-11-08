@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { loadContent } from '@/lib/db';
 import { TripYearSections } from '@/components/website/TripYearSections';
 import { categoryFromSlug, type CategoryKey } from '@/lib/utils';
+import { pageMetadata, istBildpfad } from '@/lib/seo';
 
 const typMap: Record<CategoryKey, 'Umrah' | 'Hajj' | 'Kulturreisen'> = {
   umrah: 'Umrah',
@@ -28,11 +29,15 @@ export async function generateMetadata({
 
   const content = await loadContent();
   const seo = content.c.seo[seoKeyMap[cat]];
+  const kategorie = content.c.categories.find((k) => k.key === cat);
 
-  return {
+  return pageMetadata({
     title: seo?.title ?? content.c.seo.siteName,
     description: seo?.desc ?? content.c.seo.defaultDesc,
-  };
+    path: `/${category}`,
+    image: istBildpfad(kategorie?.imageUrl) ? kategorie?.imageUrl : content.c.home?.heroUrl,
+    siteName: content.c.seo.siteName,
+  });
 }
 
 export default async function CategoryPage({

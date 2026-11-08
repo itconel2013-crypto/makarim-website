@@ -7,6 +7,7 @@ import { getAvailability, Trip, DEFAULT_INCLUDED, orderedTripSections, TripSecti
 import { availableRooms, effectiveRoomPrice } from '@/lib/pricing';
 import { truncateText, hasPrice, PRICE_ON_REQUEST, categoryFromSlug, stripInlineMarks } from '@/lib/utils';
 import { RichText } from '@/components/website/RichText';
+import { pageMetadata, istBildpfad } from '@/lib/seo';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { category, slug } = await params;
   const content = await loadContent();
   const trip = content.c.trips.find((t) => t.slug === slug && t.published !== false);
   if (!trip) return {};
@@ -71,7 +72,16 @@ export async function generateMetadata({
   const title = trip.seoTitle || `${trip.title} | ${siteName}`;
   const description = trip.seoDesc || truncateText(stripInlineMarks(trip.text || trip.description), 158) || content.c.seo.defaultDesc;
 
-  return { title, description };
+  return pageMetadata({
+    title,
+    description,
+    path: `/${category}/${slug}`,
+    // Das Titelbild der Reise — beim Teilen sieht man, um welche Reise es geht.
+    // In Altbeständen steht in trip.url gelegentlich ein Seitenpfad statt eines
+    // Bildes; dann lieber das Titelbild der Startseite als gar keine Vorschau.
+    image: istBildpfad(trip.url) ? trip.url : content.c.home?.heroUrl,
+    siteName,
+  });
 }
 
 // ─── page ────────────────────────────────────────────────────────────────────
