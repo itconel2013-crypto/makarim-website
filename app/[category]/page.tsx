@@ -95,7 +95,7 @@ export default async function CategoryPage({
             className="font-serif font-normal text-ink mb-6"
             style={{ fontSize: 'clamp(28px, 4vw, 46px)', lineHeight: '1.2' }}
           >
-            {categoryData.title}
+            {categoryData.headline?.trim() || categoryData.title}
           </h1>
 
           <p className="text-body-lg text-body-dark max-w-2xl leading-relaxed">

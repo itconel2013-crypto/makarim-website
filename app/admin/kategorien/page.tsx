@@ -73,6 +73,17 @@ export default function KategorienEditor() {
                       <TextInput value={cat.description} onChange={(v) => updCat(i, { description: v })} />
                     </Field>
                   </div>
+                  <Field
+                    label="Überschrift der Kategorie-Seite"
+                    hint={`Leer = „${cat.title}“ · Suchmaschinen gewichten diese Zeile stark`}
+                  >
+                    <TextInput
+                      value={cat.headline ?? ''}
+                      onChange={(v) => updCat(i, { headline: v })}
+                      placeholder={`z. B. ${cat.title}-Reisen 2026 & 2027`}
+                    />
+                  </Field>
+
                   <Field label="Langer Text" hint="Lead-Text auf der Kategorie-Seite">
                     <TextInput value={cat.text} onChange={(v) => updCat(i, { text: v })} multiline rows={2} />
                   </Field>

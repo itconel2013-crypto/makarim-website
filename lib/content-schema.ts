@@ -149,6 +149,14 @@ export interface Category {
   key: 'umrah' | 'hajj' | 'kulturreisen';  // URL-safe key for routing
   name: string;               // Display name (e.g., "Umrah")
   title: string;
+  /**
+   * Überschrift (H1) auf der Kategorieseite. Leer = es gilt `title`.
+   *
+   * Eigenes Feld, weil `title` zugleich die Kachel auf der Startseite beschriftet:
+   * Dort passt „Umrah", als Seitenüberschrift verschenkt ein einzelnes Wort das
+   * Suchwort. Hier steht z. B. „Umrah-Reisen 2026 & 2027".
+   */
+  headline?: string;
   description: string;        // Short description for category card
   text: string;               // Longer text
   icon?: string;              // Optional emoji/icon
