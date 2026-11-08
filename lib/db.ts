@@ -194,13 +194,24 @@ export function contentUpdatedAt(): Date | undefined {
     const row = db.prepare('SELECT updated_at FROM cms_content WHERE id = 1').get() as any;
     db.close();
     if (!row?.updated_at) return undefined;
-    // SQLite liefert "YYYY-MM-DD HH:MM:SS" in UTC.
-    const d = new Date(String(row.updated_at).replace(' ', 'T') + 'Z');
-    if (isNaN(d.getTime())) {
-      console.warn('contentUpdatedAt: unlesbarer Zeitstempel:', row.updated_at);
-      return undefined;
+
+    // Zwei Schreibweisen kommen vor: CURRENT_TIMESTAMP von SQLite liefert
+    // "YYYY-MM-DD HH:MM:SS" (UTC, ohne Zeitzone), ältere Datenstände können eine
+    // fertige ISO-Zeit enthalten. Beide zulassen, statt auf eine zu wetten —
+    // ein falsch geratenes Format ergibt ein ungültiges Datum und damit still
+    // gar keinen Eintrag in der Sitemap.
+    const roh = String(row.updated_at).trim();
+    const kandidaten = /[TZ]|[+-]\d{2}:\d{2}$/.test(roh)
+      ? [roh, roh.replace(' ', 'T') + 'Z']
+      : [roh.replace(' ', 'T') + 'Z', roh];
+
+    for (const k of kandidaten) {
+      const d = new Date(k);
+      if (!isNaN(d.getTime())) return d;
     }
-    return d;
+
+    console.warn('contentUpdatedAt: unlesbarer Zeitstempel:', roh);
+    return undefined;
   } catch (e) {
     // Nicht still verschlucken: Ohne Meldung sieht man der Sitemap nur an, dass
     // das Datum fehlt — nicht, warum. Das kostete beim ersten Mal eine halbe
