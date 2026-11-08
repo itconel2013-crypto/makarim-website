@@ -196,8 +196,16 @@ export function contentUpdatedAt(): Date | undefined {
     if (!row?.updated_at) return undefined;
     // SQLite liefert "YYYY-MM-DD HH:MM:SS" in UTC.
     const d = new Date(String(row.updated_at).replace(' ', 'T') + 'Z');
-    return isNaN(d.getTime()) ? undefined : d;
-  } catch {
+    if (isNaN(d.getTime())) {
+      console.warn('contentUpdatedAt: unlesbarer Zeitstempel:', row.updated_at);
+      return undefined;
+    }
+    return d;
+  } catch (e) {
+    // Nicht still verschlucken: Ohne Meldung sieht man der Sitemap nur an, dass
+    // das Datum fehlt — nicht, warum. Das kostete beim ersten Mal eine halbe
+    // Stunde Suche.
+    console.error('contentUpdatedAt fehlgeschlagen:', e);
     return undefined;
   }
 }
